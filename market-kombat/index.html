@@ -22,6 +22,7 @@
       </div>
       <nav class="tabs">
         <button class="tab-btn active" onclick="showTab('kombat')">Live Arena</button>
+        <button class="tab-btn" onclick="showTab('forwardtest')">Strategy Radar</button>
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
         <button class="tab-btn" onclick="showTab('intelligence')">Algo logic</button>
       </nav>
@@ -39,6 +40,40 @@
             "Awaiting session volatility pulse..."
         </div>
       </section>
+    </div>
+
+    <!-- STRATEGY RADAR (FORWARD TEST) -->
+    <div id="forwardtest" class="tab-content">
+      <div class="panel">
+        <div class="eyebrow">Real-Time Probability Monitor</div>
+        <div class="summary-grid" style="margin-top:20px;">
+          <div class="panel stat-card" style="border-color: var(--accent);">
+            <div class="eyebrow">Aura-V 2.0 Prob</div>
+            <div id="liveProb" class="stat-value" style="color:var(--accent)">15.0%</div>
+          </div>
+          <div class="panel stat-card">
+            <div class="eyebrow">Timer State</div>
+            <div id="countdownState" class="stat-value" style="font-size:18px;">IDLE</div>
+          </div>
+          <div class="panel stat-card">
+            <div class="eyebrow">Validation</div>
+            <div id="liveValidation" class="stat-value" style="font-size:18px;">PASSIVE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">60-Minute Execution Countdown</div>
+        <div id="radarContainer" style="padding:40px 0; text-align:center;">
+          <div id="timerDisplay" style="font-size: 64px; font-weight: 900; letter-spacing: -2px; color: #111;">00:00:00</div>
+          <div id="timerAction" class="eyebrow" style="margin-top:10px;">SCANNING MARKET STRUCTURE...</div>
+        </div>
+        <div id="countdownSteps" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:20px; opacity:0.3;">
+          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-60] TRIGGER</div>
+          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-30] RE-SCAN</div>
+          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-0] EXECUTE</div>
+        </div>
+      </div>
     </div>
 
     <!-- BACKTEST ANALYTICS -->
