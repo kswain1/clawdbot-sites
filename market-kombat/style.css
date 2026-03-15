@@ -1,0 +1,21 @@
+body { 
+    margin: 0; 
+    background: #06070b; 
+    color: #f5f7fb; 
+    font-family: 'Inter', sans-serif; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+.arena { 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    width: 100%; 
+    max-width: 1200px; 
+    height: 600px; 
+    background: radial-gradient(circle at center, rgba(246,196,83,0.05), transparent 70%);
+}
+.fighter { width: 350px; text-align: center; }
+.vs { font-size: 64px; font-weight: 900; opacity: 0.2; }
+.banner { background: #111; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px solid #333; }
