@@ -3,23 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Kombat | Buyers vs Sellers</title>
+    <title>Market Kombat | Replay Engine</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1 style="color:#f6c453; margin-top:40px;">MARKET KOMBAT</h1>
+    <div id="modeBadge" class="badge replay">Replay Mode</div>
+
+    <div class="header">
+        <h1 style="color:#f6c453; margin:0; font-size: 42px;">MARKET KOMBAT</h1>
+        <p id="timestamp" style="opacity:0.6;">Initializing History...</p>
+    </div>
+
     <div class="arena">
-        <div class="fighter">
-            <img src="assets/bullzen.svg" alt="Bullzen">
+        <div class="fighter" id="bullzen">
+            <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="auraGrad" cx="50%" cy="50%">
+                        <stop offset="0%" stop-color="#39D98A"/>
+                        <stop offset="45%" stop-color="#F6C453"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </radialGradient>
+                </defs>
+                <g class="auraPulse">
+                    <ellipse cx="200" cy="270" rx="122" ry="180" fill="url(#auraGrad)" opacity="0.85"/>
+                </g>
+                <rect x="145" y="180" width="110" height="166" rx="28" fill="#1A2431" stroke="#39D98A" stroke-width="2"/>
+                <circle cx="200" cy="128" r="46" fill="#E8B892"/>
+                <text x="200" y="500" text-anchor="middle" font-size="32" font-weight="900" fill="#39D98A">BULLZEN</text>
+            </svg>
         </div>
+
         <div class="vs">VS</div>
-        <div class="fighter">
-            <img src="assets/bearaku.svg" alt="Bearaku">
+
+        <div class="fighter" id="bearaku">
+            <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="bearAura" cx="50%" cy="50%">
+                        <stop offset="0%" stop-color="#ff5d5d"/>
+                        <stop offset="70%" stop-color="#8b1a1a"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </radialGradient>
+                </defs>
+                <g class="auraPulse">
+                    <ellipse cx="200" cy="270" rx="130" ry="190" fill="url(#bearAura)" opacity="0.6"/>
+                </g>
+                <rect x="145" y="180" width="110" height="170" rx="20" fill="#150c0c" stroke="#ff5d5d" stroke-width="2"/>
+                <circle cx="200" cy="128" r="46" fill="#DFA884"/>
+                <text x="200" y="500" text-anchor="middle" font-size="32" font-weight="900" fill="#ff5d5d">BEARAKU</text>
+            </svg>
         </div>
     </div>
-    <div class="banner">
-        <p>Waiting for live XAUUSD candle data... 🔱</p>
+
+    <div class="status-row">
+        <div class="stat-card">
+            <div style="font-size:12px; opacity:0.6;">PRICE</div>
+            <div id="priceDisplay" style="font-size:24px; font-weight:900;">---</div>
+        </div>
+        <div class="stat-card">
+            <div style="font-size:12px; opacity:0.6;">SENTIMENT</div>
+            <div id="sentimentDisplay" style="font-size:24px; font-weight:900;">Neutral</div>
+        </div>
     </div>
+
+    <div id="clawdyCommentary" style="margin-top:30px; max-width:600px; text-align:center; padding:20px; font-style:italic; opacity:0.8;">
+        "@Clawdy: Preparing the replay logs. The arena is about to heat up."
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
