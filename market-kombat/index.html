@@ -120,24 +120,47 @@
       window.mainChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['Jan', 'Feb', 'Mar'],
+          labels: ['Trade 1', 'Trade 5', 'Trade 10', 'Trade 15', 'Trade 20', 'Trade 25', 'Trade 30', 'Trade 35', 'Trade 40', 'Trade 45', 'Trade 47'],
           datasets: [{
-            label: 'Institutional PnL',
-            data: [0, 4200, 8366],
+            label: 'Net Equity',
+            data: [0, 450, -100, 800, 1500, 1200, 2800, 4100, 3900, 6200, 8366],
             borderColor: '#f6c453',
-            borderWidth: 2,
-            pointRadius: 0,
+            borderWidth: 3,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointBackgroundColor: function(context) {
+                const index = context.dataIndex;
+                const value = context.dataset.data[index];
+                const prevValue = index > 0 ? context.dataset.data[index - 1] : 0;
+                return value >= prevValue ? '#39d98a' : '#ff5d5d';
+            },
+            pointBorderColor: '#000',
             fill: true,
-            backgroundColor: 'rgba(246, 196, 83, 0.03)',
-            tension: 0.1
+            backgroundColor: 'rgba(246, 196, 83, 0.02)',
+            tension: 0.3
           }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(item) {
+                        return "Equity: $" + item.raw;
+                    }
+                }
+            }
+          },
           scales: {
-            y: { grid: { color: 'rgba(255,255,255,0.02)' }, ticks: { color: '#444' } },
-            x: { grid: { display: false }, ticks: { color: '#444' } }
+            y: { 
+                grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, 
+                ticks: { color: '#666', font: { size: 10 } } 
+            },
+            x: { 
+                grid: { display: false }, 
+                ticks: { color: '#666', font: { size: 10 } } 
+            }
           }
         }
       });
