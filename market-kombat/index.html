@@ -69,9 +69,18 @@
           <div id="timerAction" class="eyebrow" style="margin-top:10px;">SCANNING MARKET STRUCTURE...</div>
         </div>
         <div id="countdownSteps" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:20px; opacity:0.3;">
-          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-60] TRIGGER</div>
-          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-30] RE-SCAN</div>
-          <div class="panel stat-card" style="padding:10x; font-size:11px; text-align:center;">[T-0] EXECUTE</div>
+          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+            <div class="eyebrow" style="font-size:9px">STAGE 1 [800s]</div>
+            <div id="stage1-label">FIRST STRIKE</div>
+          </div>
+          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+            <div class="eyebrow" style="font-size:9px">STAGE 2 [2400s]</div>
+            <div id="stage2-label">STABILITY CHECK</div>
+          </div>
+          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+            <div class="eyebrow" style="font-size:9px">STAGE 3 [3600s]</div>
+            <div id="stage3-label">FINAL EXECUTION</div>
+          </div>
         </div>
       </div>
     </div>
