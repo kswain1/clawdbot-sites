@@ -3,57 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Market Kombat | Cinematic Replay</title>
+  <title>Aura Intelligence | XAUUSD Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--panel-line); padding-bottom: 10px; }
+    .tab-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 10px 20px; border-radius: 8px; }
+    .tab-btn.active { color: var(--gold); background: rgba(246, 196, 83, 0.1); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .algo-card { cursor: pointer; transition: all 0.3s ease; }
+    .algo-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; backdrop-filter: blur(10px); padding: 40px; }
+    .modal-box { max-width: 800px; margin: 0 auto; background: var(--panel); border: 1px solid var(--panel-line); border-radius: 20px; padding: 30px; position: relative; }
+    .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: var(--muted); }
+    .logic-block { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; font-family: monospace; border-left: 3px solid var(--gold); margin: 10px 0; }
+  </style>
 </head>
 <body>
   <div class="page-bg"></div>
   <div class="page-overlay"></div>
 
   <main class="shell">
-    <header class="panel">
-      <h1 style="color:#f6c453; margin:0;">MARKET KOMBAT</h1>
-      <p style="opacity:0.6;">Cinematic XAUUSD Session Replay</p>
+    <header class="topbar panel">
+      <div>
+        <div class="eyebrow">Aura Command Center</div>
+        <h1>Market Intelligence</h1>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('kombat')">Market Kombat</button>
+        <button class="tab-btn" onclick="showTab('backtest')">Backtest Radar</button>
+        <button class="tab-btn" onclick="showTab('intelligence')">Algo Logic</button>
+      </div>
     </header>
 
-    <div class="summary-grid">
-      <div class="panel">
-        <div style="font-size:12px; color:#f6c453;">PRICE</div>
-        <div id="price" style="font-size:24px; font-weight:900;">---</div>
-      </div>
-      <div class="panel">
-        <div style="font-size:12px; color:#f6c453;">DOMINANCE</div>
-        <div id="winner" style="font-size:24px; font-weight:900;">---</div>
-      </div>
-      <div class="panel">
-        <div style="font-size:12px; color:#f6c453;">TIME</div>
-        <div id="timer" style="font-size:18px;">---</div>
-      </div>
+    <!-- TAB 1: KOMBAT -->
+    <div id="kombat" class="tab-content active">
+        <!-- Re-use existing Kombat Arena Structure -->
+        <section class="arena panel">
+            <div class="fighters-row">
+                <div id="bullzenCard" class="fighter-card"><img src="assets/bullzen.png"><h3>BULLZEN</h3></div>
+                <div class="versus">VS</div>
+                <div id="bearakuCard" class="fighter-card"><img src="assets/bearaku.png"><h3>BEARAKU</h3></div>
+            </div>
+            <div id="commentary" style="text-align:center; padding:20px;">@Aura: Monitoring the 1H Mean Reversion.</div>
+        </section>
     </div>
 
-    <div class="arena panel">
-      <div class="fighters-row">
-        <div id="bullzenCard" class="fighter-card">
-          <img src="assets/bullzen.png" alt="Bullzen">
-          <h3>BULLZEN</h3>
-        </div>
-        <div class="versus">VS</div>
-        <div id="bearakuCard" class="fighter-card">
-          <img src="assets/bearaku.png" alt="Bearaku">
-          <h3>BEARAKU</h3>
-        </div>
-      </div>
-      <div id="commentary" style="text-align:center; font-style:italic; padding:20px;">
-        "@Clawdy: Session logs loading..."
-      </div>
+    <!-- TAB 2: BACKTEST RADAR -->
+    <div id="backtest" class="tab-content">
+        <section class="summary-grid">
+            <article class="panel stat-card">
+                <div class="label">90D Profit</div>
+                <div class="stat-value" style="color:var(--green)">+$8,366.00</div>
+            </article>
+            <article class="panel stat-card">
+                <div class="label">Win Rate</div>
+                <div class="stat-value">62.9%</div>
+            </article>
+            <article class="panel stat-card">
+                <div class="label">Primary Engine</div>
+                <div class="stat-value">Aura-V 2.0</div>
+            </article>
+        </section>
+        <article class="panel" style="margin-top:20px;">
+            <h3>Equity Curve (Institutional Backtest)</h3>
+            <canvas id="equityChart" style="width:100%; height:300px;"></canvas>
+        </article>
     </div>
 
-    <div class="panel">
-      <h3>REPLAY TIMELINE</h3>
-      <div id="timelineList"></div>
+    <!-- TAB 3: ALGO LOGIC -->
+    <div id="intelligence" class="tab-content">
+        <div class="summary-grid">
+            <article class="panel algo-card" ondblclick="openAlgo('aura')">
+                <div class="eyebrow">Mean Reversion</div>
+                <h3>Aura-V 2.0</h3>
+                <p>High-conviction sniping at 2.0 STD exhaustion.</p>
+                <small>(Double Click for Logic)</small>
+            </article>
+            <article class="panel algo-card" ondblclick="openAlgo('xutap')">
+                <div class="eyebrow">Trend Following</div>
+                <h3>XU-Tap v2.3</h3>
+                <p>Institutional EMA continuation with 1H filters.</p>
+                <small>(Double Click for Logic)</small>
+            </article>
+        </div>
     </div>
   </main>
 
+  <!-- MODALS -->
+  <div id="algoModal" class="modal" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Algo Logic</h2>
+        <div id="modalBody"></div>
+    </div>
+  </div>
+
   <script src="script.js"></script>
+  <script>
+    function showTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+        if(tabId === 'backtest') initChart();
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('equityChart').getContext('2d');
+        if(window.myChart) window.window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar'],
+                datasets: [{
+                    label: 'Net PnL ($)',
+                    data: [0, 4200, 8366],
+                    borderColor: '#f6c453',
+                    backgroundColor: 'rgba(246, 196, 83, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    const algoData = {
+        'aura': {
+            title: 'Aura-V 2.0 (Mean Reversion)',
+            body: 'Detects exhaustion at 2.0 Bollinger Band Standard Deviations. <div class="logic-block">Entry = Price > UpperBand AND RSI > 70 <br> SL = Anchored to 4H High <br> TP = 1:1 RR Ratio</div>'
+        },
+        'xutap': {
+            title: 'XU-Tap v2.3 (Trend)',
+            body: 'Follows institutional momentum via EMA alignment. <div class="logic-block">Logic = EMA15 > EMA112 > EMA263 <br> Confirmation = 1H EMA 200 Positive <br> TP = 20 Pts | SL = 10 Pts</div>'
+        }
+    };
+
+    function openAlgo(key) {
+        const data = algoData[key];
+        document.getElementById('modalTitle').textContent = data.title;
+        document.getElementById('modalBody').innerHTML = data.body;
+        document.getElementById('algoModal').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('algoModal').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
