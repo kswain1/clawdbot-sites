@@ -1,89 +1,28 @@
-body {
-    margin: 0;
-    background: #06070b;
-    color: #f5f7fb;
-    font-family: 'Inter', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
+body { margin: 0; background: #06070b url('assets/bg.png') no-repeat center center fixed; background-size: cover; color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 0; }
+.content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+.arena { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 1400px; height: 75vh; }
 
-.header {
-    text-align: center;
-    padding: 20px;
-}
+/* Puppet Wrapper */
+.fighter-puppet { position: relative; width: 400px; height: 500px; }
+.puppet-part { position: absolute; background-size: contain; background-repeat: no-repeat; transition: all 0.3s ease; }
 
-.arena {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    max-width: 1400px;
-    height: 60vh;
-    background: radial-gradient(circle at center, rgba(246,196,83,0.05), transparent 70%);
-    position: relative;
-}
+/* Bearaku Puppet Parts */
+#bearaku-puppet #part-head { width: 160px; height: 160px; top: 0; left: 120px; background-image: url('assets/bearaku_head.png'); z-index: 3; }
+#bearaku-puppet #part-torso { width: 240px; height: 240px; top: 140px; left: 80px; background-image: url('assets/bearaku_torso.png'); z-index: 2; }
+#bearaku-puppet #part-arm-l { width: 140px; height: 200px; top: 120px; left: 0; background-image: url('assets/bearaku_arm_l.png'); z-index: 1; transform-origin: top right; }
+#bearaku-puppet #part-arm-r { width: 140px; height: 200px; top: 120px; right: 0; background-image: url('assets/bearaku_arm_r.png'); z-index: 4; transform-origin: top left; }
 
-.fighter {
-    width: min(40vw, 450px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
+/* Bullzen Puppet Parts */
+#bullzen-puppet #part-head { width: 160px; height: 160px; top: 0; left: 120px; background-image: url('assets/bullzen_head.png'); z-index: 3; }
+#bullzen-puppet #part-torso { width: 240px; height: 240px; top: 140px; left: 80px; background-image: url('assets/bullzen_torso.png'); z-index: 2; }
+#bullzen-puppet #part-arm-l { width: 140px; height: 200px; top: 120px; left: 0; background-image: url('assets/bullzen_arm_l.png'); z-index: 1; transform-origin: top right; }
+#bullzen-puppet #part-arm-r { width: 140px; height: 200px; top: 120px; right: 0; background-image: url('assets/bullzen_arm_r.png'); z-index: 4; transform-origin: top left; }
 
-.fighter svg {
-    width: 100%;
-    height: auto;
-    overflow: visible; /* CRITICAL for glow */
-}
+/* Animation States */
+.attacking #part-arm-r { transform: rotate(-45deg); filter: brightness(1.5); }
+.attacking #part-head { transform: translateY(-10px) rotate(5deg); }
 
-.vs {
-    font-size: clamp(40px, 10vw, 120px);
-    font-weight: 900;
-    opacity: 0.15;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-}
-
-.status-row {
-    width: 100%;
-    max-width: 800px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.stat-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.badge {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 8px 16px;
-    border-radius: 99px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 1px;
-}
-
-.badge.replay { background: #f6c453; color: #000; }
-.badge.live { background: #ff5d5d; color: #fff; animation: pulse 2s infinite; }
-
-.auraPulse { animation: auraPulse 2s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-
-@keyframes auraPulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.vs { font-size: 80px; font-weight: 900; color: #f6c453; opacity: 0.3; }
+.stats { background: rgba(0,0,0,0.8); border: 1px solid #f6c453; padding: 20px 40px; border-radius: 99px; display: flex; gap: 40px; margin-top: -50px; }
+.val { font-size: 28px; font-weight: 900; }
