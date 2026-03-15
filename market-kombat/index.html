@@ -3,72 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Kombat | Replay Engine</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Market Kombat | XAUUSD Cinema</title>
+    <style>
+        body { margin: 0; background: #06070b url('assets/bg.png') no-repeat center center fixed; background-size: cover; color: #fff; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow: hidden; }
+        .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); z-index: 0; }
+        .content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .arena { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 1400px; height: 70vh; position: relative; }
+        .fighter { width: 40%; max-width: 500px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
+        .fighter img { width: 100%; height: auto; }
+        .vs { font-size: 80px; font-weight: 900; color: #f6c453; text-shadow: 0 0 20px rgba(246,196,83,0.5); opacity: 0.4; }
+        .stats { background: rgba(0,0,0,0.8); border: 1px solid #f6c453; padding: 20px 40px; border-radius: 99px; display: flex; gap: 40px; margin-top: -50px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .stat-item { text-align: center; }
+        .label { color: #f6c453; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        .val { font-size: 28px; font-weight: 900; }
+        .banner { position: fixed; top: 20px; right: 20px; background: #f6c453; color: #000; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <div id="modeBadge" class="badge replay">Replay Mode</div>
+    <div class="overlay"></div>
+    <div class="banner">REPLAY: 4H SESSION DATA</div>
+    
+    <div class="content">
+        <h1 style="color:#f6c453; font-size: 48px; margin-top: 30px; text-shadow: 0 0 10px rgba(0,0,0,1);">MARKET KOMBAT</h1>
+        <p id="timer" style="opacity:0.7; font-weight: bold;">Loading Cinema...</p>
 
-    <div class="header">
-        <h1 style="color:#f6c453; margin:0; font-size: 42px;">MARKET KOMBAT</h1>
-        <p id="timestamp" style="opacity:0.6;">Initializing History...</p>
-    </div>
-
-    <div class="arena">
-        <div class="fighter" id="bullzen">
-            <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <radialGradient id="auraGrad" cx="50%" cy="50%">
-                        <stop offset="0%" stop-color="#39D98A"/>
-                        <stop offset="45%" stop-color="#F6C453"/>
-                        <stop offset="100%" stop-color="transparent"/>
-                    </radialGradient>
-                </defs>
-                <g class="auraPulse">
-                    <ellipse cx="200" cy="270" rx="122" ry="180" fill="url(#auraGrad)" opacity="0.85"/>
-                </g>
-                <rect x="145" y="180" width="110" height="166" rx="28" fill="#1A2431" stroke="#39D98A" stroke-width="2"/>
-                <circle cx="200" cy="128" r="46" fill="#E8B892"/>
-                <text x="200" y="500" text-anchor="middle" font-size="32" font-weight="900" fill="#39D98A">BULLZEN</text>
-            </svg>
+        <div class="arena">
+            <div id="bullzen" class="fighter">
+                <img src="assets/bullzen.png" alt="Bullzen">
+            </div>
+            <div class="vs">VS</div>
+            <div id="bearaku" class="fighter">
+                <img src="assets/bearaku.png" alt="Bearaku">
+            </div>
         </div>
 
-        <div class="vs">VS</div>
-
-        <div class="fighter" id="bearaku">
-            <svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <radialGradient id="bearAura" cx="50%" cy="50%">
-                        <stop offset="0%" stop-color="#ff5d5d"/>
-                        <stop offset="70%" stop-color="#8b1a1a"/>
-                        <stop offset="100%" stop-color="transparent"/>
-                    </radialGradient>
-                </defs>
-                <g class="auraPulse">
-                    <ellipse cx="200" cy="270" rx="130" ry="190" fill="url(#bearAura)" opacity="0.6"/>
-                </g>
-                <rect x="145" y="180" width="110" height="170" rx="20" fill="#150c0c" stroke="#ff5d5d" stroke-width="2"/>
-                <circle cx="200" cy="128" r="46" fill="#DFA884"/>
-                <text x="200" y="500" text-anchor="middle" font-size="32" font-weight="900" fill="#ff5d5d">BEARAKU</text>
-            </svg>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="label">Price</div>
+                <div id="price" class="val">5061.70</div>
+            </div>
+            <div class="stat-item">
+                <div class="label">Advantage</div>
+                <div id="winner" class="val" style="color:#39d98a;">BULLZEN</div>
+            </div>
         </div>
     </div>
 
-    <div class="status-row">
-        <div class="stat-card">
-            <div style="font-size:12px; opacity:0.6;">PRICE</div>
-            <div id="priceDisplay" style="font-size:24px; font-weight:900;">---</div>
-        </div>
-        <div class="stat-card">
-            <div style="font-size:12px; opacity:0.6;">SENTIMENT</div>
-            <div id="sentimentDisplay" style="font-size:24px; font-weight:900;">Neutral</div>
-        </div>
-    </div>
+    <script>
+        // High-Detail Replay Logic
+        const history = []; // Provided by build script
+        let idx = 0;
 
-    <div id="clawdyCommentary" style="margin-top:30px; max-width:600px; text-align:center; padding:20px; font-style:italic; opacity:0.8;">
-        "@Clawdy: Preparing the replay logs. The arena is about to heat up."
-    </div>
+        function update(data) {
+            const bull = document.getElementById('bullzen');
+            const bear = document.getElementById('bearaku');
+            const price = document.getElementById('price');
+            const winner = document.getElementById('winner');
+            const timer = document.getElementById('timer');
 
-    <script src="script.js"></script>
+            price.textContent = data.price;
+            timer.textContent = data.time;
+
+            if(data.isBullish) {
+                bull.style.transform = "scale(1.2) translateX(30px)";
+                bull.style.filter = "drop-shadow(0 0 40px rgba(57,217,138,0.8))";
+                bear.style.transform = "scale(0.8) translateX(20px)";
+                bear.style.filter = "brightness(0.3) grayscale(1)";
+                winner.textContent = "BULLZEN";
+                winner.style.color = "#39d98a";
+            } else {
+                bear.style.transform = "scale(1.2) translateX(-30px)";
+                bear.style.filter = "drop-shadow(0 0 40px rgba(255,93,93,0.8))";
+                bull.style.transform = "scale(0.8) translateX(-20px)";
+                bull.style.filter = "brightness(0.3) grayscale(1)";
+                winner.textContent = "BEARAKU";
+                winner.style.color = "#ff5d5d";
+            }
+        }
+
+        const history = [{"time": "2026-03-10 00:00", "open": 5165.2998046875, "close": 5172.10009765625, "isBullish": true, "price": "5172.10"}, {"time": "2026-03-10 01:00", "open": 5172.5, "close": 5186.7001953125, "isBullish": true, "price": "5186.70"}, {"time": "2026-03-10 02:00", "open": 5187.2998046875, "close": 5183.60009765625, "isBullish": false, "price": "5183.60"}, {"time": "2026-03-10 03:00", "open": 5184.10009765625, "close": 5190.5, "isBullish": true, "price": "5190.50"}, {"time": "2026-03-10 04:00", "open": 5190.60009765625, "close": 5192.5, "isBullish": true, "price": "5192.50"}, {"time": "2026-03-10 05:00", "open": 5192.60009765625, "close": 5191.7998046875, "isBullish": false, "price": "5191.80"}, {"time": "2026-03-10 06:00", "open": 5191.5, "close": 5186.60009765625, "isBullish": false, "price": "5186.60"}, {"time": "2026-03-10 07:00", "open": 5186.60009765625, "close": 5184.2001953125, "isBullish": false, "price": "5184.20"}, {"time": "2026-03-10 08:00", "open": 5184.60009765625, "close": 5196.5, "isBullish": true, "price": "5196.50"}, {"time": "2026-03-10 09:00", "open": 5196.2001953125, "close": 5214.2001953125, "isBullish": true, "price": "5214.20"}, {"time": "2026-03-10 10:00", "open": 5215.39990234375, "close": 5215.7998046875, "isBullish": true, "price": "5215.80"}, {"time": "2026-03-10 11:00", "open": 5216.0, "close": 5238.0, "isBullish": true, "price": "5238.00"}, {"time": "2026-03-10 12:00", "open": 5238.10009765625, "close": 5236.89990234375, "isBullish": false, "price": "5236.90"}, {"time": "2026-03-10 13:00", "open": 5236.89990234375, "close": 5237.10009765625, "isBullish": true, "price": "5237.10"}, {"time": "2026-03-10 14:00", "open": 5237.0, "close": 5200.0, "isBullish": false, "price": "5200.00"}, {"time": "2026-03-10 15:00", "open": 5200.2998046875, "close": 5207.0, "isBullish": true, "price": "5207.00"}, {"time": "2026-03-10 16:00", "open": 5206.7001953125, "close": 5198.7001953125, "isBullish": false, "price": "5198.70"}, {"time": "2026-03-10 18:00", "open": 5194.0, "close": 5196.7001953125, "isBullish": true, "price": "5196.70"}, {"time": "2026-03-10 19:00", "open": 5197.2001953125, "close": 5204.89990234375, "isBullish": true, "price": "5204.90"}, {"time": "2026-03-10 20:00", "open": 5205.0, "close": 5223.10009765625, "isBullish": true, "price": "5223.10"}, {"time": "2026-03-10 21:00", "open": 5223.0, "close": 5215.89990234375, "isBullish": false, "price": "5215.90"}, {"time": "2026-03-10 22:00", "open": 5215.89990234375, "close": 5225.39990234375, "isBullish": true, "price": "5225.40"}, {"time": "2026-03-10 23:00", "open": 5225.5, "close": 5211.10009765625, "isBullish": false, "price": "5211.10"}, {"time": "2026-03-11 00:00", "open": 5211.5, "close": 5212.7998046875, "isBullish": true, "price": "5212.80"}, {"time": "2026-03-11 01:00", "open": 5212.5, "close": 5207.60009765625, "isBullish": false, "price": "5207.60"}, {"time": "2026-03-11 02:00", "open": 5207.2001953125, "close": 5205.7998046875, "isBullish": false, "price": "5205.80"}, {"time": "2026-03-11 03:00", "open": 5205.0, "close": 5203.7001953125, "isBullish": false, "price": "5203.70"}, {"time": "2026-03-11 04:00", "open": 5203.2998046875, "close": 5195.2001953125, "isBullish": false, "price": "5195.20"}, {"time": "2026-03-11 05:00", "open": 5194.89990234375, "close": 5195.7001953125, "isBullish": true, "price": "5195.70"}, {"time": "2026-03-11 06:00", "open": 5195.7998046875, "close": 5194.10009765625, "isBullish": false, "price": "5194.10"}, {"time": "2026-03-11 07:00", "open": 5194.2998046875, "close": 5189.2001953125, "isBullish": false, "price": "5189.20"}, {"time": "2026-03-11 08:00", "open": 5188.7001953125, "close": 5175.10009765625, "isBullish": false, "price": "5175.10"}, {"time": "2026-03-11 09:00", "open": 5174.7001953125, "close": 5184.2998046875, "isBullish": true, "price": "5184.30"}, {"time": "2026-03-11 10:00", "open": 5184.0, "close": 5190.7998046875, "isBullish": true, "price": "5190.80"}, {"time": "2026-03-11 11:00", "open": 5190.7001953125, "close": 5173.39990234375, "isBullish": false, "price": "5173.40"}, {"time": "2026-03-11 12:00", "open": 5173.39990234375, "close": 5183.10009765625, "isBullish": true, "price": "5183.10"}, {"time": "2026-03-11 13:00", "open": 5183.2998046875, "close": 5176.60009765625, "isBullish": false, "price": "5176.60"}, {"time": "2026-03-11 14:00", "open": 5176.60009765625, "close": 5180.10009765625, "isBullish": true, "price": "5180.10"}, {"time": "2026-03-11 15:00", "open": 5180.2001953125, "close": 5191.0, "isBullish": true, "price": "5191.00"}, {"time": "2026-03-11 16:00", "open": 5190.7998046875, "close": 5183.89990234375, "isBullish": false, "price": "5183.90"}, {"time": "2026-03-11 18:00", "open": 5185.39990234375, "close": 5144.7998046875, "isBullish": false, "price": "5144.80"}, {"time": "2026-03-11 19:00", "open": 5144.5, "close": 5140.0, "isBullish": false, "price": "5140.00"}, {"time": "2026-03-11 20:00", "open": 5139.39990234375, "close": 5158.10009765625, "isBullish": true, "price": "5158.10"}, {"time": "2026-03-11 21:00", "open": 5158.2001953125, "close": 5174.39990234375, "isBullish": true, "price": "5174.40"}, {"time": "2026-03-11 22:00", "open": 5173.7001953125, "close": 5156.0, "isBullish": false, "price": "5156.00"}, {"time": "2026-03-11 23:00", "open": 5155.7001953125, "close": 5158.2001953125, "isBullish": true, "price": "5158.20"}, {"time": "2026-03-12 00:00", "open": 5158.39990234375, "close": 5147.39990234375, "isBullish": false, "price": "5147.40"}, {"time": "2026-03-12 01:00", "open": 5147.60009765625, "close": 5159.7001953125, "isBullish": true, "price": "5159.70"}, {"time": "2026-03-12 02:00", "open": 5159.60009765625, "close": 5172.60009765625, "isBullish": true, "price": "5172.60"}, {"time": "2026-03-12 03:00", "open": 5171.89990234375, "close": 5188.39990234375, "isBullish": true, "price": "5188.40"}, {"time": "2026-03-12 04:00", "open": 5188.2001953125, "close": 5184.39990234375, "isBullish": false, "price": "5184.40"}, {"time": "2026-03-12 05:00", "open": 5184.60009765625, "close": 5194.2001953125, "isBullish": true, "price": "5194.20"}, {"time": "2026-03-12 06:00", "open": 5194.10009765625, "close": 5188.2001953125, "isBullish": false, "price": "5188.20"}, {"time": "2026-03-12 07:00", "open": 5187.89990234375, "close": 5184.7998046875, "isBullish": false, "price": "5184.80"}, {"time": "2026-03-12 08:00", "open": 5185.0, "close": 5187.7001953125, "isBullish": true, "price": "5187.70"}, {"time": "2026-03-12 09:00", "open": 5187.5, "close": 5157.39990234375, "isBullish": false, "price": "5157.40"}, {"time": "2026-03-12 10:00", "open": 5157.0, "close": 5148.7998046875, "isBullish": false, "price": "5148.80"}, {"time": "2026-03-12 11:00", "open": 5148.60009765625, "close": 5138.0, "isBullish": false, "price": "5138.00"}, {"time": "2026-03-12 12:00", "open": 5138.10009765625, "close": 5130.10009765625, "isBullish": false, "price": "5130.10"}, {"time": "2026-03-12 13:00", "open": 5129.89990234375, "close": 5112.39990234375, "isBullish": false, "price": "5112.40"}, {"time": "2026-03-12 14:00", "open": 5111.89990234375, "close": 5100.0, "isBullish": false, "price": "5100.00"}, {"time": "2026-03-12 15:00", "open": 5100.2001953125, "close": 5091.7001953125, "isBullish": false, "price": "5091.70"}, {"time": "2026-03-12 16:00", "open": 5092.0, "close": 5084.10009765625, "isBullish": false, "price": "5084.10"}, {"time": "2026-03-12 18:00", "open": 5084.0, "close": 5099.10009765625, "isBullish": true, "price": "5099.10"}, {"time": "2026-03-12 19:00", "open": 5099.60009765625, "close": 5101.5, "isBullish": true, "price": "5101.50"}, {"time": "2026-03-12 20:00", "open": 5101.0, "close": 5116.60009765625, "isBullish": true, "price": "5116.60"}, {"time": "2026-03-12 21:00", "open": 5116.7001953125, "close": 5128.5, "isBullish": true, "price": "5128.50"}, {"time": "2026-03-12 22:00", "open": 5127.89990234375, "close": 5115.39990234375, "isBullish": false, "price": "5115.40"}, {"time": "2026-03-12 23:00", "open": 5115.7998046875, "close": 5119.2001953125, "isBullish": true, "price": "5119.20"}, {"time": "2026-03-13 00:00", "open": 5118.89990234375, "close": 5107.10009765625, "isBullish": false, "price": "5107.10"}, {"time": "2026-03-13 01:00", "open": 5107.39990234375, "close": 5106.2001953125, "isBullish": false, "price": "5106.20"}, {"time": "2026-03-13 02:00", "open": 5106.10009765625, "close": 5092.2001953125, "isBullish": false, "price": "5092.20"}, {"time": "2026-03-13 03:00", "open": 5092.2001953125, "close": 5089.5, "isBullish": false, "price": "5089.50"}, {"time": "2026-03-13 04:00", "open": 5089.7998046875, "close": 5092.2001953125, "isBullish": true, "price": "5092.20"}, {"time": "2026-03-13 05:00", "open": 5092.2998046875, "close": 5094.2998046875, "isBullish": true, "price": "5094.30"}, {"time": "2026-03-13 06:00", "open": 5094.0, "close": 5099.60009765625, "isBullish": true, "price": "5099.60"}, {"time": "2026-03-13 07:00", "open": 5099.89990234375, "close": 5112.89990234375, "isBullish": true, "price": "5112.90"}, {"time": "2026-03-13 08:00", "open": 5113.0, "close": 5124.39990234375, "isBullish": true, "price": "5124.40"}, {"time": "2026-03-13 09:00", "open": 5124.60009765625, "close": 5107.5, "isBullish": false, "price": "5107.50"}, {"time": "2026-03-13 10:00", "open": 5107.10009765625, "close": 5045.7998046875, "isBullish": false, "price": "5045.80"}, {"time": "2026-03-13 11:00", "open": 5045.89990234375, "close": 5039.10009765625, "isBullish": false, "price": "5039.10"}, {"time": "2026-03-13 12:00", "open": 5038.7998046875, "close": 5050.60009765625, "isBullish": true, "price": "5050.60"}, {"time": "2026-03-13 13:00", "open": 5050.10009765625, "close": 5050.89990234375, "isBullish": true, "price": "5050.90"}, {"time": "2026-03-13 14:00", "open": 5050.7998046875, "close": 5050.89990234375, "isBullish": true, "price": "5050.90"}, {"time": "2026-03-13 15:00", "open": 5050.89990234375, "close": 5022.0, "isBullish": false, "price": "5022.00"}, {"time": "2026-03-13 16:00", "open": 5022.2998046875, "close": 5061.7001953125, "isBullish": true, "price": "5061.70"}];
+
+        setInterval(() => {
+            update(history[idx]);
+            idx = (idx + 1) % history.length;
+        }, 2500);
+    
+    </script>
 </body>
 </html>
