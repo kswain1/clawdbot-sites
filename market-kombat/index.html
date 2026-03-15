@@ -1,42 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Kombat | Puppet FX Arena</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Kombat | Cinematic Replay</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="overlay"></div>
-    
-    <div class="content">
-        <h1 style="color:#f6c453; font-size: 42px; margin-top: 30px;">MARKET KOMBAT: PUPPET ARENA</h1>
-        <p id="timer" style="opacity:0.7;">Initializing High-Detail Rig...</p>
+  <div class="page-bg"></div>
+  <div class="page-overlay"></div>
 
-        <div class="arena">
-            <div id="bullzen-puppet" class="fighter-puppet">
-                <div id="part-arm-l" class="puppet-part"></div>
-                <div id="part-torso" class="puppet-part"></div>
-                <div id="part-head" class="puppet-part"></div>
-                <div id="part-arm-r" class="puppet-part"></div>
-            </div>
+  <main class="shell">
+    <header class="panel">
+      <h1 style="color:#f6c453; margin:0;">MARKET KOMBAT</h1>
+      <p style="opacity:0.6;">Cinematic XAUUSD Session Replay</p>
+    </header>
 
-            <div class="vs">VS</div>
-
-            <div id="bearaku-puppet" class="fighter-puppet">
-                <div id="part-arm-l" class="puppet-part"></div>
-                <div id="part-torso" class="puppet-part"></div>
-                <div id="part-head" class="puppet-part"></div>
-                <div id="part-arm-r" class="puppet-part"></div>
-            </div>
-        </div>
-
-        <div class="stats">
-            <div class="stat-item"><div id="price" class="val">---</div></div>
-            <div class="stat-item"><div id="winner" class="val">NEUTRAL</div></div>
-        </div>
+    <div class="summary-grid">
+      <div class="panel">
+        <div style="font-size:12px; color:#f6c453;">PRICE</div>
+        <div id="price" style="font-size:24px; font-weight:900;">---</div>
+      </div>
+      <div class="panel">
+        <div style="font-size:12px; color:#f6c453;">DOMINANCE</div>
+        <div id="winner" style="font-size:24px; font-weight:900;">---</div>
+      </div>
+      <div class="panel">
+        <div style="font-size:12px; color:#f6c453;">TIME</div>
+        <div id="timer" style="font-size:18px;">---</div>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="arena panel">
+      <div class="fighters-row">
+        <div id="bullzenCard" class="fighter-card">
+          <img src="assets/bullzen.png" alt="Bullzen">
+          <h3>BULLZEN</h3>
+        </div>
+        <div class="versus">VS</div>
+        <div id="bearakuCard" class="fighter-card">
+          <img src="assets/bearaku.png" alt="Bearaku">
+          <h3>BEARAKU</h3>
+        </div>
+      </div>
+      <div id="commentary" style="text-align:center; font-style:italic; padding:20px;">
+        "@Clawdy: Session logs loading..."
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>REPLAY TIMELINE</h3>
+      <div id="timelineList"></div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>

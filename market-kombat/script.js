@@ -1,40 +1,40 @@
-const state = {
-    history: [
-        {time: "Session Start", price: "5061.70", isBullish: true},
-        {time: "Volatility Peak", price: "5075.20", isBullish: false},
-        {time: "Support Retest", price: "5058.40", isBullish: true}
-    ],
-    idx: 0
-};
+const replayData = [
+  { time: 'Friday Close', price: '5061.70', isBullish: true, comment: 'Bullzen answer with a sharp comeback.', summary: 'Strong bullish recovery closes the week.' },
+  { time: 'London Mid', price: '5045.80', isBullish: false, comment: 'Bearaku lands a heavy breakdown.', summary: 'Sellers drive price hard through local support.' },
+  { time: 'NY Open', price: '5050.60', isBullish: true, comment: 'Bullzen attempts recovery bounce.', summary: 'Buyers step in to stabilize the floor.' }
+];
 
-function update(data) {
-    const bull = document.getElementById('bullzen-puppet');
-    const bear = document.getElementById('bearaku-puppet');
-    const priceText = document.getElementById('price');
-    const winnerText = document.getElementById('winner');
+let idx = 0;
 
-    priceText.textContent = data.price;
+function applyFrame(frame) {
+    document.getElementById('price').textContent = frame.price;
+    document.getElementById('timer').textContent = frame.time;
+    document.getElementById('winner').textContent = frame.isBullish ? "BULLZEN" : "BEARAKU";
+    document.getElementById('commentary').textContent = `@Clawdy: ${frame.comment}`;
 
-    // Reset Classes
-    bull.classList.remove('attacking');
-    bear.classList.remove('attacking');
+    const bull = document.getElementById('bullzenCard');
+    const bear = document.getElementById('bearakuCard');
 
-    if(data.isBullish) {
-        bull.classList.add('attacking');
-        bull.style.filter = "drop-shadow(0 0 30px rgba(57,217,138,0.6))";
-        bear.style.filter = "brightness(0.4) grayscale(1)";
-        winnerText.textContent = "BULLZEN";
-        winnerText.style.color = "#39d98a";
+    if(frame.isBullish) {
+        bull.className = "fighter-card active";
+        bear.className = "fighter-card dim";
     } else {
-        bear.classList.add('attacking');
-        bear.style.filter = "drop-shadow(0 0 30px rgba(255,93,93,0.6))";
-        bull.style.filter = "brightness(0.4) grayscale(1)";
-        winnerText.textContent = "BEARAKU";
-        winnerText.style.color = "#ff5d5d";
+        bull.className = "fighter-card dim";
+        bear.className = "fighter-card active";
     }
+
+    const timeline = document.getElementById('timelineList');
+    timeline.innerHTML = replayData.map((f, i) => `
+        <div class="timeline-item ${i === idx ? 'active' : ''}">
+            <strong>${f.time}</strong> - $${f.price} <br/>
+            <small>${f.summary}</small>
+        </div>
+    `).join('');
 }
 
 setInterval(() => {
-    update(state.history[state.idx]);
-    state.idx = (state.idx + 1) % state.history.length;
+    applyFrame(replayData[idx]);
+    idx = (idx + 1) % replayData.length;
 }, 3000);
+
+applyFrame(replayData[0]);
