@@ -29,11 +29,6 @@
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
         <button class="tab-btn" onclick="showTab('intelligence')">Algo logic</button>
       </nav>
-      <div class="day-selector panel" style="margin-top:20px; display:flex; gap:10px; justify-content:center; padding:10px;">
-        <button class="tab-btn" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar13')">FRI MAR 13</button>
-        <button class="tab-btn" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar15')">SUN MAR 15</button>
-        <button class="tab-btn active" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar16')">MON MAR 16</button>
-      </div>
     </header>
 
     <!-- LIVE ARENA -->
@@ -51,31 +46,14 @@
             <div class="versus">VS</div>
             <div id="bearakuCard" class="fighter-card"><img src="assets/bearaku.png"><h3>Bearaku</h3></div>
         </div>
-        <div id="arenaDetails" class="panel" style="margin-top:20px; background:rgba(255,255,255,0.02); text-align:center;">
-          <div class="eyebrow" id="timer">TIMESTAMP</div>
-          <div style="font-size:32px; font-weight:900; color:var(--accent);">$<span id="price">0,000.00</span></div>
-          <div class="eyebrow" style="margin-top:10px;">WINNER: <span id="winner" style="color:#fff;">SCANNING</span></div>
-        </div>
-        <div id="commentary" style="text-align:center; color:var(--muted); font-size:14px; font-style:italic; margin-top:15px;">
+        <div id="commentary" style="text-align:center; color:var(--muted); font-size:14px; font-style:italic;">
             "Awaiting session volatility pulse..."
         </div>
-        <div id="timelineList" style="margin-top:30px;"></div>
       </section>
     </div>
 
     <!-- STRATEGY RADAR (FORWARD TEST) -->
     <div id="forwardtest" class="tab-content">
-      <div class="panel" style="border-color: var(--accent); background: rgba(246, 196, 83, 0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="eyebrow">System Heartbeat Relay</div>
-          <div id="pulseStatus" class="pill pill-win" style="font-size: 10px;">LIVE SYNC</div>
-        </div>
-        <div style="text-align: center; padding: 20px 0;">
-          <div id="nextPulseTimer" style="font-size: 48px; font-weight: 900; color: #fff; letter-spacing: -1px;">15:00</div>
-          <div class="eyebrow" style="color: var(--accent);">UNTIL NEXT AURA STATUS PULSE</div>
-        </div>
-      </div>
-
       <div class="panel">
         <div class="eyebrow">Real-Time Probability Monitor</div>
         <div class="summary-grid" style="margin-top:20px;">
@@ -143,15 +121,16 @@
         <canvas id="equityChart" style="width:100%; height:320px; margin-top:20px;"></canvas>
       </div>
 
-      <div class="panel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-          <div class="eyebrow">Historical Execution Log</div>
-          <div id="paginationControls" style="display: flex; gap: 5px;">
-            <button class="tab-btn" style="padding: 2px 8px; font-size: 10px;" onclick="prevPage()">PREV</button>
-            <span id="pageIndicator" style="font-size: 10px; color: var(--muted); padding: 0 10px; align-self: center;">PAGE 1 / 1</span>
-            <button class="tab-btn" style="padding: 2px 8px; font-size: 10px;" onclick="nextPage()">NEXT</button>
-          </div>
+      <div id="victoryContainer" class="panel" style="display:none;">
+        <div class="eyebrow" id="victoryTrophy">🏆 Victory Path: [Session]</div>
+        <div style="height: 240px; margin-top: 20px;">
+          <canvas id="victoryChart"></canvas>
         </div>
+        <div id="victoryCaption" class="eyebrow" style="margin-top:15px; font-size:10px; text-align:center;">Price Pathing</div>
+      </div>
+
+      <div class="panel">
+        <div class="eyebrow">Recent Executions (Asia Open + 90D)</div>
         <table class="trade-table">
           <thead>
             <tr>
@@ -164,7 +143,13 @@
             </tr>
           </thead>
           <tbody id="tradeLogBody">
-            <!-- Paged Content -->
+            <!-- ASIA OPEN DOUBLE BOTTOM -->
+            <tr onclick="showVictory('Asia Open DB', [4994.1, 4992.4, 4996.8, 5001.2, 5004.5])" style="cursor:pointer;"><td>2026-03-15 07:38 PM</td><td>BUY</td><td>$4,994.10</td><td>$5,004.50</td><td>24m</td><td><span class="pill pill-win">WIN (DB RE-ENTRY)</span></td></tr>
+            <!-- ASIA OPEN STRIKE -->
+            <tr onclick="showVictory('Asia Open Strike', [4991.0, 4993.5, 4998.2, 5000.5])" style="cursor:pointer;"><td>2026-03-15 07:16 PM</td><td>BUY</td><td>$4,991.00</td><td>$5,000.50</td><td>12m</td><td><span class="pill pill-win">WIN (ASIA PULSE)</span></td></tr>
+            <!-- Prior Samples -->
+            <tr><td>2026-03-12 03:00 PM</td><td>BUY</td><td>$5,084.10</td><td>$5,089.10</td><td>2.0h</td><td><span class="pill pill-win">WIN</span></td></tr>
+            <tr><td>2026-03-05 10:00 AM</td><td>BUY</td><td>$5,086.50</td><td>$5,065.50</td><td>1.0h</td><td><span class="pill pill-loss">LOSS</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -207,7 +192,6 @@
       const commentary = document.getElementById('commentary');
       commentary.innerText = "⏳ Initializing Neural Replay for " + timeVal + "...";
       
-      // Simulate logic trigger
       setTimeout(() => {
         const isBull = Math.random() > 0.5;
         document.getElementById('bullzenCard').classList.toggle('active', isBull);
@@ -216,16 +200,48 @@
       }, 1500);
     }
 
+    function showVictory(name, data) {
+        document.getElementById('victoryContainer').style.display = 'block';
+        document.getElementById('victoryTrophy').innerText = '🏆 Victory Path: ' + name;
+        
+        const ctx = document.getElementById('victoryChart').getContext('2d');
+        if(window.vicChart) window.vicChart.destroy();
+        window.vicChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map((_, i) => 'T+' + (i*5) + 'm'),
+                datasets: [{
+                    data: data,
+                    borderColor: '#39d98a',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#39d98a',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
+                    x: { grid: { display: false }, ticks: { color: '#666' } }
+                }
+            }
+        });
+        document.getElementById('victoryContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
     function initChart() {
       const ctx = document.getElementById('equityChart').getContext('2d');
       if(window.mainChart) window.mainChart.destroy();
       window.mainChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['Trade 1', 'Trade 5', 'Trade 10', 'Trade 15', 'Trade 20', 'Trade 25', 'Trade 30', 'Trade 35', 'Trade 40', 'Trade 45', 'Trade 47'],
+          labels: ['Trade 1', 'Trade 5', 'Trade 10', 'Trade 15', 'Trade 20', 'Trade 25', 'Trade 30', 'Trade 35', 'Trade 40', 'Trade 45', 'Trade 47', 'Asia 1', 'Asia 2'],
           datasets: [{
             label: 'Net Equity',
-            data: [0, 450, -100, 800, 1500, 1200, 2800, 4100, 3900, 6200, 8366],
+            data: [0, 450, -100, 800, 1500, 1200, 2800, 4100, 3900, 6200, 8366, 8375, 8385],
             borderColor: '#f6c453',
             borderWidth: 3,
             pointRadius: 6,
@@ -244,25 +260,14 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: { 
             legend: { display: false },
-            tooltip: {
-                callbacks: {
-                    label: function(item) {
-                        return "Equity: $" + item.raw;
-                    }
-                }
-            }
+            tooltip: { callbacks: { label: (item) => "Equity: $" + item.raw } }
           },
           scales: {
-            y: { 
-                grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, 
-                ticks: { color: '#666', font: { size: 10 } } 
-            },
-            x: { 
-                grid: { display: false }, 
-                ticks: { color: '#666', font: { size: 10 } } 
-            }
+            y: { grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { color: '#666', font: { size: 10 } } },
+            x: { grid: { display: false }, ticks: { color: '#666', font: { size: 10 } } }
           }
         }
       });
