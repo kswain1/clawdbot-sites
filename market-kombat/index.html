@@ -8,7 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
   <div class="page-bg"></div>
@@ -39,8 +42,8 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--panel-line); padding-bottom: 15px;">
           <div class="eyebrow">Session Replay Engine</div>
           <div style="display: flex; gap: 10px; align-items: center;">
-            <input type="datetime-local" id="backtestTimer" style="background: #111; border: 1px solid var(--accent); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-family: 'Inter';">
-            <button onclick="runSimulatedBacktest()" style="background: var(--accent); color: black; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase;">Simulate</button>
+            <input type="text" id="backtestTimer" placeholder="Select Session (CST)" style="background: #111; border: 1px solid var(--accent); color: white; padding: 8px 12px; border-radius: 4px; font-size: 12px; font-family: 'Inter'; cursor: pointer; width: 200px;">
+            <button onclick="runSimulatedBacktest()" style="background: var(--accent); color: black; border: none; padding: 8px 20px; border-radius: 4px; font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase;">Simulate</button>
           </div>
         </div>
         <div class="fighters-row">
@@ -172,6 +175,14 @@
 
   <script src="script.js"></script>
   <script>
+    flatpickr("#backtestTimer", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      theme: "dark",
+      minuteIncrement: 1,
+      static: true
+    });
+
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
