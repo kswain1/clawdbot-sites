@@ -26,7 +26,6 @@ jobs:
       - name: Execute Aura-V Pulse
         env:
           DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
-          DISCORD_WEBHOOK_INBOX: ${{ secrets.DISCORD_WEBHOOK_INBOX }}
         run: python alert_relay.py
 
       - name: Commit Data Update

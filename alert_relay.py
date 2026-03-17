@@ -136,16 +136,10 @@ def main():
     analysis = calculate_probability(data)
     print(f"🧠 Analysis: {analysis['signal']} @ {analysis['probability']}%")
     
-    # Send to Discord Alerts (if high conviction)
-    if analysis['probability'] > 50:
-        alerts_webhook = os.environ.get('DISCORD_WEBHOOK_ALERTS')
-        if alerts_webhook:
-            send_discord_alert(alerts_webhook, data, analysis)
-    
-    # Always send to Inbox for logging
-    inbox_webhook = os.environ.get('DISCORD_WEBHOOK_INBOX')
-    if inbox_webhook:
-        send_discord_alert(inbox_webhook, data, analysis)
+    # Send to Discord Alerts
+    alerts_webhook = os.environ.get('DISCORD_WEBHOOK_ALERTS')
+    if alerts_webhook:
+        send_discord_alert(alerts_webhook, data, analysis)
     
     # Save to file
     save_pulse_log(data, analysis)
