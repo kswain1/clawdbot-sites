@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """
-Aura-V 2.0 Multi-Channel Alert Relay
-Runs via GitHub Actions every 15 minutes
+Aura-V 2.0 Pulse Relay - CLEAN FORMAT
+Runs every 5 minutes via GitHub Actions
 """
 import os
 import json
 import requests
 import yfinance as yf
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 def fetch_gold_data():
-    """Fetch XAUUSD 1h data for Aura-V analysis"""
+    """Fetch XAUUSD data"""
     gold = yf.Ticker("GC=F")
     df = gold.history(period="2d", interval="1h")
     
-    # Aura-V 2.0 Indicators
     df['SMA20'] = df['Close'].rolling(20).mean()
     df['STD20'] = df['Close'].rolling(20).std()
     df['Upper'] = df['SMA20'] + (df['STD20'] * 2.0)
@@ -24,127 +23,159 @@ def fetch_gold_data():
     
     return {
         'price': round(latest['Close'], 2),
-        'upper_band': round(latest['Upper'], 2),
-        'lower_band': round(latest['Lower'], 2),
-        'sma20': round(latest['SMA20'], 2),
-        'timestamp': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
+        'upper': round(latest['Upper'], 2),
+        'lower': round(latest['Lower'], 2),
+        'sma': round(latest['SMA20'], 2)
     }
 
-def calculate_probability(data):
-    """Aura-V 2.0 Probability Engine"""
+def calculate_analysis(data):
+    """Aura-V 2.0 Analysis"""
     price = data['price']
-    upper = data['upper_band']
-    lower = data['lower_band']
-    sma = data['sma20']
+    upper = data['upper']
+    lower = data['lower']
     
-    # Distance from bands
-    dist_upper = abs(price - upper)
-    dist_lower = abs(price - lower)
-    dist_mean = abs(price - sma)
-    
-    # Probability calculation
     if price > upper:
         prob = min(95, 75 + (price - upper) * 2)
         signal = "SELL"
+        status = "STAGE 1 TRIGGER"
     elif price < lower:
         prob = min(95, 75 + (lower - price) * 2)
         signal = "BUY"
+        status = "STAGE 1 TRIGGER"
     else:
-        prob = max(10, 50 - dist_mean * 0.5)
-        signal = "NEUTRAL"
+        # Distance to nearest band
+        dist_to_upper = abs(price - upper)
+        dist_to_lower = abs(price - lower)
+        nearest = min(dist_to_upper, dist_to_lower)
+        
+        if nearest < 5:
+            prob = 65
+            signal = "PREPARE"
+            status = "APPROACHING ZONE"
+        else:
+            prob = max(10, 50 - nearest * 0.3)
+            signal = "WAIT"
+            status = "CONSOLIDATION"
     
     return {
         'probability': round(prob, 1),
         'signal': signal,
-        'stage': 'STAGE 1 [800s]' if prob > 75 else 'MONITORING'
+        'status': status
     }
 
 def send_discord_alert(webhook_url, data, analysis):
-    """Send formatted alert to Discord via Webhook"""
+    """Send CLEAN alert to Discord"""
     if not webhook_url:
-        print("No webhook URL provided, skipping Discord")
         return
     
-    # Format probability bar
-    filled = int(analysis['probability'] / 10)
-    bar = '█' * filled + '░' * (10 - filled)
+    now = datetime.now(timezone.utc)
+    next_pulse = now + timedelta(minutes=5)
+    next_time = next_pulse.strftime('%H:%M UTC')
+    
+    # Color based on signal
+    color_map = {
+        'BUY': 0x39d98a,
+        'SELL': 0xff5d5d,
+        'PREPARE': 0xf6c453,
+        'WAIT': 0x888888
+    }
+    color = color_map.get(analysis['signal'], 0x888888)
+    
+    # Simple fields - NO LINKS, NO COMPLEX FORMATTING
+    fields = [
+        {
+            "name": "SIGNAL",
+            "value": f"```\n{analysis['signal']}\n```",
+            "inline": True
+        },
+        {
+            "name": "PRICE",
+            "value": f"```\n${data['price']}\n```",
+            "inline": True
+        },
+        {
+            "name": "PROBABILITY",
+            "value": f"```\n{analysis['probability']}%\n```",
+            "inline": True
+        },
+        {
+            "name": "STATUS",
+            "value": f"```\n{analysis['status']}\n```",
+            "inline": False
+        },
+        {
+            "name": "NEXT PULSE",
+            "value": f"```\n{next_time}\n```",
+            "inline": True
+        },
+        {
+            "name": "2.0 STD BANDS",
+            "value": f"```\nUpper: ${data['upper']}\nLower: ${data['lower']}\n```",
+            "inline": False
+        }
+    ]
+    
+    # Add GET READY warning if approaching
+    if analysis['signal'] == 'PREPARE':
+        fields.append({
+            "name": "⚠️ ACTION REQUIRED",
+            "value": "```\nGET READY - PRICE APPROACHING ENTRY ZONE\nSTANDBY FOR STAGE 1 TRIGGER\n```",
+            "inline": False
+        })
     
     embed = {
-        "title": "🔱 Aura-V 2.0 Pulse",
-        "description": f"**{analysis['signal']} Signal Detected**",
-        "color": 0xf6c453 if analysis['signal'] == 'BUY' else 0xff5d5d if analysis['signal'] == 'SELL' else 0x888888,
-        "fields": [
-            {"name": "Price", "value": f"${data['price']}", "inline": True},
-            {"name": "Probability", "value": f"{analysis['probability']}% {bar}", "inline": True},
-            {"name": "Stage", "value": analysis['stage'], "inline": True},
-            {"name": "Upper Band (2.0 STD)", "value": f"${data['upper_band']}", "inline": True},
-            {"name": "Lower Band (2.0 STD)", "value": f"${data['lower_band']}", "inline": True},
-            {"name": "Timestamp", "value": data['timestamp'], "inline": False}
-        ],
-        "footer": {"text": "Aura Intelligence | Institutional Command"}
+        "title": "🔱 AURA-V 2.0 PULSE",
+        "color": color,
+        "fields": fields,
+        "timestamp": now.isoformat(),
+        "footer": {"text": "5-Min Pulse | CST Localized"}
     }
-    
-    payload = {"embeds": [embed]}
     
     response = requests.post(
         webhook_url,
-        json=payload,
+        json={"embeds": [embed]},
         headers={"Content-Type": "application/json"}
     )
     
-    if response.status_code == 204:
-        print(f"✅ Alert sent successfully to {webhook_url[:50]}...")
-    else:
-        print(f"❌ Failed to send: {response.status_code}")
+    print(f"Alert sent: {response.status_code}")
 
-def save_pulse_log(data, analysis):
-    """Save pulse data for dashboard sync"""
-    log_entry = {
-        "timestamp": data['timestamp'],
+def save_log(data, analysis):
+    """Save to pulse_log.json"""
+    entry = {
+        "timestamp": datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
         "price": data['price'],
         "probability": analysis['probability'],
         "signal": analysis['signal'],
-        "stage": analysis['stage']
+        "status": analysis['status']
     }
     
-    # Append to pulse log
-    log_file = "pulse_log.json"
     try:
-        with open(log_file, 'r') as f:
+        with open('pulse_log.json', 'r') as f:
             logs = json.load(f)
     except:
         logs = []
     
-    logs.append(log_entry)
-    
-    # Keep only last 100 entries
+    logs.append(entry)
     logs = logs[-100:]
     
-    with open(log_file, 'w') as f:
+    with open('pulse_log.json', 'w') as f:
         json.dump(logs, f, indent=2)
-    
-    print(f"💾 Pulse logged: {log_entry}")
 
 def main():
-    print("🚀 Aura-V 2.0 Pulse Relay Starting...")
+    print("🚀 Pulse starting...")
     
-    # Fetch data
     data = fetch_gold_data()
-    print(f"📊 Data fetched: ${data['price']}")
+    analysis = calculate_analysis(data)
     
-    # Analyze
-    analysis = calculate_probability(data)
-    print(f"🧠 Analysis: {analysis['signal']} @ {analysis['probability']}%")
+    print(f"Signal: {analysis['signal']} @ {analysis['probability']}%")
     
-    # Send to Discord Alerts
-    alerts_webhook = os.environ.get('DISCORD_WEBHOOK_ALERTS')
-    if alerts_webhook:
-        send_discord_alert(alerts_webhook, data, analysis)
+    webhook = os.environ.get('DISCORD_WEBHOOK_ALERTS')
+    if webhook:
+        send_discord_alert(webhook, data, analysis)
     
-    # Save to file
-    save_pulse_log(data, analysis)
+    save_log(data, analysis)
     
-    print("✅ Pulse relay complete")
+    print("✅ Done")
 
 if __name__ == "__main__":
     main()
