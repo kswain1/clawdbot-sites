@@ -115,23 +115,30 @@ window.showTab = function(id) {
     }
 }
 
-let pulseTimerSeconds = 900; // 15 minutes
+// Pulse Timer Logic
+let pulseTimerSeconds = 900; 
 let pulseTimerHandle = null;
 
 function startPulseTimer() {
+    console.log("Aura: Initializing Heartbeat Relay...");
     if(pulseTimerHandle) clearInterval(pulseTimerHandle);
     
+    // Reset to current 15-min block alignment if needed, or just start 15m
     pulseTimerHandle = setInterval(() => {
         if(pulseTimerSeconds > 0) {
             pulseTimerSeconds--;
             updatePulseUI();
         } else {
-            // Pulse triggered
             pulseTimerSeconds = 900;
-            document.getElementById('pulseStatus').innerText = "FETCHING...";
-            setTimeout(() => {
-                document.getElementById('pulseStatus').innerText = "LIVE SYNC";
-            }, 3000);
+            const statusPill = document.getElementById('pulseStatus');
+            if(statusPill) {
+                statusPill.innerText = "FETCHING...";
+                statusPill.className = "pill pill-loss"; // Change color during fetch
+                setTimeout(() => {
+                    statusPill.innerText = "LIVE SYNC";
+                    statusPill.className = "pill pill-win";
+                }, 3000);
+            }
         }
     }, 1000);
 }
@@ -141,9 +148,13 @@ function updatePulseUI() {
     const seconds = pulseTimerSeconds % 60;
     const display = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     const timerElem = document.getElementById('nextPulseTimer');
-    if(timerElem) timerElem.innerText = display;
+    if(timerElem) {
+        timerElem.innerText = display;
+    }
 }
 
-// Init
-restartReplay();
-startPulseTimer();
+// Global Init
+window.addEventListener('DOMContentLoaded', (event) => {
+    restartReplay();
+    startPulseTimer();
+});
