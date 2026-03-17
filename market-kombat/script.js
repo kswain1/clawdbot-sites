@@ -1,10 +1,34 @@
-const replayData = [
-  { time: 'Friday Close', price: '5061.70', isBullish: true, comment: 'Bullzen answer with a sharp comeback.', summary: 'Strong bullish recovery closes the week.' },
-  { time: 'London Mid', price: '5045.80', isBullish: false, comment: 'Bearaku lands a heavy breakdown.', summary: 'Sellers drive price hard through local support.' },
-  { time: 'NY Open', price: '5050.60', isBullish: true, comment: 'Bullzen attempts recovery bounce.', summary: 'Buyers step in to stabilize the floor.' }
-];
+const dailyData = {
+  mar13: [
+    { time: '09:00 AM CST', price: '5045.80', isBullish: true, comment: 'Bullzen holds institutional floor.', summary: 'Friday London Open rejection @ $5,045.' },
+    { time: '11:00 AM CST', price: '5050.60', isBullish: true, comment: 'Bullzen maintains momentum.', summary: 'Weekly high expansion continues.' },
+    { time: '02:00 PM CST', price: '5022.00', isBullish: false, comment: 'Bearaku lands a liquidity sweep.', summary: 'Late-day profit taking flush.' }
+  ],
+  mar15: [
+    { time: '07:16 PM CST', price: '4991.00', isBullish: true, comment: 'Bullzen holds $4,991 floor.', summary: 'Asia Moon open exhaustion pierce.' },
+    { time: '07:45 PM CST', price: '5000.50', isBullish: true, comment: 'Stage 1 Strike Success.', summary: 'Rapid +9.5pt recovery from the lows.' }
+  ],
+  mar16: [
+    { time: '02:15 UTC', price: '5019.80', isBullish: true, comment: 'Recovery drift continues.', summary: 'Market stabilizes in the value zone.' },
+    { time: '08:30 PM CST', price: '5011.40', isBullish: false, comment: 'Consolidation pullback.', summary: 'Bearaku attempts to cool the rally.' }
+  ]
+};
 
+let currentDay = 'mar16';
 let idx = 0;
+let timerHandle = null;
+
+function loadDay(dayId) {
+    currentDay = dayId;
+    idx = 0;
+    
+    // Update active button state
+    document.querySelectorAll('.day-selector .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('onclick').includes(dayId));
+    });
+
+    restartReplay();
+}
 
 function applyFrame(frame) {
     document.getElementById('price').textContent = frame.price;
@@ -24,7 +48,8 @@ function applyFrame(frame) {
     }
 
     const timeline = document.getElementById('timelineList');
-    timeline.innerHTML = replayData.map((f, i) => `
+    const data = dailyData[currentDay];
+    timeline.innerHTML = data.map((f, i) => `
         <div class="timeline-item ${i === idx ? 'active' : ''}">
             <strong>${f.time}</strong> - $${f.price} <br/>
             <small>${f.summary}</small>
@@ -32,9 +57,16 @@ function applyFrame(frame) {
     `).join('');
 }
 
-setInterval(() => {
-    applyFrame(replayData[idx]);
-    idx = (idx + 1) % replayData.length;
-}, 3000);
+function restartReplay() {
+    if(timerHandle) clearInterval(timerHandle);
+    
+    applyFrame(dailyData[currentDay][idx]);
+    
+    timerHandle = setInterval(() => {
+        idx = (idx + 1) % dailyData[currentDay].length;
+        applyFrame(dailyData[currentDay][idx]);
+    }, 4000);
+}
 
-applyFrame(replayData[0]);
+// Init
+restartReplay();

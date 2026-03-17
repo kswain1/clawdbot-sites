@@ -26,6 +26,11 @@
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
         <button class="tab-btn" onclick="showTab('intelligence')">Algo logic</button>
       </nav>
+      <div class="day-selector panel" style="margin-top:20px; display:flex; gap:10px; justify-content:center; padding:10px;">
+        <button class="tab-btn" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar13')">FRI MAR 13</button>
+        <button class="tab-btn" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar15')">SUN MAR 15</button>
+        <button class="tab-btn active" style="font-size:10px; padding:5px 15px;" onclick="loadDay('mar16')">MON MAR 16</button>
+      </div>
     </header>
 
     <!-- LIVE ARENA -->
@@ -36,9 +41,15 @@
             <div class="versus">VS</div>
             <div id="bearakuCard" class="fighter-card"><img src="assets/bearaku.png"><h3>Bearaku</h3></div>
         </div>
-        <div id="commentary" style="text-align:center; color:var(--muted); font-size:14px; font-style:italic;">
+        <div id="arenaDetails" class="panel" style="margin-top:20px; background:rgba(255,255,255,0.02); text-align:center;">
+          <div class="eyebrow" id="timer">TIMESTAMP</div>
+          <div style="font-size:32px; font-weight:900; color:var(--accent);">$<span id="price">0,000.00</span></div>
+          <div class="eyebrow" style="margin-top:10px;">WINNER: <span id="winner" style="color:#fff;">SCANNING</span></div>
+        </div>
+        <div id="commentary" style="text-align:center; color:var(--muted); font-size:14px; font-style:italic; margin-top:15px;">
             "Awaiting session volatility pulse..."
         </div>
+        <div id="timelineList" style="margin-top:30px;"></div>
       </section>
     </div>
 
