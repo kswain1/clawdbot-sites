@@ -115,5 +115,35 @@ window.showTab = function(id) {
     }
 }
 
+let pulseTimerSeconds = 900; // 15 minutes
+let pulseTimerHandle = null;
+
+function startPulseTimer() {
+    if(pulseTimerHandle) clearInterval(pulseTimerHandle);
+    
+    pulseTimerHandle = setInterval(() => {
+        if(pulseTimerSeconds > 0) {
+            pulseTimerSeconds--;
+            updatePulseUI();
+        } else {
+            // Pulse triggered
+            pulseTimerSeconds = 900;
+            document.getElementById('pulseStatus').innerText = "FETCHING...";
+            setTimeout(() => {
+                document.getElementById('pulseStatus').innerText = "LIVE SYNC";
+            }, 3000);
+        }
+    }, 1000);
+}
+
+function updatePulseUI() {
+    const minutes = Math.floor(pulseTimerSeconds / 60);
+    const seconds = pulseTimerSeconds % 60;
+    const display = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    const timerElem = document.getElementById('nextPulseTimer');
+    if(timerElem) timerElem.innerText = display;
+}
+
 // Init
 restartReplay();
+startPulseTimer();
