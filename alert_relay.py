@@ -63,6 +63,11 @@ def calculate_analysis(data):
         'status': status
     }
 
+def get_prob_bar(probability):
+    """Visual probability bar"""
+    filled = int(probability / 10)
+    return '█' * filled + '░' * (10 - filled)
+
 def send_discord_alert(webhook_url, data, analysis):
     """Send CLEAN alert to Discord"""
     if not webhook_url:
@@ -95,7 +100,7 @@ def send_discord_alert(webhook_url, data, analysis):
         },
         {
             "name": "PROBABILITY",
-            "value": f"```\n{analysis['probability']}%\n```",
+            "value": f"```\n{analysis['probability']}%\n{get_prob_bar(analysis['probability'])}\n```",
             "inline": True
         },
         {
