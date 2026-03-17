@@ -57,6 +57,35 @@
 
     <!-- STRATEGY RADAR (FORWARD TEST) -->
     <div id="forwardtest" class="tab-content">
+      <div class="panel" style="border-color: var(--accent); background: rgba(246, 196, 83, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="eyebrow">Live Pulse Feed (5-Min Auto)</div>
+          <div id="pulseStatus" class="pill pill-win" style="font-size: 10px;">SYNCED</div>
+        </div>
+        <div id="livePulseFeed" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--panel-line);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div class="eyebrow">Last Pulse</div>
+              <div id="lastPulseTime" style="font-size: 24px; font-weight: 900; color: var(--text);">--:-- UTC</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="eyebrow">XAUUSD</div>
+              <div id="lastPulsePrice" style="font-size: 32px; font-weight: 900; color: var(--accent);">$----.--</div>
+            </div>
+          </div>
+          <div style="margin-top: 15px; display: flex; gap: 20px;">
+            <div>
+              <div class="eyebrow">Signal</div>
+              <div id="lastPulseSignal" style="font-size: 14px; font-weight: 700; color: var(--muted);">WAITING...</div>
+            </div>
+            <div>
+              <div class="eyebrow">Probability</div>
+              <div id="lastPulseProb" style="font-size: 14px; font-weight: 700; color: var(--muted);">--%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="panel">
         <div class="eyebrow">Real-Time Probability Monitor</div>
         <div class="summary-grid" style="margin-top:20px;">
@@ -179,6 +208,27 @@
       minuteIncrement: 1,
       static: true
     });
+
+    // Live Pulse Feed - fetch from pulse_log.json
+    async function updatePulseFeed() {
+      try {
+        const response = await fetch('pulse_log.json?t=' + Date.now());
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const latest = data[data.length - 1];
+          document.getElementById('lastPulseTime').innerText = latest.timestamp.split(' ')[1] + ' UTC';
+          document.getElementById('lastPulsePrice').innerText = '$' + latest.price;
+          document.getElementById('lastPulseSignal').innerText = latest.signal;
+          document.getElementById('lastPulseSignal').style.color = latest.signal === 'BUY' ? '#39d98a' : latest.signal === 'SELL' ? '#ff5d5d' : '#888';
+          document.getElementById('lastPulseProb').innerText = latest.probability + '%';
+          document.getElementById('lastPulseProb').style.color = latest.probability > 75 ? '#39d98a' : latest.probability > 50 ? '#f6c453' : '#888';
+        }
+      } catch (e) {
+        console.log('Pulse feed loading...');
+      }
+    }
+    updatePulseFeed();
+    setInterval(updatePulseFeed, 30000); // Refresh every 30 seconds
 
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
