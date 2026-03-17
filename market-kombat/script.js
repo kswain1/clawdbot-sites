@@ -57,15 +57,62 @@ function applyFrame(frame) {
     `).join('');
 }
 
-function restartReplay() {
-    if(timerHandle) clearInterval(timerHandle);
-    
-    applyFrame(dailyData[currentDay][idx]);
-    
-    timerHandle = setInterval(() => {
-        idx = (idx + 1) % dailyData[currentDay].length;
-        applyFrame(dailyData[currentDay][idx]);
-    }, 4000);
+const tradeHistory = [
+  { date: '2026-03-15 07:38 PM', type: 'BUY', entry: '$4,994.10', exit: '$5,004.50', dur: '24m', res: 'WIN (DB RE-ENTRY)' },
+  { date: '2026-03-15 07:16 PM', type: 'BUY', entry: '$4,991.00', exit: '$5,000.50', dur: '12m', res: 'WIN (ASIA PULSE)' },
+  { date: '2026-03-12 03:00 PM', type: 'BUY', entry: '$5,084.10', exit: '$5,089.10', dur: '2.0h', res: 'WIN' },
+  { date: '2026-03-05 10:00 AM', type: 'BUY', entry: '$5,086.50', exit: '$5,065.50', dur: '1.0h', res: 'LOSS' },
+  { date: '2026-02-24 07:00 AM', type: 'BUY', entry: '$5,132.30', exit: '$5,162.20', dur: '2.0h', res: 'WIN' },
+  { date: '2026-02-02 02:00 PM', type: 'BUY', entry: '$4,676.30', exit: '$4,699.10', dur: '1.0h', res: 'WIN' },
+  { date: '2025-12-29 10:00 AM', type: 'BUY', entry: '$4,359.80', exit: '$4,403.60', dur: '18.0h', res: 'WIN' }
+];
+
+let pagedIdx = 0;
+const pageSize = 5;
+
+function renderTradeHistory() {
+    const body = document.getElementById('tradeLogBody');
+    const start = pagedIdx * pageSize;
+    const end = start + pageSize;
+    const pageData = tradeHistory.slice(start, end);
+    const totalPages = Math.ceil(tradeHistory.length / pageSize);
+
+    document.getElementById('pageIndicator').innerText = `PAGE ${pagedIdx + 1} / ${totalPages}`;
+
+    body.innerHTML = pageData.map(t => `
+        <tr>
+            <td>${t.date}</td>
+            <td>${t.type}</td>
+            <td>${t.entry}</td>
+            <td>${t.exit}</td>
+            <td>${t.dur}</td>
+            <td><span class="pill pill-${t.res.includes('WIN') ? 'win' : 'loss'}">${t.res}</span></td>
+        </tr>
+    `).join('');
+}
+
+function prevPage() {
+    if(pagedIdx > 0) {
+        pagedIdx--;
+        renderTradeHistory();
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(tradeHistory.length / pageSize);
+    if(pagedIdx < totalPages - 1) {
+        pagedIdx++;
+        renderTradeHistory();
+    }
+}
+
+// Update showTab to init history
+const originalShowTab = window.showTab;
+window.showTab = function(id) {
+    if(typeof originalShowTab === 'function') originalShowTab(id);
+    if(id === 'backtest') { 
+        setTimeout(renderTradeHistory, 100); 
+    }
 }
 
 // Init
