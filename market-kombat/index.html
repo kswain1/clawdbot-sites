@@ -11,6 +11,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.1.1/dist/chartjs-chart-financial.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 <body>
@@ -202,21 +205,32 @@
 
     function showVictory(name, data) {
         document.getElementById('victoryContainer').style.display = 'block';
-        document.getElementById('victoryTrophy').innerText = '🏆 Victory Path: ' + name;
+        document.getElementById('victoryTrophy').innerText = '🏆 Victory Path (OHLC): ' + name;
         
         const ctx = document.getElementById('victoryChart').getContext('2d');
         if(window.vicChart) window.vicChart.destroy();
+
+        // Convert simple price path into simulated OHLC bars for visual depth
+        const ohlcData = data.map((price, i) => {
+            const spread = 1.2;
+            const isGreen = i === 0 || price > data[i-1];
+            return {
+                x: luxon.DateTime.now().plus({ minutes: i * 5 }).toMillis(),
+                o: i === 0 ? price - 0.5 : data[i-1],
+                h: price + spread,
+                l: price - spread,
+                c: price
+            };
+        });
+
         window.vicChart = new Chart(ctx, {
-            type: 'line',
+            type: 'candlestick',
             data: {
-                labels: data.map((_, i) => 'T+' + (i*5) + 'm'),
                 datasets: [{
-                    data: data,
-                    borderColor: '#39d98a',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#39d98a',
-                    tension: 0.4,
-                    fill: false
+                    label: name,
+                    data: ohlcData,
+                    color: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' },
+                    borderColor: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' }
                 }]
             },
             options: {
@@ -225,7 +239,7 @@
                 plugins: { legend: { display: false } },
                 scales: {
                     y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
-                    x: { grid: { display: false }, ticks: { color: '#666' } }
+                    x: { type: 'time', grid: { display: false }, ticks: { color: '#666' } }
                 }
             }
         });
