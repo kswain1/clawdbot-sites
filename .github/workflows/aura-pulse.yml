@@ -1,0 +1,38 @@
+name: Aura-V 2.0 Pulse Relay
+
+on:
+  schedule:
+    # Run every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  pulse-relay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install yfinance requests
+
+      - name: Execute Aura-V Pulse
+        env:
+          DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
+          DISCORD_WEBHOOK_INBOX: ${{ secrets.DISCORD_WEBHOOK_INBOX }}
+        run: python alert_relay.py
+
+      - name: Commit Data Update
+        run: |
+          git config --local user.email "aura@clawdbot.com"
+          git config --local user.name "Aura Relay"
+          git add -A
+          git diff --staged --quiet || git commit -m "Pulse Update: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
