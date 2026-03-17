@@ -36,6 +36,13 @@
     <!-- LIVE ARENA -->
     <div id="kombat" class="tab-content active">
       <section class="panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--panel-line); padding-bottom: 15px;">
+          <div class="eyebrow">Session Replay Engine</div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="datetime-local" id="backtestTimer" style="background: #111; border: 1px solid var(--accent); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-family: 'Inter';">
+            <button onclick="runSimulatedBacktest()" style="background: var(--accent); color: black; border: none; padding: 6px 15px; border-radius: 4px; font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase;">Simulate</button>
+          </div>
+        </div>
         <div class="fighters-row">
             <div id="bullzenCard" class="fighter-card"><img src="assets/bullzen.png"><h3>Bullzen</h3></div>
             <div class="versus">VS</div>
@@ -171,6 +178,22 @@
       document.getElementById(id).classList.add('active');
       event.target.classList.add('active');
       if(id === 'backtest') { setTimeout(initChart, 100); }
+    }
+
+    function runSimulatedBacktest() {
+      const timeVal = document.getElementById('backtestTimer').value;
+      if(!timeVal) return alert('Select target session time.');
+      
+      const commentary = document.getElementById('commentary');
+      commentary.innerText = "⏳ Initializing Neural Replay for " + timeVal + "...";
+      
+      // Simulate logic trigger
+      setTimeout(() => {
+        const isBull = Math.random() > 0.5;
+        document.getElementById('bullzenCard').classList.toggle('active', isBull);
+        document.getElementById('bearakuCard').classList.toggle('active', !isBull);
+        commentary.innerHTML = `🚨 REPLAY TRIGGER: ${isBull ? 'BULLZEN' : 'BEARAKU'} ACTIVE @ ${timeVal}<br><span style="color:var(--accent)">Aura Probability: 88.4% | Validation: Stage 1 [800s]</span>`;
+      }, 1500);
     }
 
     function initChart() {
