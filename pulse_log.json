@@ -26,5 +26,13 @@
     "probability": 37.6,
     "signal": "WAIT",
     "status": "CONSOLIDATION"
+  },
+  {
+    "timestamp": "2026-03-20 00:29 CST",
+    "price": 4689.1,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "status": "WAIT"
   }
 ]
