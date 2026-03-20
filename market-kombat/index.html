@@ -523,10 +523,31 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      event.target.classList.add('active');
+      // Update active tab button
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        if (b.getAttribute('onclick') === `showTab('${id}')`) b.classList.add('active');
+      });
+      // Update URL hash for direct linking
+      history.replaceState(null, '', '#' + id);
       if (id === 'backtest') setTimeout(initChart, 100);
       if (id === 'forwardtest') setTimeout(updatePulseFeed, 100);
     }
+
+    // Direct route via URL hash on page load
+    (function() {
+      const hash = window.location.hash.replace('#', '');
+      const valid = ['kombat', 'forwardtest', 'backtest', 'intelligence'];
+      if (hash && valid.includes(hash)) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(hash).classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          if (b.getAttribute('onclick') === `showTab('${hash}')`) b.classList.add('active');
+        });
+        if (hash === 'backtest') setTimeout(initChart, 100);
+        if (hash === 'forwardtest') setTimeout(updatePulseFeed, 100);
+      }
+    })();
 
     function runSimulatedBacktest() {
       const timeVal = document.getElementById('backtestTimer').value;
