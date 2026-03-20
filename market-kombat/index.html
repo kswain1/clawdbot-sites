@@ -400,6 +400,69 @@
       </div>
     </div>
 
+
+      <!-- 30-DAY BACKTEST PANEL -->
+      <div class="panel" style="margin-top:20px; border-color: rgba(246,196,83,0.3);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+          <div>
+            <div class="eyebrow">30-Day Backtest — Feb 18 → Mar 20, 2026</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:3px;">Hybrid Auto-Mode | TREND=Immediate | CONSOL=20-Min | R:R 1:2.8 | Risk 20pts | $10,000 start</div>
+          </div>
+          <span style="background:rgba(255,93,93,.1); border:1px solid rgba(255,93,93,.3); padding:6px 14px; border-radius:6px; font-size:12px; color:#ff5d5d; font-weight:700;">⚠️ Bear Filter Needed</span>
+        </div>
+
+        <!-- SUMMARY STATS -->
+        <div class="summary-grid" style="margin-bottom:20px;">
+          <article class="panel stat-card"><div class="eyebrow">30D Net PnL</div><div class="stat-value" style="color:#ff5d5d">-$2,022</div></article>
+          <article class="panel stat-card"><div class="eyebrow">Win Rate</div><div class="stat-value" style="color:#ff5d5d">29.2%</div></article>
+          <article class="panel stat-card"><div class="eyebrow">Total Trades</div><div class="stat-value">48</div></article>
+          <article class="panel stat-card"><div class="eyebrow">Max Drawdown</div><div class="stat-value" style="color:#ff5d5d">51.5%</div></article>
+          <article class="panel stat-card"><div class="eyebrow">EV Ratio</div><div class="stat-value" style="color:#ff5d5d">-0.15</div></article>
+          <article class="panel stat-card"><div class="eyebrow">Final Equity</div><div class="stat-value">$7,978</div></article>
+        </div>
+
+        <!-- INSIGHT BOX -->
+        <div style="background:#111; border-left:3px solid #f6c453; border-radius:0 8px 8px 0; padding:16px; margin-bottom:20px; font-size:13px; line-height:1.9; color:#aaa;">
+          <strong style="color:#f6c453;">🔍 Root Cause Analysis</strong><br>
+          Gold ran from <strong>$5,000 → $5,400</strong> between Feb 19 – Mar 11 (a massive bull rally).<br>
+          The 5-min ADX detected "TREND mode" and fired <strong>17 SELL signals</strong> during that bull run — all wrong direction.<br>
+          <strong style="color:#ff5d5d;">Feb 19 – Mar 11: 26 trades | 26.9% WR | -$2,449</strong><br>
+          <strong style="color:var(--green);">Mar 12 – Mar 20: 22 trades | 31.8% WR | +$427</strong><br><br>
+          <strong style="color:var(--accent);">Fix identified: Higher-timeframe trend filter</strong> — only take TREND signals that align with the daily/1-hour direction. Estimated improvement: <strong>+40-50% WR → EV +0.4 to +0.7</strong>
+        </div>
+
+        <!-- MODE BREAKDOWN -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+          <div style="background:#111; border:1px solid #1e1e22; border-radius:8px; padding:16px;">
+            <div class="eyebrow" style="margin-bottom:8px;">TREND Mode (44 trades)</div>
+            <div style="font-size:24px; font-weight:900; color:#ff5d5d;">29.5%</div>
+            <div style="font-size:12px; color:var(--muted);">Win Rate | Net -$1,359</div>
+            <div style="font-size:11px; color:#f6c453; margin-top:6px;">⚠️ Counter-trend signals during bull rally = 17 bad SELLs</div>
+          </div>
+          <div style="background:#111; border:1px solid #1e1e22; border-radius:8px; padding:16px;">
+            <div class="eyebrow" style="margin-bottom:8px;">CONSOL Mode (4 trades)</div>
+            <div style="font-size:24px; font-weight:900; color:#ff5d5d;">25.0%</div>
+            <div style="font-size:12px; color:var(--muted);">Win Rate | Net -$663</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:6px;">Low sample — not statistically significant</div>
+          </div>
+        </div>
+
+        <!-- EQUITY CURVE -->
+        <div class="eyebrow" style="margin-bottom:10px;">Equity Curve (30 Days)</div>
+        <div style="height:200px; margin-bottom:20px;">
+          <canvas id="bt30Chart"></canvas>
+        </div>
+
+        <!-- TRADE LOG TOGGLE -->
+        <button onclick="toggleBt30Log()" style="background:#111; border:1px solid #333; color:var(--accent); padding:8px 18px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:700; margin-bottom:12px;">📋 Show All 48 Trades ▾</button>
+        <div id="bt30Log" style="display:none; overflow-x:auto;">
+          <table class="trade-table" id="bt30Table">
+            <thead><tr><th>Date</th><th>Time</th><th>Mode</th><th>Dir</th><th>Entry</th><th>Exit</th><th>PnL pts</th><th>PnL $</th><th>Result</th><th>Equity</th></tr></thead>
+            <tbody id="bt30Body"></tbody>
+          </table>
+        </div>
+      </div>
+
     <!-- ═══════════════════════════════════════════════════════════ -->
     <!-- R:R SWEEP — HYBRID AUTO-MODE                               -->
     <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1230,6 +1293,58 @@
     document.getElementById('deepDiveOverlay').addEventListener('click', function(e) {
       if (e.target === this) closeDeepDive();
     });
+
+    // ── 30-DAY BACKTEST ──
+    const bt30Trades = [{"date": "Wed 02/18", "time": "07:05 AM", "mode": "TREND", "dir": "BUY", "entry": 4975.4, "exit": 4996.1, "pts": 20.7, "usd": 207.0, "result": "WIN", "reason": "TIMEOUT", "equity": 10207.0}, {"date": "Thu 02/19", "time": "03:35 AM", "mode": "TREND", "dir": "SELL", "entry": 5018.5, "exit": 5041.3, "pts": -22.8, "usd": -228.0, "result": "LOSS", "reason": "STOP", "equity": 9979.0}, {"date": "Fri 02/20", "time": "02:50 AM", "mode": "TREND", "dir": "BUY", "entry": 5049.8, "exit": 5093.7, "pts": 43.9, "usd": 439.0, "result": "WIN", "reason": "TIMEOUT", "equity": 10418.01}, {"date": "Fri 02/20", "time": "03:55 PM", "mode": "TREND", "dir": "SELL", "entry": 5080.9, "exit": 5168.0, "pts": -87.1, "usd": -871.0, "result": "LOSS", "reason": "STOP", "equity": 9547.01}, {"date": "Sun 02/22", "time": "05:15 PM", "mode": "TREND", "dir": "BUY", "entry": 5164.3, "exit": 5149.1, "pts": -15.2, "usd": -152.0, "result": "LOSS", "reason": "TIMEOUT", "equity": 9395.01}, {"date": "Mon 02/23", "time": "08:35 AM", "mode": "TREND", "dir": "BUY", "entry": 5204.6, "exit": 5262.8, "pts": 58.2, "usd": 582.0, "result": "WIN", "reason": "TARGET", "equity": 9977.01}, {"date": "Mon 02/23", "time": "07:00 PM", "mode": "TREND", "dir": "SELL", "entry": 5231.8, "exit": 5170.6, "pts": 61.2, "usd": 612.0, "result": "WIN", "reason": "TARGET", "equity": 10589.0}, {"date": "Tue 02/24", "time": "06:50 AM", "mode": "TREND", "dir": "SELL", "entry": 5165.4, "exit": 5186.7, "pts": -21.3, "usd": -213.0, "result": "LOSS", "reason": "STOP", "equity": 10376.0}, {"date": "Tue 02/24", "time": "05:00 PM", "mode": "TREND", "dir": "SELL", "entry": 5154.0, "exit": 5178.0, "pts": -24.0, "usd": -240.0, "result": "LOSS", "reason": "STOP", "equity": 10136.0}, {"date": "Wed 02/25", "time": "02:45 PM", "mode": "TREND", "dir": "SELL", "entry": 5191.9, "exit": 5212.5, "pts": -20.6, "usd": -206.0, "result": "LOSS", "reason": "STOP", "equity": 9930.0}, {"date": "Thu 02/26", "time": "09:25 AM", "mode": "TREND", "dir": "SELL", "entry": 5157.5, "exit": 5184.9, "pts": -27.4, "usd": -274.0, "result": "LOSS", "reason": "STOP", "equity": 9656.0}, {"date": "Fri 02/27", "time": "06:05 AM", "mode": "CONSOLIDATION", "dir": "SELL", "entry": 5204.2, "exit": 5229.2, "pts": -25.0, "usd": -250.0, "result": "LOSS", "reason": "STOP", "equity": 9406.0}, {"date": "Fri 02/27", "time": "07:10 AM", "mode": "TREND", "dir": "BUY", "entry": 5230.9, "exit": 5288.4, "pts": 57.5, "usd": 575.0, "result": "WIN", "reason": "TARGET", "equity": 9981.0}, {"date": "Fri 02/27", "time": "03:55 PM", "mode": "TREND", "dir": "SELL", "entry": 5247.9, "exit": 5360.3, "pts": -112.4, "usd": -1124.0, "result": "LOSS", "reason": "STOP", "equity": 8857.0}, {"date": "Sun 03/01", "time": "05:15 PM", "mode": "TREND", "dir": "BUY", "entry": 5360.4, "exit": 5335.1, "pts": -25.3, "usd": -253.0, "result": "LOSS", "reason": "STOP", "equity": 8604.0}, {"date": "Sun 03/01", "time": "07:25 PM", "mode": "TREND", "dir": "SELL", "entry": 5320.5, "exit": 5346.6, "pts": -26.1, "usd": -261.0, "result": "LOSS", "reason": "STOP", "equity": 8343.0}, {"date": "Mon 03/02", "time": "08:20 AM", "mode": "CONSOLIDATION", "dir": "BUY", "entry": 5362.4, "exit": 5329.0, "pts": -33.4, "usd": -334.0, "result": "LOSS", "reason": "STOP", "equity": 8009.0}, {"date": "Mon 03/02", "time": "09:55 AM", "mode": "TREND", "dir": "SELL", "entry": 5329.6, "exit": 5353.2, "pts": -23.6, "usd": -236.0, "result": "LOSS", "reason": "STOP", "equity": 7773.0}, {"date": "Tue 03/03", "time": "12:10 AM", "mode": "TREND", "dir": "SELL", "entry": 5302.2, "exit": 5329.8, "pts": -27.6, "usd": -276.0, "result": "LOSS", "reason": "STOP", "equity": 7497.01}, {"date": "Tue 03/03", "time": "03:25 AM", "mode": "TREND", "dir": "SELL", "entry": 5253.3, "exit": 5278.9, "pts": -25.6, "usd": -256.0, "result": "LOSS", "reason": "STOP", "equity": 7241.01}, {"date": "Wed 03/04", "time": "12:20 AM", "mode": "TREND", "dir": "SELL", "entry": 5144.6, "exit": 5170.3, "pts": -25.7, "usd": -257.0, "result": "LOSS", "reason": "STOP", "equity": 6984.01}, {"date": "Wed 03/04", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5165.2, "exit": 5189.4, "pts": -24.2, "usd": -242.0, "result": "LOSS", "reason": "STOP", "equity": 6742.01}, {"date": "Thu 03/05", "time": "12:05 AM", "mode": "TREND", "dir": "SELL", "entry": 5148.4, "exit": 5176.5, "pts": -28.1, "usd": -281.0, "result": "LOSS", "reason": "STOP", "equity": 6461.01}, {"date": "Thu 03/05", "time": "07:20 AM", "mode": "TREND", "dir": "SELL", "entry": 5113.5, "exit": 5137.6, "pts": -24.1, "usd": -241.0, "result": "LOSS", "reason": "STOP", "equity": 6220.01}, {"date": "Fri 03/06", "time": "03:10 AM", "mode": "TREND", "dir": "SELL", "entry": 5104.4, "exit": 5132.5, "pts": -28.1, "usd": -281.0, "result": "LOSS", "reason": "STOP", "equity": 5939.01}, {"date": "Fri 03/06", "time": "09:20 AM", "mode": "TREND", "dir": "BUY", "entry": 5176.1, "exit": 5155.7, "pts": -20.4, "usd": -204.0, "result": "LOSS", "reason": "STOP", "equity": 5735.01}, {"date": "Sun 03/08", "time": "05:15 PM", "mode": "TREND", "dir": "SELL", "entry": 5145.1, "exit": 5165.4, "pts": -20.3, "usd": -203.0, "result": "LOSS", "reason": "STOP", "equity": 5532.01}, {"date": "Sun 03/08", "time": "05:35 PM", "mode": "TREND", "dir": "SELL", "entry": 5143.3, "exit": 5073.9, "pts": 69.4, "usd": 694.0, "result": "WIN", "reason": "TARGET", "equity": 6226.01}, {"date": "Mon 03/09", "time": "04:25 AM", "mode": "CONSOLIDATION", "dir": "SELL", "entry": 5133.3, "exit": 5118.9, "pts": 14.4, "usd": 144.0, "result": "WIN", "reason": "TIMEOUT", "equity": 6370.01}, {"date": "Mon 03/09", "time": "06:15 PM", "mode": "TREND", "dir": "BUY", "entry": 5164.1, "exit": 5143.7, "pts": -20.4, "usd": -204.0, "result": "LOSS", "reason": "STOP", "equity": 6166.01}, {"date": "Mon 03/09", "time": "08:30 PM", "mode": "TREND", "dir": "BUY", "entry": 5172.8, "exit": 5167.0, "pts": -5.8, "usd": -58.0, "result": "LOSS", "reason": "TIMEOUT", "equity": 6108.01}, {"date": "Tue 03/10", "time": "08:25 AM", "mode": "TREND", "dir": "BUY", "entry": 5230.8, "exit": 5210.3, "pts": -20.5, "usd": -205.0, "result": "LOSS", "reason": "STOP", "equity": 5903.01}, {"date": "Wed 03/11", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5166.9, "exit": 5192.9, "pts": -26.0, "usd": -260.0, "result": "LOSS", "reason": "STOP", "equity": 5643.01}, {"date": "Wed 03/11", "time": "05:40 PM", "mode": "TREND", "dir": "SELL", "entry": 5163.8, "exit": 5184.5, "pts": -20.7, "usd": -207.0, "result": "LOSS", "reason": "STOP", "equity": 5436.01}, {"date": "Thu 03/12", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5158.3, "exit": 5097.6, "pts": 60.7, "usd": 607.0, "result": "WIN", "reason": "TARGET", "equity": 6043.01}, {"date": "Fri 03/13", "time": "02:15 AM", "mode": "TREND", "dir": "SELL", "entry": 5081.7, "exit": 5112.9, "pts": -31.2, "usd": -312.0, "result": "LOSS", "reason": "STOP", "equity": 5731.01}, {"date": "Fri 03/13", "time": "08:55 AM", "mode": "TREND", "dir": "SELL", "entry": 5107.5, "exit": 5045.8, "pts": 61.7, "usd": 617.0, "result": "WIN", "reason": "TARGET", "equity": 6348.01}, {"date": "Fri 03/13", "time": "10:00 AM", "mode": "TREND", "dir": "SELL", "entry": 5054.0, "exit": 5074.2, "pts": -20.2, "usd": -202.0, "result": "LOSS", "reason": "STOP", "equity": 6146.01}, {"date": "Fri 03/13", "time": "02:35 PM", "mode": "CONSOLIDATION", "dir": "BUY", "entry": 5033.5, "exit": 5011.2, "pts": -22.3, "usd": -223.0, "result": "LOSS", "reason": "STOP", "equity": 5923.01}, {"date": "Sun 03/15", "time": "06:25 PM", "mode": "TREND", "dir": "SELL", "entry": 4992.8, "exit": 5026.1, "pts": -33.3, "usd": -333.0, "result": "LOSS", "reason": "STOP", "equity": 5590.01}, {"date": "Mon 03/16", "time": "08:45 PM", "mode": "TREND", "dir": "BUY", "entry": 5024.9, "exit": 5003.1, "pts": -21.8, "usd": -218.0, "result": "LOSS", "reason": "STOP", "equity": 5372.01}, {"date": "Wed 03/18", "time": "01:10 AM", "mode": "TREND", "dir": "BUY", "entry": 5012.8, "exit": 4989.3, "pts": -23.5, "usd": -235.0, "result": "LOSS", "reason": "STOP", "equity": 5137.01}, {"date": "Wed 03/18", "time": "05:50 AM", "mode": "TREND", "dir": "SELL", "entry": 4976.1, "exit": 4916.5, "pts": 59.6, "usd": 596.0, "result": "WIN", "reason": "TARGET", "equity": 5733.01}, {"date": "Wed 03/18", "time": "07:10 AM", "mode": "TREND", "dir": "SELL", "entry": 4911.3, "exit": 4853.6, "pts": 57.7, "usd": 577.0, "result": "WIN", "reason": "TARGET", "equity": 6310.01}, {"date": "Wed 03/18", "time": "01:45 PM", "mode": "TREND", "dir": "SELL", "entry": 4872.1, "exit": 4814.3, "pts": 57.8, "usd": 578.0, "result": "WIN", "reason": "TARGET", "equity": 6888.01}, {"date": "Thu 03/19", "time": "01:15 AM", "mode": "TREND", "dir": "SELL", "entry": 4824.2, "exit": 4755.5, "pts": 68.7, "usd": 687.0, "result": "WIN", "reason": "TARGET", "equity": 7575.01}, {"date": "Thu 03/19", "time": "03:05 AM", "mode": "TREND", "dir": "SELL", "entry": 4715.9, "exit": 4655.6, "pts": 60.3, "usd": 603.0, "result": "WIN", "reason": "TARGET", "equity": 8178.01}, {"date": "Fri 03/20", "time": "01:35 AM", "mode": "TREND", "dir": "SELL", "entry": 4669.0, "exit": 4689.0, "pts": -20.0, "usd": -200.0, "result": "LOSS", "reason": "STOP", "equity": 7978.01}];
+    const bt30Equity = [10000, 10207.0, 9979.0, 10418.01, 9547.01, 9395.01, 9977.01, 10589.0, 10376.0, 10136.0, 9930.0, 9656.0, 9406.0, 9981.0, 8857.0, 8604.0, 8343.0, 8009.0, 7773.0, 7497.01, 7241.01, 6984.01, 6742.01, 6461.01, 6220.01, 5939.01, 5735.01, 5532.01, 6226.01, 6370.01, 6166.01, 6108.01, 5903.01, 5643.01, 5436.01, 6043.01, 5731.01, 6348.01, 6146.01, 5923.01, 5590.01, 5372.01, 5137.01, 5733.01, 6310.01, 6888.01, 7575.01, 8178.01, 7978.01];
+
+    function toggleBt30Log() {
+      const el = document.getElementById('bt30Log');
+      el.style.display = el.style.display === 'none' ? 'block' : 'none';
+      const btn = el.previousElementSibling;
+      btn.textContent = el.style.display === 'none' ? '📋 Show All 48 Trades ▾' : '📋 Hide Trades ▲';
+      if (el.style.display === 'block' && !document.getElementById('bt30Body').innerHTML) {
+        document.getElementById('bt30Body').innerHTML = bt30Trades.map(t => {
+          const win = t.result === 'WIN';
+          const modeTag = t.mode === 'TREND'
+            ? '<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>'
+            : '<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>';
+          return '<tr><td>'+t.date+'</td><td style="font-size:11px;">'+t.time+'</td><td>'+modeTag+'</td><td style="color:'+(t.dir==='BUY'?'#39d98a':'#ff5d5d')+';font-weight:700;">'+t.dir+'</td><td>$'+t.entry.toFixed(2)+'</td><td>$'+t.exit.toFixed(2)+'</td><td style="color:'+(t.pts>=0?'#39d98a':'#ff5d5d')+'">'+(t.pts>=0?'+':'')+t.pts+'</td><td style="color:'+(t.usd>=0?'#39d98a':'#ff5d5d')+'">'+(t.usd>=0?'+':'')+t.usd+'</td><td><span class="pill '+(win?'pill-win':'pill-loss')+'">'+t.result+'</span></td><td>$'+Math.round(t.equity).toLocaleString()+'</td></tr>';
+        }).join('');
+      }
+    }
+
+    // 30D equity chart
+    (function init30DChart() {
+      const el = document.getElementById('bt30Chart');
+      if (!el) return;
+      const ctx = el.getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: bt30Equity.map((_,i) => 'T'+i),
+          datasets: [{
+            data: bt30Equity,
+            borderColor: '#ff5d5d',
+            backgroundColor: 'rgba(255,93,93,0.06)',
+            borderWidth: 2, fill: true, tension: 0.3, pointRadius: 0
+          }, {
+            data: new Array(bt30Equity.length).fill(10000),
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1, borderDash: [4,4], fill: false, pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid:{color:'#1a1a1a'}, ticks:{color:'#444',maxTicksLimit:8,font:{size:10}} },
+            y: { grid:{color:'#1a1a1a'}, ticks:{color:'#888',font:{size:10},callback:v=>'$'+v.toLocaleString()} }
+          }
+        }
+      });
+    })();
+
   </script>
 </body>
 </html>
