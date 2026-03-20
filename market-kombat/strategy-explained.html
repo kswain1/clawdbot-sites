@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aura-V 2.0 — Strategy Explained</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0c;
+      --panel: #111113;
+      --accent: #f6c453;
+      --green: #39d98a;
+      --red: #ff5d5d;
+      --blue: #6ab8ff;
+      --purple: #a09aff;
+      --muted: #666;
+      --line: #1e1e22;
+      --text: #e8e8e8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 28px 16px 80px; }
+
+    /* HEADER */
+    .page-header { text-align: center; padding: 40px 0 32px; border-bottom: 1px solid var(--line); margin-bottom: 40px; }
+    .page-header .eyebrow { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .page-header h1 { font-size: clamp(22px, 5vw, 38px); font-weight: 900; }
+    .page-header p { color: var(--muted); margin-top: 10px; font-size: 14px; }
+
+    /* CARDS */
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; margin-bottom: 28px; }
+    .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin-bottom: 16px; }
+    h2 { font-size: clamp(17px, 3vw, 22px); font-weight: 800; margin-bottom: 12px; }
+    h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    p { color: #bbb; margin-bottom: 12px; }
+    p:last-child { margin-bottom: 0; }
+
+    /* STORY BUBBLES */
+    .story-step { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+    .story-icon { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+    .story-body h3 { font-size: 15px; margin-bottom: 4px; }
+    .story-body p  { font-size: 14px; color: #aaa; }
+
+    /* FLOWCHART */
+    .flow { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .flow-box { border-radius: 10px; padding: 14px 20px; text-align: center; font-weight: 700; font-size: 13px; width: 100%; max-width: 400px; position: relative; }
+    .flow-arrow { color: var(--muted); font-size: 22px; line-height: 1; margin: 4px 0; }
+    .flow-branch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; width: 100%; margin: 4px 0; }
+    .flow-branch-box { border-radius: 10px; padding: 12px 10px; text-align: center; font-size: 12px; font-weight: 700; }
+    .fb-blue   { background: rgba(106,184,255,.12); border: 1px solid rgba(106,184,255,.3); color: var(--blue); }
+    .fb-green  { background: rgba(57,217,138,.12);  border: 1px solid rgba(57,217,138,.3);  color: var(--green); }
+    .fb-orange { background: rgba(246,196,83,.12);  border: 1px solid rgba(246,196,83,.3);  color: var(--accent); }
+    .fb-muted  { background: rgba(100,100,100,.1);  border: 1px solid #333; color: var(--muted); }
+    .fb-red    { background: rgba(255,93,93,.12);   border: 1px solid rgba(255,93,93,.3);  color: var(--red); }
+    .fb-purple { background: rgba(160,154,255,.12); border: 1px solid rgba(160,154,255,.3);color: var(--purple); }
+
+    /* INDICATOR DOTS */
+    .ind-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .ind-pill { padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+    /* CHART SECTION */
+    .chart-wrap { position: relative; width: 100%; }
+    canvas { width: 100% !important; }
+
+    /* R:R TABLE */
+    .rr-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .rr-table th { text-align: left; padding: 10px 8px; color: var(--muted); border-bottom: 1px solid var(--line); font-size: 11px; text-transform: uppercase; }
+    .rr-table td { padding: 10px 8px; border-bottom: 1px solid #1a1a1a; }
+    .rr-table tr.winner-row { background: rgba(57,217,138,.06); }
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+    .ba { background: rgba(57,217,138,.15); color: var(--green); }
+    .bb { background: rgba(106,184,255,.15); color: var(--blue); }
+    .bc { background: rgba(246,196,83,.15);  color: var(--accent); }
+    .bd { background: rgba(255,93,93,.15);   color: var(--red); }
+
+    /* BACK LINK */
+    .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 700; margin-bottom: 28px; }
+    .back-link:hover { opacity: .8; }
+
+    @media (max-width: 600px) {
+      .flow-branch { grid-template-columns: 1fr; }
+      .story-step  { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back-link" href="../market-kombat/#backtest">← Back to Backtest Analytics</a>
+
+  <div class="page-header">
+    <div class="eyebrow">Aura Intelligence · Strategy Docs</div>
+    <h1>How Aura-V 2.0 Works</h1>
+    <p>The full strategy explained in plain English — plus the logic flow, entry examples, and R:R test results.</p>
+  </div>
+
+  <!-- ═══════════════════════════ STORY ═══════════════════════════ -->
+  <div class="card">
+    <div class="card-title">The Story — 5th Grade Edition</div>
+    <h2>Imagine Gold is a Rubber Band 🏅</h2>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(246,196,83,.15);">🎯</div>
+      <div class="story-body">
+        <h3>Step 1 — Aura Watches the Rubber Band</h3>
+        <p>Every 5 minutes, Aura checks how stretched or compressed the gold price rubber band is. It draws a normal "calm zone" in the middle and two lines at the edges — the Upper Wall and the Lower Floor. These are called <strong>Bollinger Bands</strong>. When the price gets too close to the walls, something usually happens.</p>
+      </div>
+    </div>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(57,217,138,.15);">🔍</div>
+      <div class="story-body">
+        <h3>Step 2 — Is the Market Bouncing or Running?</h3>
+        <p>Before deciding what to do, Aura asks: <em>"Is gold in a calm, bouncy mood — or is it sprinting in one direction?"</em><br>
+        It uses three sensors:</p>
+        <div class="ind-row">
+          <span class="ind-pill" style="background:rgba(106,184,255,.12);color:var(--blue);border:1px solid rgba(106,184,255,.3);">ADX — Trend Strength</span>
+          <span class="ind-pill" style="background:rgba(246,196,83,.12);color:var(--accent);border:1px solid rgba(246,196,83,.3);">ATR — Volatility Size</span>
+          <span class="ind-pill" style="background:rgba(160,154,255,.12);color:var(--purple);border:1px solid rgba(160,154,255,.3);">ROC — Speed of Move</span>
+        </div>
+        <p style="margin-top:10px;">If all three say <em>"GO GO GO"</em> → <strong style="color:var(--blue)">TREND MODE</strong>. If they're all calm → <strong style="color:var(--green)">CONSOLIDATION MODE</strong>. If mixed signals → <strong style="color:var(--muted)">TRANSITION</strong> (sit out).</p>
+      </div>
+    </div>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(106,184,255,.15);">⚡</div>
+      <div class="story-body">
+        <h3>Step 3 — TREND Mode (Sprint Race)</h3>
+        <p>When gold is running fast in one direction and it breaks through a wall, Aura <strong>jumps in immediately</strong> — no waiting. Like catching a wave. If gold breaks the Upper Wall while sprinting UP, we ride it up. If it crashes through the Floor while sprinting DOWN, we ride it down. We risk 20 points, aiming for 56 points back (2.8× reward).</p>
+      </div>
+    </div>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(57,217,138,.15);">⏳</div>
+      <div class="story-body">
+        <h3>Step 4 — CONSOLIDATION Mode (Rubber Band Snap)</h3>
+        <p>When gold is calm and bouncing around, Aura watches for it to touch the walls. When it does, it usually <strong>snaps back to the middle</strong>. But instead of jumping in right away (which can be a fake-out), Aura <strong>waits 20 minutes</strong> to confirm the signal is still valid. If it is — we enter. Risk 20 points, target 56 points back.</p>
+      </div>
+    </div>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(255,93,93,.15);">🛡️</div>
+      <div class="story-body">
+        <h3>Step 5 — Safety Rules</h3>
+        <p>Every trade has a <strong>Stop Loss</strong> (a maximum pain point — we exit if price goes against us 20 points). We also limit how much we lose per day (4% of the account = $400 max daily loss). If we hit that limit, the bot pauses for the rest of the day.</p>
+      </div>
+    </div>
+
+    <div class="story-step">
+      <div class="story-icon" style="background:rgba(246,196,83,.15);">📢</div>
+      <div class="story-body">
+        <h3>Step 6 — The Discord Alerts</h3>
+        <p>In TREND mode: <strong>one immediate alert</strong> fires — enter now.<br>
+        In CONSOLIDATION mode: a <strong>5-step countdown</strong> fires over 20 minutes (20 min → 15 → 10 → 5 → ENTER NOW → 15-second final window). This gives you time to get to your terminal, check the chart, and place the order confidently.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ FLOWCHART ═══════════════════════ -->
+  <div class="card">
+    <div class="card-title">Logic Flowchart</div>
+    <h2>Every 5 Minutes, Aura Does This:</h2>
+
+    <div class="flow" style="margin-top:20px;">
+
+      <div class="flow-box fb-orange">📡 PULSE FIRES — Fetch Gold Price (XAUUSD)</div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box fb-blue">🔬 Calculate Bollinger Bands (2.0 STD)<br><small style="font-weight:400;color:#aaa">Upper Band &nbsp;|&nbsp; Middle SMA &nbsp;|&nbsp; Lower Band</small></div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-box fb-blue">📊 Read ADX + ATR + ROC Sensors</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-branch">
+        <div class="flow-branch-box fb-blue">ADX &gt; 25<br>ATR Expanding<br>ROC Strong<br><br><strong>TREND MODE</strong></div>
+        <div class="flow-branch-box fb-green">ADX &lt; 20<br>ATR Contracting<br>Calm Market<br><br><strong>CONSOL MODE</strong></div>
+        <div class="flow-branch-box fb-muted">Mixed Signals<br><br><br><br><strong>TRANSITION</strong><br>→ WAIT</div>
+      </div>
+      <div class="flow-arrow">↓ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓</div>
+
+      <div class="flow-branch" style="grid-template-columns: 1fr 1fr;">
+        <div>
+          <div class="flow-branch-box fb-blue" style="margin-bottom:8px;">Price breaks Upper Band<br>→ <strong style="color:var(--green)">BUY NOW ⚡</strong><br><small>Enter immediately</small></div>
+          <div class="flow-branch-box fb-blue">Price breaks Lower Band<br>→ <strong style="color:var(--red)">SELL NOW ⚡</strong><br><small>Enter immediately</small></div>
+        </div>
+        <div>
+          <div class="flow-branch-box fb-green" style="margin-bottom:8px;">Price touches Lower Band<br>→ <strong style="color:var(--accent)">20-MIN COUNTDOWN</strong><br><small>Re-confirm at bar +4</small></div>
+          <div class="flow-branch-box fb-green">Price touches Upper Band<br>→ <strong style="color:var(--accent)">20-MIN COUNTDOWN</strong><br><small>Re-confirm at bar +4</small></div>
+        </div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-box fb-orange">SET STOP LOSS (-20 pts) &nbsp;|&nbsp; SET TARGET (+56 pts) &nbsp;|&nbsp; Alert Discord</div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-branch" style="grid-template-columns: 1fr 1fr;">
+        <div class="flow-branch-box fb-green">Price hits TARGET<br>→ <strong>WIN ✅</strong><br>+$560 per contract</div>
+        <div class="flow-branch-box fb-red">Price hits STOP<br>→ <strong>LOSS ❌</strong><br>-$200 per contract</div>
+      </div>
+      <div class="flow-arrow">↓</div>
+
+      <div class="flow-box fb-muted">Check Daily Loss Cap ($400)<br>If hit → pause trading for the day</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ EXAMPLE CHART ═══════════════════ -->
+  <div class="card">
+    <div class="card-title">Entry Examples — X/Y Chart</div>
+    <h2>What a Trade Looks Like on a Chart</h2>
+    <p style="margin-bottom:18px;">The bands wrap around the price. When price touches a band, the signal fires. Green triangles = BUY entries. Red triangles = SELL entries.</p>
+
+    <div class="chart-wrap" style="height:320px;">
+      <canvas id="exampleChart"></canvas>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; font-size:12px;">
+      <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:14px;border-radius:2px;background:rgba(57,217,138,.3);display:inline-block;"></span>Price Line</span>
+      <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:2px;background:#6ab8ff;display:inline-block;"></span>Upper Band (2.0 STD)</span>
+      <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:2px;background:#a09aff;display:inline-block;"></span>Lower Band (2.0 STD)</span>
+      <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:2px;background:#444;border-top:1px dashed #888;display:inline-block;"></span>Middle SMA</span>
+      <span style="display:flex;align-items:center;gap:6px;color:var(--green);">▲ BUY Entry</span>
+      <span style="display:flex;align-items:center;gap:6px;color:var(--red);">▼ SELL Entry</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ R:R TABLE ═══════════════════════ -->
+  <div class="card">
+    <div class="card-title">R:R Sweep — 1:1.0 to 1:3.0 (Backtest Week Mar 13–20)</div>
+    <h2>Which Reward-to-Risk Ratio Wins?</h2>
+    <p style="margin-bottom:18px;">We risk 20 points on every trade. The table below shows what happens when we aim for different sized rewards — from 1× to 3× our risk.</p>
+
+    <div style="overflow-x:auto;">
+      <table class="rr-table" id="rrTable">
+        <thead>
+          <tr>
+            <th>R:R</th>
+            <th>Trades</th>
+            <th>Win Rate</th>
+            <th>Net PnL</th>
+            <th>Equity</th>
+            <th>Avg Win</th>
+            <th>Avg Loss</th>
+            <th>EV Ratio</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody id="rrBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:14px; padding:14px; background:#111; border-left:3px solid var(--green); border-radius:0 8px 8px 0; font-size:13px; color:#aaa; line-height:1.8;">
+      <strong style="color:var(--green);">🏆 Winner: 1:2.8 R:R</strong> — Win Rate 54.5% | Net +$2,447 | EV Ratio +0.92<br>
+      Risking 20 pts, targeting 56 pts. Every $200 risked returns ~$184 in expected profit over time. This is the live setting deployed in the pulse relay.
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── EXAMPLE CHART ──
+const labels = Array.from({length:60},(_,i)=>'T'+i);
+// Simulate a price range
+let price = 5010;
+const prices=[], upper=[], lower=[], middle=[];
+for(let i=0;i<60;i++){
+  price += (Math.random()-0.495)*4;
+  const sma=5010+(Math.sin(i*0.12)*8);
+  const std=7+Math.sin(i*0.3)*2;
+  prices.push(+price.toFixed(2));
+  middle.push(+(sma).toFixed(2));
+  upper.push(+(sma+std*2).toFixed(2));
+  lower.push(+(sma-std*2).toFixed(2));
+}
+
+// Entry markers
+const buyEntries  = [{x:8,  y:prices[8]},  {x:37, y:prices[37]}];
+const sellEntries = [{x:21, y:prices[21]}, {x:52, y:prices[52]}];
+
+// Force entry points to be at/near the bands
+prices[8]  = lower[8]  - 0.5;
+prices[21] = upper[21] + 0.5;
+prices[37] = lower[37] - 0.5;
+prices[52] = upper[52] + 0.5;
+
+const ctx = document.getElementById('exampleChart').getContext('2d');
+new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: [
+      { label:'Price',       data:prices, borderColor:'#39d98a', backgroundColor:'rgba(57,217,138,0.06)', borderWidth:2, fill:true, tension:0.3, pointRadius:0 },
+      { label:'Upper Band',  data:upper,  borderColor:'rgba(106,184,255,0.6)', borderWidth:1, fill:false, pointRadius:0, borderDash:[4,4] },
+      { label:'Lower Band',  data:lower,  borderColor:'rgba(160,154,255,0.6)', borderWidth:1, fill:false, pointRadius:0, borderDash:[4,4] },
+      { label:'SMA',         data:middle, borderColor:'rgba(255,255,255,0.12)', borderWidth:1, fill:false, pointRadius:0, borderDash:[2,4] },
+      { label:'BUY Entry',   data:prices.map((v,i)=>buyEntries.find(e=>e.x===i)?v:null),
+        borderColor:'transparent', backgroundColor:'#39d98a',
+        pointStyle:'triangle', pointRadius:12, pointHoverRadius:14, showLine:false },
+      { label:'SELL Entry',  data:prices.map((v,i)=>sellEntries.find(e=>e.x===i)?v:null),
+        borderColor:'transparent', backgroundColor:'#ff5d5d',
+        pointStyle:'triangle', pointRadius:12, pointHoverRadius:14, showLine:false,
+        rotation:180 },
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    interaction:{mode:'index', intersect:false},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.label==='BUY Entry'?`▲ BUY @ $${ctx.parsed.y.toFixed(2)}`
+                     :ctx.dataset.label==='SELL Entry'?`▼ SELL @ $${ctx.parsed.y.toFixed(2)}`
+                     :`${ctx.dataset.label}: $${ctx.parsed.y?.toFixed(2)||''}`
+        }
+      }
+    },
+    scales:{
+      x:{grid:{color:'#1a1a1a'},ticks:{color:'#444',font:{size:10},maxTicksLimit:10}},
+      y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:10},callback:v=>'$'+v.toFixed(0)}}
+    }
+  }
+});
+
+// ── R:R TABLE ──
+const rrData = [
+  {rr:'1:1.0', trades:16,wins:11,wr:68.8,net:+1292,eq:11292,aw:+239,al:267,ev:+0.30,grade:'C'},
+  {rr:'1:1.1', trades:15,wins:9, wr:60.0,net:+736, eq:10736,aw:+254,al:259,ev:+0.19,grade:'D'},
+  {rr:'1:1.2', trades:14,wins:9, wr:64.3,net:+1011,eq:11011,aw:+262,al:270,ev:+0.27,grade:'C'},
+  {rr:'1:1.3', trades:13,wins:7, wr:53.8,net:+724, eq:10724,aw:+329,al:264,ev:+0.21,grade:'C'},
+  {rr:'1:1.4', trades:13,wins:7, wr:53.8,net:+839, eq:10839,aw:+346,al:264,ev:+0.24,grade:'C'},
+  {rr:'1:1.5', trades:13,wins:7, wr:53.8,net:+904, eq:10904,aw:+355,al:264,ev:+0.26,grade:'C'},
+  {rr:'1:1.6', trades:13,wins:7, wr:53.8,net:+1145,eq:11145,aw:+371,al:242,ev:+0.36,grade:'C'},
+  {rr:'1:1.7', trades:13,wins:7, wr:53.8,net:+1213,eq:11213,aw:+381,al:242,ev:+0.39,grade:'C'},
+  {rr:'1:1.8', trades:13,wins:6, wr:46.2,net:+924, eq:10924,aw:+441,al:246,ev:+0.29,grade:'C'},
+  {rr:'1:1.9', trades:13,wins:6, wr:46.2,net:+924, eq:10924,aw:+441,al:246,ev:+0.29,grade:'C'},
+  {rr:'1:2.0', trades:13,wins:6, wr:46.2,net:+1318,eq:11318,aw:+502,al:242,ev:+0.42,grade:'C'},
+  {rr:'1:2.1', trades:13,wins:6, wr:46.2,net:+1344,eq:11344,aw:+506,al:242,ev:+0.43,grade:'C'},
+  {rr:'1:2.2', trades:13,wins:6, wr:46.2,net:+1493,eq:11493,aw:+531,al:242,ev:+0.48,grade:'C'},
+  {rr:'1:2.3', trades:13,wins:6, wr:46.2,net:+1501,eq:11501,aw:+532,al:242,ev:+0.48,grade:'C'},
+  {rr:'1:2.4', trades:12,wins:6, wr:50.0,net:+1847,eq:11847,aw:+554,al:246,ev:+0.62,grade:'B'},
+  {rr:'1:2.5', trades:12,wins:6, wr:50.0,net:+1966,eq:11966,aw:+574,al:246,ev:+0.67,grade:'B'},
+  {rr:'1:2.6', trades:12,wins:6, wr:50.0,net:+1966,eq:11966,aw:+574,al:246,ev:+0.67,grade:'B'},
+  {rr:'1:2.7', trades:12,wins:6, wr:50.0,net:+2046,eq:12046,aw:+587,al:246,ev:+0.69,grade:'B'},
+  {rr:'1:2.8', trades:11,wins:6, wr:54.5,net:+2447,eq:12447,aw:+610,al:242,ev:+0.92,grade:'B+',winner:true},
+  {rr:'1:2.9', trades:11,wins:5, wr:45.5,net:+1556,eq:11556,aw:+622,al:259,ev:+0.55,grade:'B'},
+  {rr:'1:3.0', trades:10,wins:5, wr:50.0,net:+1551,eq:11551,aw:+552,al:242,ev:+0.64,grade:'B'},
+];
+
+const gradeColor = {A:'.ba','B+':'.ba', B:'.bb', C:'.bc', D:'.bd', F:'.bd'};
+const tbody = document.getElementById('rrBody');
+tbody.innerHTML = rrData.map(r=>{
+  const gc = r.grade.startsWith('B+') || r.grade==='A' ? 'ba' : r.grade.startsWith('B') ? 'bb' : r.grade==='C' ? 'bc' : 'bd';
+  const ev_color = r.ev >= 0.7 ? 'var(--green)' : r.ev >= 0.4 ? 'var(--accent)' : '#888';
+  const net_color = r.net > 0 ? 'var(--green)' : 'var(--red)';
+  return `<tr${r.winner?' class="winner-row"':''}>
+    <td><strong>${r.rr}</strong>${r.winner?' 🏆':''}</td>
+    <td>${r.trades}</td>
+    <td>${r.wr.toFixed(1)}%</td>
+    <td style="color:${net_color};font-weight:700;">${r.net>0?'+':''}$${r.net.toLocaleString()}</td>
+    <td>$${r.eq.toLocaleString()}</td>
+    <td style="color:var(--green);">+$${r.aw}</td>
+    <td style="color:var(--red);">-$${r.al}</td>
+    <td style="color:${ev_color};font-weight:700;">${r.ev>0?'+':''}${r.ev.toFixed(2)}</td>
+    <td><span class="badge ${gc}">${r.grade}</span></td>
+  </tr>`;
+}).join('');
+</script>
+</body>
+</html>
