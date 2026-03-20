@@ -463,6 +463,40 @@
         </div>
       </div>
 
+
+      <!-- HTF DAILY FILTER PANEL -->
+      <div class="panel" style="margin-top:20px; border-color: rgba(57,217,138,0.3);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+          <div>
+            <div class="eyebrow">30-Day Backtest v2 — Daily Bias Filter Added</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:3px;">Skip TREND signals that oppose Daily SMA10/SMA20 direction</div>
+          </div>
+          <span style="background:rgba(57,217,138,.1); border:1px solid rgba(57,217,138,.3); padding:6px 14px; border-radius:6px; font-size:12px; color:var(--green); font-weight:700;">✅ Now Profitable</span>
+        </div>
+        <!-- COMPARISON TABLE -->
+        <table class="trade-table" style="margin-bottom:20px;">
+          <thead><tr><th>#</th><th>Version</th><th>Trades</th><th>Filtered</th><th>Win Rate</th><th>Net PnL</th><th>Max DD</th><th>EV Ratio</th><th>Grade</th></tr></thead>
+          <tbody>
+            <tr style="opacity:0.6;"><td>1</td><td>Baseline Raw 30D</td><td>48</td><td>0</td><td style="color:#ff5d5d;">29.2%</td><td style="color:#ff5d5d;">-$2,022</td><td style="color:#ff5d5d;">51.5%</td><td style="color:#ff5d5d;">-0.15</td><td><span class="grade-badge grade-f">D</span></td></tr>
+            <tr style="opacity:0.6;"><td>2</td><td>+ 1H Bias Filter</td><td>42</td><td>10</td><td style="color:#ff5d5d;">28.6%</td><td style="color:#ff5d5d;">-$1,230</td><td style="color:#ff5d5d;">43.6%</td><td style="color:#ff5d5d;">-0.11</td><td><span class="grade-badge grade-f">D</span></td></tr>
+            <tr style="background:rgba(57,217,138,0.04);"><td>3</td><td><strong>+ Daily SMA Filter ★ NEW</strong></td><td>39</td><td style="color:var(--green);">25</td><td style="color:var(--green);">33.3%</td><td style="color:var(--green);">$+816</td><td style="color:#f6c453;">29.0%</td><td style="color:var(--green);">+0.09</td><td><span class="grade-badge grade-d">D→C</span></td></tr>
+          </tbody>
+        </table>
+        <div style="background:#111; border-left:3px solid var(--green); border-radius:0 8px 8px 0; padding:14px; font-size:13px; color:#aaa; line-height:1.9; margin-bottom:20px;">
+          <strong style="color:var(--green);">🔧 What the Daily Filter Does</strong><br>
+          Checks Daily SMA10 vs SMA20 before each TREND signal. If daily trend = BULL → only take BUY entries. If BEAR → only take SELLs. NEUTRAL = allow both.<br>
+          Blocked <strong>25 counter-trend signals</strong> — turned -$2,022 into <strong>+$816 profitable</strong>.<br><br>
+          <strong style="color:#f6c453;">⚡ Next upgrade: combine daily filter with sharper prob threshold (>85%) to further reduce noise</strong>
+        </div>
+        <!-- EQUITY CURVE -->
+        <div class="eyebrow" style="margin-bottom:8px;">Equity Curve — With Daily Filter</div>
+        <div style="height:180px; margin-bottom:16px;"><canvas id="bt30FilterChart"></canvas></div>
+        <button onclick="toggleBtFilterLog()" style="background:#111; border:1px solid #333; color:var(--accent); padding:8px 18px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:700; margin-bottom:12px;">📋 Show 39 Trades ▾</button>
+        <div id="btFilterLog" style="display:none; overflow-x:auto;">
+          <table class="trade-table"><thead><tr><th>Date</th><th>Time</th><th>Mode</th><th>Dir</th><th>Entry</th><th>Exit</th><th>PnL pts</th><th>PnL $</th><th>Result</th><th>Equity</th></tr></thead><tbody id="btFilterBody"></tbody></table>
+        </div>
+      </div>
+
     <!-- ═══════════════════════════════════════════════════════════ -->
     <!-- R:R SWEEP — HYBRID AUTO-MODE                               -->
     <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1342,6 +1376,40 @@
             y: { grid:{color:'#1a1a1a'}, ticks:{color:'#888',font:{size:10},callback:v=>'$'+v.toLocaleString()} }
           }
         }
+      });
+    })();
+
+
+    const btFilterTrades = [{"date": "Wed 02/18", "time": "08:35 AM", "mode": "TREND", "dir": "BUY", "entry": 5004.1, "exit": 4981.5, "pts": -22.6, "usd": -226.0, "result": "LOSS", "equity": 9774.0}, {"date": "Fri 02/20", "time": "02:50 AM", "mode": "TREND", "dir": "BUY", "entry": 5049.8, "exit": 5093.7, "pts": 43.9, "usd": 439.0, "result": "WIN", "equity": 10213.0}, {"date": "Sun 02/22", "time": "05:10 PM", "mode": "TREND", "dir": "BUY", "entry": 5168.0, "exit": 5157.3, "pts": -10.7, "usd": -107.0, "result": "LOSS", "equity": 10106.0}, {"date": "Mon 02/23", "time": "08:35 AM", "mode": "TREND", "dir": "BUY", "entry": 5204.6, "exit": 5262.8, "pts": 58.2, "usd": 582.0, "result": "WIN", "equity": 10688.0}, {"date": "Tue 02/24", "time": "07:25 PM", "mode": "TREND", "dir": "BUY", "entry": 5202.9, "exit": 5192.1, "pts": -10.8, "usd": -108.0, "result": "LOSS", "equity": 10580.0}, {"date": "Fri 02/27", "time": "06:05 AM", "mode": "CONSOLIDATION", "dir": "SELL", "entry": 5204.2, "exit": 5229.2, "pts": -25.0, "usd": -250.0, "result": "LOSS", "equity": 10330.0}, {"date": "Fri 02/27", "time": "07:10 AM", "mode": "TREND", "dir": "BUY", "entry": 5230.9, "exit": 5288.4, "pts": 57.5, "usd": 575.0, "result": "WIN", "equity": 10905.0}, {"date": "Sun 03/01", "time": "05:10 PM", "mode": "TREND", "dir": "BUY", "entry": 5360.3, "exit": 5335.1, "pts": -25.2, "usd": -252.0, "result": "LOSS", "equity": 10653.0}, {"date": "Mon 03/02", "time": "08:20 AM", "mode": "CONSOLIDATION", "dir": "BUY", "entry": 5362.4, "exit": 5329.0, "pts": -33.4, "usd": -334.0, "result": "LOSS", "equity": 10319.0}, {"date": "Mon 03/02", "time": "09:55 AM", "mode": "TREND", "dir": "SELL", "entry": 5329.6, "exit": 5353.2, "pts": -23.6, "usd": -236.0, "result": "LOSS", "equity": 10083.0}, {"date": "Tue 03/03", "time": "12:10 AM", "mode": "TREND", "dir": "SELL", "entry": 5302.2, "exit": 5329.8, "pts": -27.6, "usd": -276.0, "result": "LOSS", "equity": 9807.01}, {"date": "Tue 03/03", "time": "03:25 AM", "mode": "TREND", "dir": "SELL", "entry": 5253.3, "exit": 5278.9, "pts": -25.6, "usd": -256.0, "result": "LOSS", "equity": 9551.01}, {"date": "Wed 03/04", "time": "12:20 AM", "mode": "TREND", "dir": "SELL", "entry": 5144.6, "exit": 5170.3, "pts": -25.7, "usd": -257.0, "result": "LOSS", "equity": 9294.01}, {"date": "Wed 03/04", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5165.2, "exit": 5189.4, "pts": -24.2, "usd": -242.0, "result": "LOSS", "equity": 9052.01}, {"date": "Thu 03/05", "time": "12:05 AM", "mode": "TREND", "dir": "SELL", "entry": 5148.4, "exit": 5176.5, "pts": -28.1, "usd": -281.0, "result": "LOSS", "equity": 8771.01}, {"date": "Thu 03/05", "time": "07:20 AM", "mode": "TREND", "dir": "SELL", "entry": 5113.5, "exit": 5137.6, "pts": -24.1, "usd": -241.0, "result": "LOSS", "equity": 8530.01}, {"date": "Fri 03/06", "time": "03:10 AM", "mode": "TREND", "dir": "SELL", "entry": 5104.4, "exit": 5132.5, "pts": -28.1, "usd": -281.0, "result": "LOSS", "equity": 8249.01}, {"date": "Fri 03/06", "time": "09:20 AM", "mode": "TREND", "dir": "BUY", "entry": 5176.1, "exit": 5155.7, "pts": -20.4, "usd": -204.0, "result": "LOSS", "equity": 8045.01}, {"date": "Sun 03/08", "time": "05:15 PM", "mode": "TREND", "dir": "SELL", "entry": 5145.1, "exit": 5165.4, "pts": -20.3, "usd": -203.0, "result": "LOSS", "equity": 7842.01}, {"date": "Sun 03/08", "time": "05:35 PM", "mode": "TREND", "dir": "SELL", "entry": 5143.3, "exit": 5073.9, "pts": 69.4, "usd": 694.0, "result": "WIN", "equity": 8536.01}, {"date": "Mon 03/09", "time": "04:25 AM", "mode": "CONSOLIDATION", "dir": "SELL", "entry": 5133.3, "exit": 5118.9, "pts": 14.4, "usd": 144.0, "result": "WIN", "equity": 8680.01}, {"date": "Mon 03/09", "time": "06:15 PM", "mode": "TREND", "dir": "BUY", "entry": 5164.1, "exit": 5143.7, "pts": -20.4, "usd": -204.0, "result": "LOSS", "equity": 8476.01}, {"date": "Mon 03/09", "time": "08:30 PM", "mode": "TREND", "dir": "BUY", "entry": 5172.8, "exit": 5167.0, "pts": -5.8, "usd": -58.0, "result": "LOSS", "equity": 8418.01}, {"date": "Tue 03/10", "time": "08:25 AM", "mode": "TREND", "dir": "BUY", "entry": 5230.8, "exit": 5210.3, "pts": -20.5, "usd": -205.0, "result": "LOSS", "equity": 8213.01}, {"date": "Wed 03/11", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5166.9, "exit": 5192.9, "pts": -26.0, "usd": -260.0, "result": "LOSS", "equity": 7953.01}, {"date": "Wed 03/11", "time": "05:40 PM", "mode": "TREND", "dir": "SELL", "entry": 5163.8, "exit": 5184.5, "pts": -20.7, "usd": -207.0, "result": "LOSS", "equity": 7746.01}, {"date": "Thu 03/12", "time": "08:45 AM", "mode": "TREND", "dir": "SELL", "entry": 5158.3, "exit": 5097.6, "pts": 60.7, "usd": 607.0, "result": "WIN", "equity": 8353.01}, {"date": "Fri 03/13", "time": "02:15 AM", "mode": "TREND", "dir": "SELL", "entry": 5081.7, "exit": 5112.9, "pts": -31.2, "usd": -312.0, "result": "LOSS", "equity": 8041.01}, {"date": "Fri 03/13", "time": "08:55 AM", "mode": "TREND", "dir": "SELL", "entry": 5107.5, "exit": 5045.8, "pts": 61.7, "usd": 617.0, "result": "WIN", "equity": 8658.01}, {"date": "Fri 03/13", "time": "10:00 AM", "mode": "TREND", "dir": "SELL", "entry": 5054.0, "exit": 5074.2, "pts": -20.2, "usd": -202.0, "result": "LOSS", "equity": 8456.01}, {"date": "Fri 03/13", "time": "02:35 PM", "mode": "CONSOLIDATION", "dir": "BUY", "entry": 5033.5, "exit": 5011.2, "pts": -22.3, "usd": -223.0, "result": "LOSS", "equity": 8233.01}, {"date": "Sun 03/15", "time": "06:25 PM", "mode": "TREND", "dir": "SELL", "entry": 4992.8, "exit": 5026.1, "pts": -33.3, "usd": -333.0, "result": "LOSS", "equity": 7900.01}, {"date": "Tue 03/17", "time": "01:00 AM", "mode": "TREND", "dir": "SELL", "entry": 5022.2, "exit": 5014.7, "pts": 7.5, "usd": 75.0, "result": "WIN", "equity": 7975.01}, {"date": "Wed 03/18", "time": "05:50 AM", "mode": "TREND", "dir": "SELL", "entry": 4976.1, "exit": 4916.5, "pts": 59.6, "usd": 596.0, "result": "WIN", "equity": 8571.01}, {"date": "Wed 03/18", "time": "07:10 AM", "mode": "TREND", "dir": "SELL", "entry": 4911.3, "exit": 4853.6, "pts": 57.7, "usd": 577.0, "result": "WIN", "equity": 9148.01}, {"date": "Wed 03/18", "time": "01:45 PM", "mode": "TREND", "dir": "SELL", "entry": 4872.1, "exit": 4814.3, "pts": 57.8, "usd": 578.0, "result": "WIN", "equity": 9726.01}, {"date": "Thu 03/19", "time": "01:15 AM", "mode": "TREND", "dir": "SELL", "entry": 4824.2, "exit": 4755.5, "pts": 68.7, "usd": 687.0, "result": "WIN", "equity": 10413.01}, {"date": "Thu 03/19", "time": "03:05 AM", "mode": "TREND", "dir": "SELL", "entry": 4715.9, "exit": 4655.6, "pts": 60.3, "usd": 603.0, "result": "WIN", "equity": 11016.01}, {"date": "Fri 03/20", "time": "01:35 AM", "mode": "TREND", "dir": "SELL", "entry": 4669.0, "exit": 4689.0, "pts": -20.0, "usd": -200.0, "result": "LOSS", "equity": 10816.01}];
+    const btFilterEquity = [10000, 9774.0, 10213.0, 10106.0, 10688.0, 10580.0, 10330.0, 10905.0, 10653.0, 10319.0, 10083.0, 9807.01, 9551.01, 9294.01, 9052.01, 8771.01, 8530.01, 8249.01, 8045.01, 7842.01, 8536.01, 8680.01, 8476.01, 8418.01, 8213.01, 7953.01, 7746.01, 8353.01, 8041.01, 8658.01, 8456.01, 8233.01, 7900.01, 7975.01, 8571.01, 9148.01, 9726.01, 10413.01, 11016.01, 10816.01];
+
+    function toggleBtFilterLog() {
+      const el = document.getElementById('btFilterLog');
+      el.style.display = el.style.display==='none' ? 'block' : 'none';
+      const btn = el.previousElementSibling;
+      btn.textContent = el.style.display==='none' ? '📋 Show 39 Trades ▾' : '📋 Hide Trades ▲';
+      if (el.style.display==='block' && !document.getElementById('btFilterBody').innerHTML) {
+        document.getElementById('btFilterBody').innerHTML = btFilterTrades.map(t => {
+          const win=t.result==='WIN';
+          const modeTag=t.mode==='TREND'?'<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>':'<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>';
+          return '<tr><td>'+t.date+'</td><td style="font-size:11px;">'+t.time+'</td><td>'+modeTag+'</td><td style="color:'+(t.dir==='BUY'?'#39d98a':'#ff5d5d')+';font-weight:700;">'+t.dir+'</td><td>$'+t.entry.toFixed(2)+'</td><td>$'+t.exit.toFixed(2)+'</td><td style="color:'+(t.pts>=0?'#39d98a':'#ff5d5d')+'">'+(t.pts>=0?'+':'')+t.pts+'</td><td style="color:'+(t.usd>=0?'#39d98a':'#ff5d5d')+'">'+(t.usd>=0?'+':'')+t.usd+'</td><td><span class="pill '+(win?'pill-win':'pill-loss')+'">'+t.result+'</span></td><td>$'+Math.round(t.equity).toLocaleString()+'</td></tr>';
+        }).join('');
+      }
+    }
+
+    (function initBtFilterChart() {
+      const el = document.getElementById('bt30FilterChart');
+      if (!el) return;
+      new Chart(el.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: btFilterEquity.map((_,i) => 'T'+i),
+          datasets: [
+            { data: btFilterEquity, borderColor: '#39d98a', backgroundColor: 'rgba(57,217,138,0.07)', borderWidth:2, fill:true, tension:0.3, pointRadius:0 },
+            { data: new Array(btFilterEquity.length).fill(10000), borderColor:'rgba(255,255,255,0.12)', borderWidth:1, borderDash:[4,4], fill:false, pointRadius:0 }
+          ]
+        },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#444',maxTicksLimit:8,font:{size:10}}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:10},callback:v=>'$'+v.toLocaleString()}} } }
       });
     })();
 
