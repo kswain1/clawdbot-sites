@@ -234,5 +234,13 @@
     "signal": "SELL",
     "mode": "TREND",
     "status": "SIGNAL"
+  },
+  {
+    "timestamp": "2026-03-20 08:42 CST",
+    "price": 4572.9,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "status": "WAIT"
   }
 ]
