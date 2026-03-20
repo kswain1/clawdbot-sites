@@ -146,12 +146,34 @@
       </section>
 
       <!-- ══════════════════════════════════════════════════════════ -->
-      <!-- 4-HOUR TREND RECAP                                        -->
+      <!-- DAY PERIOD BREAKDOWN                                       -->
       <!-- ══════════════════════════════════════════════════════════ -->
       <section class="panel" style="margin-top:0;">
-        <div class="eyebrow" style="margin-bottom:14px;">🕐 Last 4 Hours — Trend Ownership</div>
-        <div id="fourHourRecap" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px;"></div>
-        <div id="fourHourWinner" style="font-size:13px; color:var(--muted); text-align:center; padding:10px; background:#0a0a0a; border-radius:6px;"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+          <div class="eyebrow">📅 Today's Battle — Period Breakdown</div>
+          <div id="dayDateLabel" style="font-size:11px; color:var(--muted);"></div>
+        </div>
+        <!-- Period cards -->
+        <div id="dayPeriodGrid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:14px;"></div>
+        <!-- Score bar -->
+        <div style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:5px;">
+            <span style="color:#39d98a;">🦀 CLAWDY</span>
+            <span id="dayScoreLabel" style="color:var(--accent);">— vs —</span>
+            <span style="color:#ff5d5d;">MRKTZ 🌀</span>
+          </div>
+          <div style="display:flex; height:14px; border-radius:6px; overflow:hidden; border:1px solid #222;">
+            <div id="clawdyDayBar" style="background:linear-gradient(90deg,#1a9a5a,#39d98a); width:50%; transition:width .6s ease;"></div>
+            <div id="mrktsDayBar" style="background:linear-gradient(90deg,#b3001b,#ff5d5d); width:50%; transition:width .6s ease;"></div>
+          </div>
+        </div>
+        <!-- Daily winner verdict -->
+        <div id="dayWinnerVerdict" style="font-size:15px; font-weight:900; text-align:center; padding:12px; background:#0a0a0a; border-radius:8px; border:1px solid #1a1a1a; letter-spacing:.06em;"></div>
+        <!-- Last 4 hours sub-row -->
+        <div style="margin-top:14px;">
+          <div style="font-size:10px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em;">Last 4 Hours (rolling)</div>
+          <div id="fourHourRecap" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;"></div>
+        </div>
       </section>
 
       <!-- ══════════════════════════════════════════════════════════ -->
@@ -1610,8 +1632,113 @@
     }
 
     function build4HRecap(logs) {
+      // ── Day period breakdown ──────────────────────────────────────
+      const periodGrid = document.getElementById('dayPeriodGrid');
+      const verdictEl  = document.getElementById('dayWinnerVerdict');
+      const scoreLabel = document.getElementById('dayScoreLabel');
+      const clawdyBar  = document.getElementById('clawdyDayBar');
+      const mrktzBar   = document.getElementById('mrktsDayBar');
+      const dateLabel  = document.getElementById('dayDateLabel');
+
+      // CST offset: UTC-6
+      const cstOffset = -6 * 60 * 60 * 1000;
+      const nowUtc = Date.now();
+      const nowCst = new Date(nowUtc + cstOffset);
+      const todayCst = nowCst.toISOString().slice(0,10);
+      if (dateLabel) dateLabel.textContent = todayCst + ' CST';
+
+      // Day periods (CST hours, 0-based)
+      const periods = [
+        { label:'🌙 Asia Open',    emoji:'🌙', start:18, end:22, prevDay:true },
+        { label:'🌃 Overnight',    emoji:'🌃', start:22, end:6,  prevDay:true, overnight:true },
+        { label:'🔥 NY Open',      emoji:'🔥', start:6,  end:10 },
+        { label:'☀️ Mid-Day',      emoji:'☀️', start:10, end:14 },
+        { label:'🌆 Afternoon',    emoji:'🌆', start:14, end:18 },
+      ];
+
+      let totalClawdy=0, totalMrktz=0;
+      const periodResults = periods.map(p => {
+        // Build start/end UTC timestamps for the period
+        let startCst, endCst;
+        if (p.overnight) {
+          // 10PM prev day → 6AM today (CST)
+          const prev = new Date(todayCst + 'T22:00:00');
+          prev.setDate(prev.getDate()-1);
+          startCst = new Date(prev.getTime() - cstOffset);
+          endCst   = new Date(todayCst + 'T06:00:00' + '-06:00');
+        } else if (p.prevDay) {
+          const prev = new Date(todayCst + 'T' + String(p.start).padStart(2,'0') + ':00:00');
+          prev.setDate(prev.getDate()-1);
+          startCst = new Date(prev.getTime() - cstOffset);
+          const prevE = new Date(todayCst + 'T' + String(p.end).padStart(2,'0') + ':00:00');
+          prevE.setDate(prevE.getDate()-1);
+          endCst = new Date(prevE.getTime() - cstOffset);
+        } else {
+          startCst = new Date(todayCst + 'T' + String(p.start).padStart(2,'0') + ':00:00-06:00');
+          endCst   = new Date(todayCst + 'T' + String(p.end).padStart(2,'0') + ':00:00-06:00');
+        }
+
+        const slice = logs.filter(l => {
+          if (!l.timestamp) return false;
+          const d = new Date(l.timestamp);
+          return d >= startCst && d < endCst;
+        });
+
+        const buys  = slice.filter(l=>l.signal==='BUY').length;
+        const sells = slice.filter(l=>l.signal==='SELL').length;
+        const total = slice.length;
+        const dominant = buys>sells?'clawdy': sells>buys?'market': total>0?'tie':'pending';
+        if (dominant==='clawdy') totalClawdy++;
+        else if (dominant==='market') totalMrktz++;
+
+        // Is this period current?
+        const isCurrent = nowUtc >= startCst.getTime() && nowUtc < endCst.getTime();
+        const timeRange = String(p.overnight?'10PM–6AM':p.start+'–'+p.end+'h') + ' CST';
+
+        return { ...p, buys, sells, total, dominant, isCurrent, timeRange };
+      });
+
+      if (periodGrid) {
+        periodGrid.innerHTML = periodResults.map(r => {
+          const col = r.dominant==='clawdy'?'rgba(57,217,138,.13)': r.dominant==='market'?'rgba(255,93,93,.13)': r.dominant==='tie'?'rgba(246,196,83,.08)':'rgba(255,255,255,.03)';
+          const tCol= r.dominant==='clawdy'?'#39d98a': r.dominant==='market'?'#ff5d5d': r.dominant==='tie'?'#f6c453':'#444';
+          const winnerText = r.dominant==='clawdy'?'🦀 CLAWDY': r.dominant==='market'?'🌀 MRKTZ': r.dominant==='tie'?'⚖️ TIE':'⏳ PENDING';
+          const borderStyle = r.isCurrent ? '2px solid '+tCol : '1px solid '+tCol+'44';
+          const curBadge = r.isCurrent ? '<div style="font-size:9px;background:'+tCol+';color:#000;border-radius:3px;padding:1px 5px;font-weight:800;display:inline-block;margin-bottom:3px;">NOW</div><br>' : '';
+          return `<div style="background:${col};border:${borderStyle};border-radius:8px;padding:11px 8px;text-align:center;">
+            ${curBadge}
+            <div style="font-size:11px;color:var(--muted);margin-bottom:3px;">${r.label}</div>
+            <div style="font-size:9px;color:#555;margin-bottom:5px;">${r.timeRange}</div>
+            <div style="font-size:15px;font-weight:900;color:${tCol};">${winnerText}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px;">${r.buys}B · ${r.sells}S · ${r.total}p</div>
+          </div>`;
+        }).join('');
+      }
+
+      // Score bar
+      const total = totalClawdy + totalMrktz || 1;
+      const clawdyPct = Math.round(totalClawdy/total*100);
+      const mrktzPct  = 100 - clawdyPct;
+      if (clawdyBar) clawdyBar.style.width = clawdyPct+'%';
+      if (mrktzBar)  mrktzBar.style.width  = mrktzPct+'%';
+      if (scoreLabel) scoreLabel.textContent = totalClawdy + ' – ' + totalMrktz;
+
+      // Daily winner verdict
+      if (verdictEl) {
+        if (totalClawdy > totalMrktz) {
+          verdictEl.innerHTML = '🦀 <span style="color:#39d98a;">CLAWDY WINS TODAY</span> — controlled '+totalClawdy+' of '+periods.length+' sessions 👑';
+          verdictEl.style.borderColor='#39d98a44';
+        } else if (totalMrktz > totalClawdy) {
+          verdictEl.innerHTML = '🌀 <span style="color:#ff5d5d;">MRKTZ WINS TODAY</span> — controlled '+totalMrktz+' of '+periods.length+' sessions';
+          verdictEl.style.borderColor='#ff5d5d44';
+        } else {
+          verdictEl.innerHTML = '⚖️ <span style="color:#f6c453;">CONTESTED DAY</span> — '+totalClawdy+'–'+totalMrktz+' even split';
+          verdictEl.style.borderColor='#f6c45344';
+        }
+      }
+
+      // ── Last 4 rolling hours (sub-row) ───────────────────────────
       const el = document.getElementById('fourHourRecap');
-      const winner = document.getElementById('fourHourWinner');
       if (!el) return;
       const now = new Date();
       const hours = [3,2,1,0].map(h => {
@@ -1621,25 +1748,19 @@
         const buys=slice.filter(l=>l.signal==='BUY').length;
         const sells=slice.filter(l=>l.signal==='SELL').length;
         const dominant = buys>sells?'clawdy': sells>buys?'market':'neutral';
-        const label = `${start.getHours().toString().padStart(2,'0')}:00–${end.getHours().toString().padStart(2,'0')}:00`;
+        const startH = start.getHours().toString().padStart(2,'0');
+        const endH   = end.getHours().toString().padStart(2,'0');
         const col = dominant==='clawdy'?'rgba(57,217,138,.12)': dominant==='market'?'rgba(255,93,93,.12)':'rgba(255,255,255,.04)';
         const icon = dominant==='clawdy'?'🦀 CLAWDY': dominant==='market'?'🌀 MRKTZ':'— TIE';
         const tCol = dominant==='clawdy'?'#39d98a': dominant==='market'?'#ff5d5d':'#888';
-        return { label, dominant, icon, tCol, col, buys, sells, total:slice.length };
+        return { label:startH+':00–'+endH+':00', dominant, icon, tCol, col, buys, sells, total:slice.length };
       });
       el.innerHTML = hours.map(h => `
-        <div style="background:${h.col}; border:1px solid ${h.tCol}44; border-radius:8px; padding:12px; text-align:center;">
-          <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${h.label} CST</div>
-          <div style="font-size:18px; font-weight:900; color:${h.tCol};">${h.icon}</div>
-          <div style="font-size:10px; color:var(--muted); margin-top:4px;">${h.buys}B · ${h.sells}S · ${h.total} pulses</div>
+        <div style="background:${h.col};border:1px solid ${h.tCol}44;border-radius:6px;padding:9px;text-align:center;">
+          <div style="font-size:10px;color:var(--muted);margin-bottom:3px;">${h.label}</div>
+          <div style="font-size:13px;font-weight:900;color:${h.tCol};">${h.icon}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:3px;">${h.buys}B·${h.sells}S</div>
         </div>`).join('');
-      const cWins = hours.filter(h=>h.dominant==='clawdy').length;
-      const mWins = hours.filter(h=>h.dominant==='market').length;
-      winner.innerHTML = cWins>mWins
-        ? '<span style="color:#39d98a;font-weight:700;">🦀 CLAWDY controls the last 4 hours ('+cWins+'/4)</span>'
-        : mWins>cWins
-        ? '<span style="color:#ff5d5d;font-weight:700;">🌀 MRKTZ controls the last 4 hours ('+mWins+'/4)</span>'
-        : '<span style="color:#f6c453;font-weight:700;">⚖️ CONTESTED — even battle (2/2)</span>';
     }
 
     function buildDayRecap(logs) {
