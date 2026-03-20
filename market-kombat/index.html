@@ -30,7 +30,7 @@
         <button class="tab-btn active" onclick="showTab('kombat')">Live Arena</button>
         <button class="tab-btn" onclick="showTab('forwardtest')">Strategy Radar</button>
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
-        <button class="tab-btn" onclick="showTab('intelligence')">Algo logic</button>
+        <button class="tab-btn" onclick="showTab('intelligence')">Algo Logic</button>
       </nav>
     </header>
 
@@ -55,76 +55,90 @@
       </section>
     </div>
 
-    <!-- STRATEGY RADAR (FORWARD TEST) -->
+    <!-- STRATEGY RADAR -->
     <div id="forwardtest" class="tab-content">
-      <div class="panel" style="border-color: var(--accent); background: rgba(246, 196, 83, 0.05);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="eyebrow">Live Pulse Feed (5-Min Auto)</div>
-          <div id="pulseStatus" class="pill pill-win" style="font-size: 10px;">SYNCED</div>
+
+      <!-- TOP ROW: Live Status Cards -->
+      <div class="summary-grid" style="margin-bottom: 0;">
+        <div class="panel stat-card" style="border-color: var(--accent);">
+          <div class="eyebrow">Last Signal</div>
+          <div id="lastPulseSignal" style="font-size: 28px; font-weight: 900; color: var(--accent);">--</div>
         </div>
-        <div id="livePulseFeed" style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid var(--panel-line);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div class="eyebrow">Last Pulse</div>
-              <div id="lastPulseTime" style="font-size: 24px; font-weight: 900; color: var(--text);">--:-- UTC</div>
-            </div>
-            <div style="text-align: right;">
-              <div class="eyebrow">XAUUSD</div>
-              <div id="lastPulsePrice" style="font-size: 32px; font-weight: 900; color: var(--accent);">$----.--</div>
-            </div>
-          </div>
-          <div style="margin-top: 15px; display: flex; gap: 20px;">
-            <div>
-              <div class="eyebrow">Signal</div>
-              <div id="lastPulseSignal" style="font-size: 14px; font-weight: 700; color: var(--muted);">WAITING...</div>
-            </div>
-            <div>
-              <div class="eyebrow">Probability</div>
-              <div id="lastPulseProb" style="font-size: 14px; font-weight: 700; color: var(--muted);">--%</div>
-            </div>
-          </div>
+        <div class="panel stat-card">
+          <div class="eyebrow">XAUUSD Price</div>
+          <div id="lastPulsePrice" style="font-size: 28px; font-weight: 900; color: var(--text);">$----.--</div>
+        </div>
+        <div class="panel stat-card">
+          <div class="eyebrow">Probability</div>
+          <div id="lastPulseProb" style="font-size: 28px; font-weight: 900; color: var(--muted);">--%</div>
+        </div>
+        <div class="panel stat-card">
+          <div class="eyebrow">Last Update (CST)</div>
+          <div id="lastPulseTime" style="font-size: 20px; font-weight: 900; color: var(--muted);">--:-- CST</div>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="eyebrow">Real-Time Probability Monitor</div>
-        <div class="summary-grid" style="margin-top:20px;">
-          <div class="panel stat-card" style="border-color: var(--accent);">
-            <div class="eyebrow">Aura-V 2.0 Prob</div>
-            <div id="liveProb" class="stat-value" style="color:var(--accent)">15.0%</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="eyebrow">Timer State</div>
-            <div id="countdownState" class="stat-value" style="font-size:18px;">IDLE</div>
-          </div>
-          <div class="panel stat-card">
-            <div class="eyebrow">Validation</div>
-            <div id="liveValidation" class="stat-value" style="font-size:18px;">PASSIVE</div>
+      <!-- LIVE ENTRY CHART -->
+      <div class="panel" style="margin-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="eyebrow">Live Price Chart — Pulse Entries</div>
+          <div style="display: flex; gap: 12px; font-size: 11px;">
+            <span style="color: #39d98a;">▲ BUY Entry</span>
+            <span style="color: #ff5d5d;">▼ SELL Entry</span>
+            <span style="color: #f6c453;">◆ PREPARE Zone</span>
           </div>
         </div>
+        <div style="height: 300px; position: relative;">
+          <canvas id="liveEntryChart"></canvas>
+        </div>
+        <div id="chartStatus" style="text-align: center; color: var(--muted); font-size: 11px; margin-top: 8px;">Loading pulse data...</div>
       </div>
 
-      <div class="panel">
-        <div class="eyebrow">60-Minute Execution Countdown</div>
-        <div id="radarContainer" style="padding:40px 0; text-align:center;">
-          <div id="timerDisplay" style="font-size: 64px; font-weight: 900; letter-spacing: -2px; color: #111;">00:00:00</div>
-          <div id="timerAction" class="eyebrow" style="margin-top:10px;">SCANNING MARKET STRUCTURE...</div>
+      <!-- LIVE ENTRY LOG TABLE -->
+      <div class="panel" style="margin-top: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <div class="eyebrow">Entry Log — Bot Decisions</div>
+          <div id="pulseCount" style="font-size: 11px; color: var(--muted);">0 pulses logged</div>
         </div>
-        <div id="countdownSteps" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:20px; opacity:0.3;">
-          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+        <table class="trade-table">
+          <thead>
+            <tr>
+              <th>Time (CST)</th>
+              <th>Signal</th>
+              <th>Price</th>
+              <th>Probability</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="liveEntryLog">
+            <tr><td colspan="6" style="text-align:center; color: var(--muted); padding: 20px;">Waiting for pulse data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- STAGE COUNTDOWN -->
+      <div class="panel" style="margin-top: 16px;">
+        <div class="eyebrow">Validation Stage Monitor</div>
+        <div id="countdownSteps" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:20px;">
+          <div class="panel stat-card" style="padding:15px; text-align:center;">
             <div class="eyebrow" style="font-size:9px">STAGE 1 [800s]</div>
-            <div id="stage1-label">FIRST STRIKE</div>
+            <div style="font-size: 13px; font-weight: 700; margin-top: 6px;">FIRST STRIKE</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">~13 min entry window</div>
           </div>
-          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+          <div class="panel stat-card" style="padding:15px; text-align:center;">
             <div class="eyebrow" style="font-size:9px">STAGE 2 [2400s]</div>
-            <div id="stage2-label">STABILITY CHECK</div>
+            <div style="font-size: 13px; font-weight: 700; margin-top: 6px;">STABILITY CHECK</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">~40 min hold check</div>
           </div>
-          <div class="panel stat-card" style="padding:10px; font-size:11px; text-align:center;">
+          <div class="panel stat-card" style="padding:15px; text-align:center;">
             <div class="eyebrow" style="font-size:9px">STAGE 3 [3600s]</div>
-            <div id="stage3-label">FINAL EXECUTION</div>
+            <div style="font-size: 13px; font-weight: 700; margin-top: 6px;">FINAL EXECUTION</div>
+            <div style="font-size: 11px; color: var(--muted); margin-top: 4px;">~60 min institutional</div>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- BACKTEST ANALYTICS -->
@@ -154,11 +168,10 @@
       </div>
 
       <div id="victoryContainer" class="panel" style="display:none;">
-        <div class="eyebrow" id="victoryTrophy">🏆 Victory Path: [Session]</div>
+        <div class="eyebrow" id="victoryTrophy">Victory Path: [Session]</div>
         <div style="height: 240px; margin-top: 20px;">
           <canvas id="victoryChart"></canvas>
         </div>
-        <div id="victoryCaption" class="eyebrow" style="margin-top:15px; font-size:10px; text-align:center;">Price Pathing</div>
       </div>
 
       <div class="panel">
@@ -175,11 +188,8 @@
             </tr>
           </thead>
           <tbody id="tradeLogBody">
-            <!-- ASIA OPEN DOUBLE BOTTOM -->
             <tr onclick="showVictory('Asia Open DB', [4994.1, 4992.4, 4996.8, 5001.2, 5004.5])" style="cursor:pointer;"><td>2026-03-15 07:38 PM</td><td>BUY</td><td>$4,994.10</td><td>$5,004.50</td><td>24m</td><td><span class="pill pill-win">WIN (DB RE-ENTRY)</span></td></tr>
-            <!-- ASIA OPEN STRIKE -->
             <tr onclick="showVictory('Asia Open Strike', [4991.0, 4993.5, 4998.2, 5000.5])" style="cursor:pointer;"><td>2026-03-15 07:16 PM</td><td>BUY</td><td>$4,991.00</td><td>$5,000.50</td><td>12m</td><td><span class="pill pill-win">WIN (ASIA PULSE)</span></td></tr>
-            <!-- Prior Samples -->
             <tr><td>2026-03-12 03:00 PM</td><td>BUY</td><td>$5,084.10</td><td>$5,089.10</td><td>2.0h</td><td><span class="pill pill-win">WIN</span></td></tr>
             <tr><td>2026-03-05 10:00 AM</td><td>BUY</td><td>$5,086.50</td><td>$5,065.50</td><td>1.0h</td><td><span class="pill pill-loss">LOSS</span></td></tr>
           </tbody>
@@ -189,14 +199,37 @@
 
     <!-- ALGO LOGIC -->
     <div id="intelligence" class="tab-content">
-        <!-- Re-use prior logic cards here -->
+      <div class="panel">
+        <div class="eyebrow">Aura-V 2.0 Strategy Logic</div>
+        <div style="margin-top: 20px; color: var(--muted); font-size: 13px; line-height: 1.8;">
+          <p><strong style="color:var(--text)">2.0 Standard Deviation Bands</strong> — Price outside upper/lower band = mean reversion signal</p>
+          <p><strong style="color:var(--text)">Reward Ratio 1.0</strong> — Equal risk/reward for high-velocity snap-back trades</p>
+          <p><strong style="color:var(--text)">Stage 1 [800s]</strong> — First Strike entry window (~13 min)</p>
+          <p><strong style="color:var(--text)">81.4%</strong> of targets hit within 45 minutes of entry</p>
+          <p><strong style="color:var(--text)">NY Open (2:00 AM CST)</strong> — Primary Power Mode kill zone. 71.4% win rate</p>
+          <p><strong style="color:var(--text)">Asia Open (12:00 AM CST)</strong> — Sniping Mode. Low-vol precision entries</p>
+        </div>
+      </div>
     </div>
+
   </main>
 
   <style>
     .tab-content { display: none; }
     .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .action-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .badge-buy { background: rgba(57,217,138,0.15); color: #39d98a; border: 1px solid #39d98a; }
+    .badge-sell { background: rgba(255,93,93,0.15); color: #ff5d5d; border: 1px solid #ff5d5d; }
+    .badge-prepare { background: rgba(246,196,83,0.15); color: #f6c453; border: 1px solid #f6c453; }
+    .badge-wait { background: rgba(136,136,136,0.1); color: #888; border: 1px solid #444; }
   </style>
 
   <script src="script.js"></script>
@@ -209,128 +242,255 @@
       static: true
     });
 
-    // Live Pulse Feed - fetch from pulse_log.json
+    let liveEntryChartInstance = null;
+    let pulseData = [];
+
+    // ── LOAD PULSE DATA & BUILD CHART + TABLE ──
     async function updatePulseFeed() {
       try {
-        const response = await fetch('pulse_log.json?t=' + Date.now());
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const latest = data[data.length - 1];
-          document.getElementById('lastPulseTime').innerText = latest.timestamp.split(' ')[1] + ' UTC';
-          document.getElementById('lastPulsePrice').innerText = '$' + latest.price;
-          document.getElementById('lastPulseSignal').innerText = latest.signal;
-          document.getElementById('lastPulseSignal').style.color = latest.signal === 'BUY' ? '#39d98a' : latest.signal === 'SELL' ? '#ff5d5d' : '#888';
-          document.getElementById('lastPulseProb').innerText = latest.probability + '%';
-          document.getElementById('lastPulseProb').style.color = latest.probability > 75 ? '#39d98a' : latest.probability > 50 ? '#f6c453' : '#888';
-        }
+        const res = await fetch('pulse_log.json?t=' + Date.now());
+        pulseData = await res.json();
+        if (!pulseData || pulseData.length === 0) return;
+
+        const latest = pulseData[pulseData.length - 1];
+
+        // Update header cards
+        document.getElementById('lastPulsePrice').innerText = '$' + latest.price;
+        document.getElementById('lastPulseTime').innerText = latest.timestamp.split(' ')[1] + ' CST';
+        document.getElementById('lastPulseProb').innerText = latest.probability + '%';
+
+        const sig = latest.signal;
+        const sigEl = document.getElementById('lastPulseSignal');
+        sigEl.innerText = sig;
+        sigEl.style.color = sig === 'BUY' ? '#39d98a' : sig === 'SELL' ? '#ff5d5d' : sig === 'PREPARE' ? '#f6c453' : '#888';
+
+        document.getElementById('pulseCount').innerText = pulseData.length + ' pulses logged';
+
+        buildEntryChart(pulseData);
+        buildEntryTable(pulseData);
+        document.getElementById('chartStatus').innerText = 'Last sync: ' + latest.timestamp;
       } catch (e) {
-        console.log('Pulse feed loading...');
+        document.getElementById('chartStatus').innerText = 'Waiting for first pulse...';
       }
     }
+
+    function buildEntryChart(data) {
+      const ctx = document.getElementById('liveEntryChart').getContext('2d');
+      if (liveEntryChartInstance) liveEntryChartInstance.destroy();
+
+      const labels = data.map(d => d.timestamp.split(' ')[1]);
+      const prices = data.map(d => d.price);
+
+      // Entry marker points — only BUY/SELL/PREPARE get colored dots
+      const buyPoints = data.map(d => d.signal === 'BUY' ? d.price : null);
+      const sellPoints = data.map(d => d.signal === 'SELL' ? d.price : null);
+      const preparePoints = data.map(d => d.signal === 'PREPARE' ? d.price : null);
+
+      liveEntryChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            // Base price line
+            {
+              label: 'XAUUSD',
+              data: prices,
+              borderColor: 'rgba(255,255,255,0.3)',
+              borderWidth: 1.5,
+              pointRadius: 0,
+              tension: 0.3,
+              fill: false,
+              order: 4
+            },
+            // BUY entries — green triangles
+            {
+              label: 'BUY Entry',
+              data: buyPoints,
+              borderColor: '#39d98a',
+              backgroundColor: '#39d98a',
+              pointRadius: 10,
+              pointStyle: 'triangle',
+              showLine: false,
+              order: 1
+            },
+            // SELL entries — red inverted triangles
+            {
+              label: 'SELL Entry',
+              data: sellPoints,
+              borderColor: '#ff5d5d',
+              backgroundColor: '#ff5d5d',
+              pointRadius: 10,
+              pointStyle: 'triangle',
+              rotation: 180,
+              showLine: false,
+              order: 2
+            },
+            // PREPARE zones — gold diamonds
+            {
+              label: 'PREPARE Zone',
+              data: preparePoints,
+              borderColor: '#f6c453',
+              backgroundColor: '#f6c453',
+              pointRadius: 8,
+              pointStyle: 'rectRot',
+              showLine: false,
+              order: 3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: true,
+              labels: { color: '#666', font: { size: 10 }, boxWidth: 12 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (item) => {
+                  if (item.datasetIndex === 0) return 'Price: $' + item.raw;
+                  if (item.raw === null) return null;
+                  const d = data[item.dataIndex];
+                  return `${d.signal} @ $${d.price} | Prob: ${d.probability}%`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              grid: { color: 'rgba(255,255,255,0.04)' },
+              ticks: { color: '#666', font: { size: 10 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#666', font: { size: 9 }, maxTicksLimit: 8 }
+            }
+          }
+        }
+      });
+    }
+
+    function buildEntryTable(data) {
+      const tbody = document.getElementById('liveEntryLog');
+      const recent = [...data].reverse().slice(0, 20);
+
+      tbody.innerHTML = recent.map(d => {
+        const badgeClass = d.signal === 'BUY' ? 'badge-buy' :
+                           d.signal === 'SELL' ? 'badge-sell' :
+                           d.signal === 'PREPARE' ? 'badge-prepare' : 'badge-wait';
+        const probColor = d.probability > 75 ? '#39d98a' : d.probability > 50 ? '#f6c453' : '#888';
+        const probBar = '█'.repeat(Math.floor(d.probability / 10)) + '░'.repeat(10 - Math.floor(d.probability / 10));
+        const action = (d.signal === 'BUY' || d.signal === 'SELL') && d.probability > 75
+          ? '<span style="color:#39d98a; font-weight:800; font-size:11px;">ENTER NOW</span>'
+          : d.signal === 'PREPARE'
+          ? '<span style="color:#f6c453; font-weight:800; font-size:11px;">GET READY</span>'
+          : '<span style="color:#555; font-size:11px;">WAIT</span>';
+
+        return `<tr>
+          <td style="font-size:12px;">${d.timestamp}</td>
+          <td><span class="action-badge ${badgeClass}">${d.signal}</span></td>
+          <td style="font-weight:700;">$${d.price}</td>
+          <td style="color:${probColor}; font-size:11px; font-family:monospace;">${d.probability}%<br>${probBar}</td>
+          <td style="font-size:11px; color:var(--muted);">${d.status || '--'}</td>
+          <td>${action}</td>
+        </tr>`;
+      }).join('');
+    }
+
     updatePulseFeed();
-    setInterval(updatePulseFeed, 30000); // Refresh every 30 seconds
+    setInterval(updatePulseFeed, 30000);
 
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       event.target.classList.add('active');
-      if(id === 'backtest') { setTimeout(initChart, 100); }
+      if (id === 'backtest') setTimeout(initChart, 100);
+      if (id === 'forwardtest') setTimeout(updatePulseFeed, 100);
     }
 
     function runSimulatedBacktest() {
       const timeVal = document.getElementById('backtestTimer').value;
-      if(!timeVal) return alert('Select target session time.');
-      
+      if (!timeVal) return alert('Select target session time.');
       const commentary = document.getElementById('commentary');
-      commentary.innerText = "⏳ Initializing Neural Replay for " + timeVal + "...";
-      
+      commentary.innerText = "Initializing Neural Replay for " + timeVal + "...";
       setTimeout(() => {
         const isBull = Math.random() > 0.5;
         document.getElementById('bullzenCard').classList.toggle('active', isBull);
         document.getElementById('bearakuCard').classList.toggle('active', !isBull);
-        commentary.innerHTML = `🚨 REPLAY TRIGGER: ${isBull ? 'BULLZEN' : 'BEARAKU'} ACTIVE @ ${timeVal}<br><span style="color:var(--accent)">Aura Probability: 88.4% | Validation: Stage 1 [800s]</span>`;
+        commentary.innerHTML = `REPLAY TRIGGER: ${isBull ? 'BULLZEN' : 'BEARAKU'} ACTIVE @ ${timeVal}<br><span style="color:var(--accent)">Aura Probability: 88.4% | Validation: Stage 1 [800s]</span>`;
       }, 1500);
     }
 
     function showVictory(name, data) {
-        document.getElementById('victoryContainer').style.display = 'block';
-        document.getElementById('victoryTrophy').innerText = '🏆 Victory Path (OHLC): ' + name;
-        
-        const ctx = document.getElementById('victoryChart').getContext('2d');
-        if(window.vicChart) window.vicChart.destroy();
-
-        // Convert simple price path into simulated OHLC bars for visual depth
-        const ohlcData = data.map((price, i) => {
-            const spread = 1.2;
-            const isGreen = i === 0 || price > data[i-1];
-            return {
-                x: luxon.DateTime.now().plus({ minutes: i * 5 }).toMillis(),
-                o: i === 0 ? price - 0.5 : data[i-1],
-                h: price + spread,
-                l: price - spread,
-                c: price
-            };
-        });
-
-        window.vicChart = new Chart(ctx, {
-            type: 'candlestick',
-            data: {
-                datasets: [{
-                    label: name,
-                    data: ohlcData,
-                    color: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' },
-                    borderColor: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' }
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
-                    x: { type: 'time', grid: { display: false }, ticks: { color: '#666' } }
-                }
-            }
-        });
-        document.getElementById('victoryContainer').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('victoryContainer').style.display = 'block';
+      document.getElementById('victoryTrophy').innerText = 'Victory Path (OHLC): ' + name;
+      const ctx = document.getElementById('victoryChart').getContext('2d');
+      if (window.vicChart) window.vicChart.destroy();
+      const ohlcData = data.map((price, i) => ({
+        x: luxon.DateTime.now().plus({ minutes: i * 5 }).toMillis(),
+        o: i === 0 ? price - 0.5 : data[i - 1],
+        h: price + 1.2,
+        l: price - 1.2,
+        c: price
+      }));
+      window.vicChart = new Chart(ctx, {
+        type: 'candlestick',
+        data: {
+          datasets: [{
+            label: name,
+            data: ohlcData,
+            color: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' },
+            borderColor: { up: '#39d98a', down: '#ff5d5d', unchanged: '#999' }
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
+            x: { type: 'time', grid: { display: false }, ticks: { color: '#666' } }
+          }
+        }
+      });
+      document.getElementById('victoryContainer').scrollIntoView({ behavior: 'smooth' });
     }
 
     function initChart() {
       const ctx = document.getElementById('equityChart').getContext('2d');
-      if(window.mainChart) window.mainChart.destroy();
+      if (window.mainChart) window.mainChart.destroy();
       window.mainChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['Trade 1', 'Trade 5', 'Trade 10', 'Trade 15', 'Trade 20', 'Trade 25', 'Trade 30', 'Trade 35', 'Trade 40', 'Trade 45', 'Trade 47', 'Asia 1', 'Asia 2'],
+          labels: ['T1', 'T5', 'T10', 'T15', 'T20', 'T25', 'T30', 'T35', 'T40', 'T45', 'T47', 'Asia1', 'Asia2'],
           datasets: [{
-            label: 'Net Equity',
             data: [0, 450, -100, 800, 1500, 1200, 2800, 4100, 3900, 6200, 8366, 8375, 8385],
             borderColor: '#f6c453',
             borderWidth: 3,
             pointRadius: 6,
-            pointHoverRadius: 8,
-            pointBackgroundColor: function(context) {
-                const index = context.dataIndex;
-                const value = context.dataset.data[index];
-                const prevValue = index > 0 ? context.dataset.data[index - 1] : 0;
-                return value >= prevValue ? '#39d98a' : '#ff5d5d';
+            pointBackgroundColor: (ctx) => {
+              const v = ctx.dataset.data[ctx.dataIndex];
+              const p = ctx.dataIndex > 0 ? ctx.dataset.data[ctx.dataIndex - 1] : 0;
+              return v >= p ? '#39d98a' : '#ff5d5d';
             },
             pointBorderColor: '#000',
             fill: true,
-            backgroundColor: 'rgba(246, 196, 83, 0.02)',
+            backgroundColor: 'rgba(246,196,83,0.02)',
             tension: 0.3
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { 
+          plugins: {
             legend: { display: false },
-            tooltip: { callbacks: { label: (item) => "Equity: $" + item.raw } }
+            tooltip: { callbacks: { label: (i) => 'Equity: $' + i.raw } }
           },
           scales: {
-            y: { grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { color: '#666', font: { size: 10 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666', font: { size: 10 } } },
             x: { grid: { display: false }, ticks: { color: '#666', font: { size: 10 } } }
           }
         }
