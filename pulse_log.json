@@ -394,5 +394,13 @@
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
     "status": "PREPARE"
+  },
+  {
+    "timestamp": "2026-03-20 17:46 CST",
+    "price": 4492.0,
+    "probability": 65,
+    "signal": "PREPARE",
+    "mode": "CONSOLIDATION",
+    "status": "PREPARE"
   }
 ]
