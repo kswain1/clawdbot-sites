@@ -295,6 +295,46 @@
     </div>
 
     <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- R:R SWEEP — HYBRID AUTO-MODE                               -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="panel" style="margin-top:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div>
+          <div class="eyebrow">Hybrid Auto-Mode — R:R Sweep (1:1.0 → 1:3.0)</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:4px;">Same hybrid logic (TREND=immediate, CONSOL=20-min). Target size only variable. Risk = 20 pts each.</div>
+        </div>
+        <div style="background:rgba(57,217,138,.1); border:1px solid rgba(57,217,138,.3); padding:8px 16px; border-radius:8px; text-align:center;">
+          <div style="font-size:10px; color:var(--muted); text-transform:uppercase;">Live Config</div>
+          <div style="font-size:18px; font-weight:900; color:var(--green);">1:2.8</div>
+          <div style="font-size:11px; color:var(--muted);">56pt target</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="trade-table" id="rrSweepTable">
+          <thead>
+            <tr>
+              <th>R:R</th>
+              <th>Trades</th>
+              <th>Wins</th>
+              <th>Win Rate</th>
+              <th>Net PnL</th>
+              <th>Equity</th>
+              <th>Avg Win</th>
+              <th>Avg Loss</th>
+              <th>EV Ratio</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="rrSweepBody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:14px; padding:14px; background:#111; border-left:3px solid var(--green); border-radius:0 8px 8px 0; font-size:13px; color:#aaa; line-height:1.8;">
+        <strong style="color:var(--green);">🏆 Winner: 1:2.8 R:R</strong> — Win Rate 54.5% | Net +$2,447 | EV Ratio +0.92 | Grade B+<br>
+        Risking 20 pts ($200) targeting 56 pts ($560). Every dollar risked returns ~$0.92 in expected profit over time.
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <!-- DEEP DIVE MODAL                                            -->
     <!-- ═══════════════════════════════════════════════════════════ -->
     <div id="deepDiveOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; overflow-y:auto; padding:40px 20px;">
@@ -529,7 +569,14 @@
 
     updatePulseFeed();
     setInterval(updatePulseFeed, 30000);
-    startArenaAutoRefresh(); // Live Arena auto-refresh every 5 min
+    startArenaAutoRefresh();
+
+    // ── R:R SWEEP TABLE ──
+    (function buildRRTable(){
+      const d=[{rr:"1:1.0",t:16,w:11,wr:68.8,net:1292,eq:11292,aw:239,al:267,ev:0.30,g:"C"},{rr:"1:1.1",t:15,w:9,wr:60.0,net:736,eq:10736,aw:254,al:259,ev:0.19,g:"D"},{rr:"1:1.2",t:14,w:9,wr:64.3,net:1011,eq:11011,aw:262,al:270,ev:0.27,g:"C"},{rr:"1:1.3",t:13,w:7,wr:53.8,net:724,eq:10724,aw:329,al:264,ev:0.21,g:"C"},{rr:"1:1.4",t:13,w:7,wr:53.8,net:839,eq:10839,aw:346,al:264,ev:0.24,g:"C"},{rr:"1:1.5",t:13,w:7,wr:53.8,net:904,eq:10904,aw:355,al:264,ev:0.26,g:"C"},{rr:"1:1.6",t:13,w:7,wr:53.8,net:1145,eq:11145,aw:371,al:242,ev:0.36,g:"C"},{rr:"1:1.7",t:13,w:7,wr:53.8,net:1213,eq:11213,aw:381,al:242,ev:0.39,g:"C"},{rr:"1:1.8",t:13,w:6,wr:46.2,net:924,eq:10924,aw:441,al:246,ev:0.29,g:"C"},{rr:"1:1.9",t:13,w:6,wr:46.2,net:924,eq:10924,aw:441,al:246,ev:0.29,g:"C"},{rr:"1:2.0",t:13,w:6,wr:46.2,net:1318,eq:11318,aw:502,al:242,ev:0.42,g:"C"},{rr:"1:2.1",t:13,w:6,wr:46.2,net:1344,eq:11344,aw:506,al:242,ev:0.43,g:"C"},{rr:"1:2.2",t:13,w:6,wr:46.2,net:1493,eq:11493,aw:531,al:242,ev:0.48,g:"C"},{rr:"1:2.3",t:13,w:6,wr:46.2,net:1501,eq:11501,aw:532,al:242,ev:0.48,g:"C"},{rr:"1:2.4",t:12,w:6,wr:50.0,net:1847,eq:11847,aw:554,al:246,ev:0.62,g:"B"},{rr:"1:2.5",t:12,w:6,wr:50.0,net:1966,eq:11966,aw:574,al:246,ev:0.67,g:"B"},{rr:"1:2.6",t:12,w:6,wr:50.0,net:1966,eq:11966,aw:574,al:246,ev:0.67,g:"B"},{rr:"1:2.7",t:12,w:6,wr:50.0,net:2046,eq:12046,aw:587,al:246,ev:0.69,g:"B"},{rr:"1:2.8",t:11,w:6,wr:54.5,net:2447,eq:12447,aw:610,al:242,ev:0.92,g:"B+",win:true},{rr:"1:2.9",t:11,w:5,wr:45.5,net:1556,eq:11556,aw:622,al:259,ev:0.55,g:"B"},{rr:"1:3.0",t:10,w:5,wr:50.0,net:1551,eq:11551,aw:552,al:242,ev:0.64,g:"B"}];
+      const tb=document.getElementById("rrSweepBody"); if(!tb) return;
+      tb.innerHTML=d.map(r=>{const gc=r.g==="B+"?"#39d98a":r.g==="B"?"#6ab8ff":r.g==="C"?"#f6c453":"#ff5d5d";const ec=r.ev>=0.7?"#39d98a":r.ev>=0.4?"#f6c453":"#888";return`<tr style="${r.win?"background:rgba(57,217,138,0.06);":""}"><td><strong>${r.rr}</strong>${r.win?" D83CDFC6":""}</td><td>${r.t}</td><td>${r.w}</td><td>${r.wr.toFixed(1)}%</td><td style="color:${r.net>0?"#39d98a":"#ff5d5d"};font-weight:700;">+$${r.net.toLocaleString()}</td><td>$${r.eq.toLocaleString()}</td><td style="color:#39d98a;">+$${r.aw}</td><td style="color:#ff5d5d;">-$${r.al}</td><td style="color:${ec};font-weight:700;">+${r.ev.toFixed(2)}</td><td><span style="background:${gc}22;color:${gc};padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid ${gc}44;">${r.g}</span></td></tr>`;}).join("");
+    })();
 
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
