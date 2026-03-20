@@ -53,6 +53,17 @@
             "Awaiting session volatility pulse..."
         </div>
       </section>
+
+      <!-- REPLAY TRADE TABLE (populated by simulator) -->
+      <div class="panel" id="replaySection" style="margin-top:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div class="eyebrow">Session Pulse Log</div>
+          <span id="liveArenaBadge" style="font-size:10px; color:var(--muted); background:#111; padding:3px 10px; border-radius:4px; border:1px solid #222;">LIVE AUTO-REFRESH · 5 MIN</span>
+        </div>
+        <div id="replayTradeTable" style="color:var(--muted); font-size:13px; padding:12px 0;">
+          Select a session time above and hit Simulate — or wait for the next live pulse.
+        </div>
+      </div>
     </div>
 
     <!-- STRATEGY RADAR -->
@@ -518,6 +529,7 @@
 
     updatePulseFeed();
     setInterval(updatePulseFeed, 30000);
+    startArenaAutoRefresh(); // Live Arena auto-refresh every 5 min
 
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -549,17 +561,127 @@
       }
     })();
 
-    function runSimulatedBacktest() {
+    // ── LIVE ARENA AUTO-REFRESH (every 5 min from pulse_log.json) ──
+    let arenaRefreshHandle = null;
+
+    async function refreshLiveArena() {
+      try {
+        const res = await fetch('../pulse_log.json?_=' + Date.now());
+        const logs = await res.json();
+        if (!logs || !logs.length) return;
+        const latest = logs[logs.length - 1];
+        const signal = latest.signal;
+        const price  = parseFloat(latest.price).toFixed(2);
+        const prob   = latest.probability;
+        const mode   = latest.mode || 'CONSOLIDATION';
+        const time   = latest.timestamp || '';
+        const isBull = signal === 'BUY';
+        const isWait = signal === 'WAIT' || signal === 'TRANSITION';
+
+        const bull = document.getElementById('bullzenCard');
+        const bear = document.getElementById('bearakuCard');
+        const commentary = document.getElementById('commentary');
+
+        if (isWait) {
+          bull.className = 'fighter-card';
+          bear.className = 'fighter-card';
+          commentary.innerHTML = `<span style="color:var(--muted)">MODE: ${mode} &nbsp;|&nbsp; ${signal} &nbsp;|&nbsp; PROB: ${prob}%</span><br><span style="color:var(--accent);font-size:11px;">Last pulse: ${time}</span>`;
+        } else if (isBull) {
+          bull.className = 'fighter-card active';
+          bear.className = 'fighter-card dim';
+          commentary.innerHTML = `<span style="color:var(--green)">⚡ BULLZEN ACTIVE — BUY SIGNAL @ $${price}</span><br><span style="color:var(--muted)">MODE: ${mode} &nbsp;|&nbsp; PROB: ${prob}% &nbsp;|&nbsp; ${time}</span>`;
+        } else {
+          bull.className = 'fighter-card dim';
+          bear.className = 'fighter-card active';
+          commentary.innerHTML = `<span style="color:#ff5d5d">⚡ BEARAKU ACTIVE — SELL SIGNAL @ $${price}</span><br><span style="color:var(--muted)">MODE: ${mode} &nbsp;|&nbsp; PROB: ${prob}% &nbsp;|&nbsp; ${time}</span>`;
+        }
+
+        // Update the pulse countdown badge if present
+        const badge = document.getElementById('liveArenaBadge');
+        if (badge) badge.textContent = 'LIVE · ' + time.split(' ')[1] + ' ' + (time.split(' ')[2] || '');
+      } catch(e) {
+        console.warn('Arena refresh failed:', e);
+      }
+    }
+
+    function startArenaAutoRefresh() {
+      refreshLiveArena(); // immediate
+      if (arenaRefreshHandle) clearInterval(arenaRefreshHandle);
+      arenaRefreshHandle = setInterval(refreshLiveArena, 5 * 60 * 1000); // every 5 min
+    }
+
+    // ── SIMULATOR — show trades from pulse_log.json near selected time ──
+    async function runSimulatedBacktest() {
       const timeVal = document.getElementById('backtestTimer').value;
-      if (!timeVal) return alert('Select target session time.');
+      if (!timeVal) return alert('Select a session time to replay.');
       const commentary = document.getElementById('commentary');
-      commentary.innerText = "Initializing Neural Replay for " + timeVal + "...";
-      setTimeout(() => {
-        const isBull = Math.random() > 0.5;
-        document.getElementById('bullzenCard').classList.toggle('active', isBull);
-        document.getElementById('bearakuCard').classList.toggle('active', !isBull);
-        commentary.innerHTML = `REPLAY TRIGGER: ${isBull ? 'BULLZEN' : 'BEARAKU'} ACTIVE @ ${timeVal}<br><span style="color:var(--accent)">Aura Probability: 88.4% | Validation: Stage 1 [800s]</span>`;
-      }, 1500);
+      commentary.innerHTML = `<span style="color:var(--accent)">Scanning pulse log for session: ${timeVal}...</span>`;
+
+      try {
+        const res = await fetch('../pulse_log.json?_=' + Date.now());
+        const logs = await res.json();
+
+        // Parse selected time (flatpickr gives "Mon Mar 09 2026 12:25 AM" or similar)
+        const selDate = new Date(timeVal);
+        const windowMs = 3 * 60 * 60 * 1000; // ±3 hour window
+
+        // Filter pulses near the selected time
+        const nearby = logs.filter(l => {
+          const d = new Date(l.timestamp);
+          return Math.abs(d - selDate) <= windowMs;
+        });
+
+        // Extract trades (BUY/SELL signals) from nearby pulses
+        const tradePulses = nearby.filter(l => l.signal === 'BUY' || l.signal === 'SELL');
+
+        if (tradePulses.length === 0) {
+          commentary.innerHTML = `<span style="color:var(--muted)">No trade signals found near ${timeVal}.<br>Pulse log covers last 100 pulses (~8 hours). Try a more recent time.</span>`;
+          return;
+        }
+
+        // Pick dominant signal
+        const buys  = tradePulses.filter(l => l.signal === 'BUY').length;
+        const sells = tradePulses.filter(l => l.signal === 'SELL').length;
+        const isBull = buys >= sells;
+
+        document.getElementById('bullzenCard').className = isBull ? 'fighter-card active' : 'fighter-card dim';
+        document.getElementById('bearakuCard').className = isBull ? 'fighter-card dim' : 'fighter-card active';
+
+        // Build session trade log
+        const rows = tradePulses.map(p => {
+          const isBuy = p.signal === 'BUY';
+          const modeTag = p.mode === 'TREND'
+            ? `<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>`
+            : `<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>`;
+          const barW = Math.round(p.probability / 10);
+          const probBar = '█'.repeat(barW) + '░'.repeat(10 - barW);
+          return `<tr>
+            <td style="font-size:11px;">${p.timestamp}</td>
+            <td>${modeTag}</td>
+            <td style="color:${isBuy?'#39d98a':'#ff5d5d'};font-weight:700;">${p.signal}</td>
+            <td>$${parseFloat(p.price).toFixed(2)}</td>
+            <td><span style="font-family:monospace;font-size:11px;color:${p.probability>=75?'#39d98a':p.probability>=50?'#f6c453':'#ff5d5d'}">${p.probability}%</span></td>
+            <td style="font-family:monospace;font-size:10px;color:var(--muted);">${probBar}</td>
+          </tr>`;
+        }).join('');
+
+        const replayTable = document.getElementById('replayTradeTable');
+        if (replayTable) {
+          replayTable.innerHTML = `
+            <table class="trade-table" style="margin-top:12px;">
+              <thead><tr><th>Pulse Time</th><th>Mode</th><th>Signal</th><th>Price</th><th>Prob</th><th>Bar</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>`;
+        }
+
+        commentary.innerHTML = `
+          <span style="color:${isBull?'var(--green)':'#ff5d5d'}">REPLAY: ${isBull?'BULLZEN':'BEARAKU'} DOMINANT @ ${timeVal}</span><br>
+          <span style="color:var(--muted);font-size:12px;">${tradePulses.length} signal(s) found in ±3hr window &nbsp;|&nbsp; Buys: ${buys} &nbsp;|&nbsp; Sells: ${sells}</span><br>
+          <span style="color:var(--accent);font-size:11px;">Aura Mode: ${tradePulses[0].mode || 'AUTO'} | Peak Prob: ${Math.max(...tradePulses.map(p=>p.probability))}%</span>`;
+
+      } catch(e) {
+        commentary.innerHTML = `<span style="color:#ff5d5d">Pulse log unavailable. Run GitHub Actions first to populate data.</span>`;
+      }
     }
 
     function showVictory(name, data) {
