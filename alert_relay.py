@@ -227,7 +227,27 @@ def main():
             print(f"Countdown step: {step} ({['ENTER NOW','5 MIN','10 MIN','15 MIN','20 MIN'][step]})")
             send(webhook, embed_alert({**data, 'signal_price': state['signal_price']}, step, state['signal_time']))
             if step == 0:
-                # Reset after ENTER NOW fires
+                # Fire 15-second final window message immediately after ENTER NOW
+                risk = data['risk']
+                sp = state['signal_price']
+                tgt = round(sp + risk, 2) if data['signal'] == 'BUY' else round(sp - risk, 2)
+                stp = round(sp - risk, 2) if data['signal'] == 'BUY' else round(sp + risk, 2)
+                fifteen_embed = {
+                    "title": f"15 SECONDS — EXECUTE {data['signal']}",
+                    "description": "Final window. Open chart, confirm band, place order.",
+                    "color": 0x39d98a if data['signal'] == 'BUY' else 0xff5d5d,
+                    "fields": [
+                        {"name": "ENTRY",  "value": f"```\n${sp}\n```",  "inline": True},
+                        {"name": "TARGET", "value": f"```\n${tgt}\n```", "inline": True},
+                        {"name": "STOP",   "value": f"```\n${stp}\n```", "inline": True},
+                        {"name": "WINDOW", "value": "```\n15 ▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌  0\n```", "inline": False},
+                        {"name": "ACTION", "value": "```\nCONFIRM PRICE AT BAND → ENTER MARKET\n```", "inline": False},
+                    ],
+                    "timestamp": now_utc.isoformat(),
+                    "footer": {"text": "15-Second Entry Window | Auto-Mode Active"}
+                }
+                send(webhook, fifteen_embed)
+                # Reset after firing
                 state = {'active_signal': None, 'signal_time': None, 'signal_price': None, 'countdown_step': 0}
     else:
         # No signal — send regular pulse, reset state
