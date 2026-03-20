@@ -5,5 +5,12 @@
     "probability": 15.2,
     "signal": "NEUTRAL",
     "stage": "MONITORING"
+  },
+  {
+    "timestamp": "2026-03-19 23:17 CST",
+    "price": 4711.0,
+    "probability": 40.6,
+    "signal": "WAIT",
+    "status": "CONSOLIDATION"
   }
 ]
