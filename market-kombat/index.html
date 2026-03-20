@@ -2104,39 +2104,73 @@
       canvas.height = canvas.parentElement.offsetHeight || 340;
       const ctx = canvas.getContext('2d');
 
-      // Update HUD
       document.getElementById('hudModel').textContent = model.label;
+      document.getElementById('replayPlayBtn').textContent = '⏸ PAUSE';
 
-      // Generate synthetic price path for animation (smooth random walk around realistic gold price)
-      const N = 200;
-      const prices = []; let p = 4800 + Math.random()*400;
-      const upper = [], lower = [], sma = [];
-      const window_sz = 20;
-      const pArr = [];
-      for (let i=0; i<N; i++) {
-        p += (Math.random()-0.5)*8 + (Math.random()>0.5?0.3:-0.3);
-        pArr.push(p);
-      }
-      // Calculate BB
-      for (let i=0; i<N; i++) {
-        const slice = pArr.slice(Math.max(0,i-window_sz+1),i+1);
-        const avg = slice.reduce((a,b)=>a+b,0)/slice.length;
-        const std = Math.sqrt(slice.reduce((a,b)=>a+(b-avg)**2,0)/slice.length);
-        sma.push(avg); upper.push(avg+std*2); lower.push(avg-std*2);
+      // ── Try to load real price data first ────────────────────────
+      let pArr = [], upper = [], lower = [], sma = [];
+      let usingReal = false;
+
+      try {
+        const res = await fetch('../price_data.json?_=' + Date.now());
+        if (res.ok) {
+          const pd = await res.json();
+          const bars = pd.bars_5m && pd.bars_5m.length >= 30 ? pd.bars_5m : pd.bars_1m;
+          if (bars && bars.length >= 30) {
+            pArr = bars.map(b => b.c);
+            usingReal = true;
+            document.getElementById('hudModel').textContent = model.label + ' · REAL DATA';
+            // BB from data if available
+            const window_sz = 20;
+            for (let i=0; i<pArr.length; i++) {
+              const slice = pArr.slice(Math.max(0,i-window_sz+1),i+1);
+              const avg = slice.reduce((a,b)=>a+b,0)/slice.length;
+              const std = Math.sqrt(slice.reduce((a,b)=>a+(b-avg)**2,0)/slice.length);
+              sma.push(avg); upper.push(avg+std*2); lower.push(avg-std*2);
+            }
+            // Overlay S/R levels
+            if (pd.sr_levels) canvas._srLevels = pd.sr_levels.map(l=>l.price);
+            console.log(`Loaded ${pArr.length} real bars for replay`);
+          }
+        }
+      } catch(e) { console.warn('price_data.json load failed, using synthetic', e); }
+
+      // ── Fallback: synthetic price path ───────────────────────────
+      if (!usingReal) {
+        document.getElementById('hudModel').textContent = model.label + ' · SYNTHETIC';
+        const N_synth = 200;
+        let p = 3000 + Math.random()*100;
+        const window_sz = 20;
+        for (let i=0; i<N_synth; i++) {
+          p += (Math.random()-0.5)*8 + (Math.random()>0.5?0.3:-0.3);
+          pArr.push(p);
+        }
+        for (let i=0; i<N_synth; i++) {
+          const slice = pArr.slice(Math.max(0,i-window_sz+1),i+1);
+          const avg = slice.reduce((a,b)=>a+b,0)/slice.length;
+          const std = Math.sqrt(slice.reduce((a,b)=>a+(b-avg)**2,0)/slice.length);
+          sma.push(avg); upper.push(avg+std*2); lower.push(avg-std*2);
+        }
       }
 
-      // Generate fake trades based on model win rate
+      const N = pArr.length;
+
+      // ── Generate trade markers overlaid on real/synth price ──────
       const fakeTrades = [];
-      for (let i=20; i<N-10; i+=Math.floor(N/model.trades)) {
+      const step = Math.max(1, Math.floor(N / Math.max(model.trades, 1)));
+      for (let i=20; i<N-10; i+=step) {
+        if (fakeTrades.length >= model.trades) break;
         const isWin = Math.random() < (model.wr/100);
-        const dir = pArr[i] < lower[i] ? 'BUY' : pArr[i] > upper[i] ? 'SELL' : null;
-        if (!dir) continue;
-        fakeTrades.push({ idx: i, dir, isWin, prob: Math.round(70+Math.random()*25) });
+        const dir = lower[i] && pArr[i] < lower[i] ? 'BUY'
+                  : upper[i] && pArr[i] > upper[i] ? 'SELL'
+                  : (Math.random()>0.5 ? 'BUY' : 'SELL');
+        fakeTrades.push({ idx:i, dir, isWin, prob: Math.round(65+Math.random()*25) });
       }
 
       if (replayState?.raf) cancelAnimationFrame(replayState.raf);
-      replayState = { pArr, sma, upper, lower, fakeTrades, idx:0, playing:true, speed:parseFloat(document.getElementById('replaySpeed').value), canvas, ctx, model, modelKey, N };
-      document.getElementById('replayPlayBtn').textContent = '⏸ PAUSE';
+      replayState = { pArr, sma, upper, lower, fakeTrades, idx:0, playing:true,
+        speed: parseFloat(document.getElementById('replaySpeed').value),
+        canvas, ctx, model, modelKey, N };
       replayLoop();
     }
 
@@ -2184,6 +2218,18 @@
       ctx.beginPath(); ctx.strokeStyle='rgba(57,217,138,0.35)'; ctx.lineWidth=1;
       for(let j=window_sz;j<i;j++){j===window_sz?ctx.moveTo(scaleX(j),scaleY(lower[j])):ctx.lineTo(scaleX(j),scaleY(lower[j]));}
       ctx.stroke();
+
+      // S/R level lines (real data only)
+      if (canvas._srLevels) {
+        canvas._srLevels.forEach(lvl => {
+          const y = scaleY(lvl);
+          if (y < 0 || y > H) return;
+          ctx.beginPath(); ctx.strokeStyle='rgba(246,196,83,0.35)'; ctx.lineWidth=1; ctx.setLineDash([6,4]);
+          ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle='rgba(246,196,83,0.7)'; ctx.font='10px monospace';
+          ctx.fillText('$'+lvl.toFixed(1), W-60, y-3);
+        });
+      }
 
       // SMA line
       ctx.beginPath(); ctx.strokeStyle='rgba(246,196,83,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);

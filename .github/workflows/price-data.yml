@@ -1,0 +1,40 @@
+name: XAUUSD Price Data Fetch
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # every 5 minutes
+  workflow_dispatch:         # manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install yfinance requests
+
+      - name: Fetch XAUUSD Price Data
+        env:
+          ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
+        run: python fetch_price_data.py
+
+      - name: Commit price_data.json
+        run: |
+          git config --local user.email "aura@clawdbot.com"
+          git config --local user.name "Aura Price Feed"
+          git add price_data.json
+          git diff --staged --quiet || git commit -m "Price Update: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
