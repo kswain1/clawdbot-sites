@@ -236,6 +236,91 @@
       </section>
 
       <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- BULLZEN vs BEARAKU — HOURLY BATTLE SCREEN                 -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="panel" style="margin-top:0; background:radial-gradient(ellipse at top, #0a0f18 0%, #060a0f 100%); border-color:rgba(106,184,255,0.2); position:relative; overflow:hidden;">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div class="eyebrow" style="color:#6ab8ff;">⚡ BULLZEN vs BEARAKU — HOURLY DOMINANCE</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Who controlled each hour today · separate from Clawdy vs MRKTZ</div>
+          </div>
+          <span id="bbArenaBadge" style="font-size:10px; color:var(--muted); background:#0a0f18; padding:4px 12px; border-radius:4px; border:1px solid #1a2a3a;">LIVE · UPDATING</span>
+        </div>
+
+        <!-- HP bars row -->
+        <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin-bottom:20px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:4px;">
+              <span style="color:#39d98a;">BULLZEN ⚡</span>
+              <span id="bullHpLabel" style="color:#39d98a;">—</span>
+            </div>
+            <div style="background:#0d1a0d; border-radius:3px; height:12px; overflow:hidden; border:1px solid #1a3a1a;">
+              <div id="bullHpBar" style="height:100%; width:50%; background:linear-gradient(90deg,#1a9a5a,#39d98a); transition:width .6s ease;"></div>
+            </div>
+          </div>
+          <div style="font-size:16px; font-weight:900; color:#6ab8ff; text-align:center; padding:0 6px;">VS</div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:4px;">
+              <span id="bearHpLabel" style="color:#ff5d5d;">—</span>
+              <span style="color:#ff5d5d;">🔥 BEARAKU</span>
+            </div>
+            <div style="background:#1a0d0d; border-radius:3px; height:12px; overflow:hidden; border:1px solid #3a1a1a;">
+              <div id="bearHpBar" style="height:100%; width:50%; background:linear-gradient(90deg,#b3001b,#ff5d5d); transition:width .6s ease; margin-left:auto;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fighter cards -->
+        <div class="fighters-row" style="align-items:flex-end; padding-bottom:10px;">
+          <!-- Bullzen -->
+          <div style="text-align:center;">
+            <div style="position:relative; display:inline-block;">
+              <div id="bullzenGlow" style="position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle,rgba(57,217,138,.2) 0%,transparent 70%); transition:opacity .4s;"></div>
+              <img src="assets/bullzen.png" id="bullzenFightImg" style="height:150px; object-fit:contain; filter:drop-shadow(0 0 10px #39d98a66); transition:transform .3s,filter .3s; position:relative; z-index:1;">
+            </div>
+            <div style="font-size:12px; font-weight:900; color:#39d98a; letter-spacing:.1em; margin-top:8px;">BULLZEN</div>
+            <div id="bullzenFightScore" style="font-size:28px; font-weight:900; color:#39d98a; margin-top:2px;">—</div>
+            <div style="font-size:10px; color:var(--muted);">BULL HOURS WON</div>
+            <div id="bullzenFightStatus" style="font-size:10px; color:#39d98a; margin-top:4px; font-weight:700;">READY</div>
+          </div>
+
+          <!-- Center ring -->
+          <div style="text-align:center; flex:1; padding:0 8px;">
+            <div style="font-size:clamp(24px,5vw,40px); font-weight:900; color:#6ab8ff; text-shadow:0 0 20px #6ab8ff44; letter-spacing:.1em; margin-bottom:8px;" id="bbWinnerBig">— VS —</div>
+            <div id="bbScoreDisplay" style="font-size:20px; font-weight:900; color:white; margin-bottom:8px; letter-spacing:.06em;">— : —</div>
+            <div id="bbWinnerLabel" style="font-size:11px; color:var(--muted); padding:4px 12px; background:#0a0f18; border-radius:4px; display:inline-block;">Loading...</div>
+          </div>
+
+          <!-- Bearaku -->
+          <div style="text-align:center;">
+            <div style="position:relative; display:inline-block;">
+              <div id="bearakuGlow" style="position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle,rgba(255,93,93,.2) 0%,transparent 70%); transition:opacity .4s;"></div>
+              <img src="assets/bearaku.png" id="bearakuFightImg" style="height:150px; object-fit:contain; filter:drop-shadow(0 0 10px #ff5d5d66); transition:transform .3s,filter .3s; position:relative; z-index:1;">
+            </div>
+            <div style="font-size:12px; font-weight:900; color:#ff5d5d; letter-spacing:.1em; margin-top:8px;">BEARAKU</div>
+            <div id="bearakuFightScore" style="font-size:28px; font-weight:900; color:#ff5d5d; margin-top:2px;">—</div>
+            <div style="font-size:10px; color:var(--muted);">BEAR HOURS WON</div>
+            <div id="bearakuFightStatus" style="font-size:10px; color:#ff5d5d; margin-top:4px; font-weight:700;">READY</div>
+          </div>
+        </div>
+
+        <!-- Commentary bar -->
+        <div id="bbCommentary" style="text-align:center; color:var(--muted); font-size:13px; font-style:italic; margin-top:8px; padding:8px 12px; background:#060a0f; border-radius:6px; border:1px solid #0a1420;">
+          "Waiting for hourly data..."
+        </div>
+
+        <!-- Hourly breakdown bar -->
+        <div style="margin-top:14px;">
+          <div style="font-size:10px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em;">Hour-by-Hour Ownership</div>
+          <div id="bbHourlyBar" style="display:flex; gap:3px; flex-wrap:wrap;"></div>
+        </div>
+
+        <!-- Attack flash overlay (fires on new signal) -->
+        <div id="bbFlash" style="position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .15s; border-radius:inherit;"></div>
+      </section>
+
       <!-- DAY RECAP + STRATEGY LOG                                  -->
       <!-- ══════════════════════════════════════════════════════════ -->
       <section class="panel" style="margin-top:0;">
@@ -1686,6 +1771,7 @@
 
         // 4-Hour recap
         build4HRecap(logs);
+        updateBullBearArena(logs);
         // Day recap
         buildDayRecap(logs);
 
@@ -1822,6 +1908,130 @@
           <div style="font-size:13px;font-weight:900;color:${h.tCol};">${h.icon}</div>
           <div style="font-size:10px;color:var(--muted);margin-top:3px;">${h.buys}B·${h.sells}S</div>
         </div>`).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // BULLZEN vs BEARAKU — HOURLY BATTLE SCREEN
+    // ═══════════════════════════════════════════════════════════════
+    function updateBullBearArena(logs) {
+      if (!logs || !logs.length) return;
+
+      // Hourly ownership: which hours had more buys vs sells
+      const byHour = {};
+      logs.forEach(l => {
+        const hr = (l.timestamp||'').slice(11,13);
+        if (!hr) return;
+        if (!byHour[hr]) byHour[hr] = { buy:0, sell:0 };
+        if (l.signal==='BUY')  byHour[hr].buy++;
+        else if (l.signal==='SELL') byHour[hr].sell++;
+      });
+
+      let bullWins=0, bearWins=0;
+      const hourKeys = Object.keys(byHour).sort();
+      hourKeys.forEach(hr => {
+        const h = byHour[hr];
+        if (h.buy > h.sell)  bullWins++;
+        else if (h.sell > h.buy) bearWins++;
+      });
+
+      const total = bullWins + bearWins || 1;
+      const bullPct = Math.round(bullWins/total*100);
+      const bearPct = 100 - bullPct;
+
+      // HP bars
+      document.getElementById('bullHpBar').style.width  = bullPct + '%';
+      document.getElementById('bearHpBar').style.width  = bearPct + '%';
+      document.getElementById('bullHpLabel').textContent = bullPct + '%';
+      document.getElementById('bearHpLabel').textContent = bearPct + '%';
+
+      // Scores
+      document.getElementById('bullzenFightScore').textContent = bullWins;
+      document.getElementById('bearakuFightScore').textContent = bearWins;
+      document.getElementById('bbScoreDisplay').textContent = bullWins + ' : ' + bearWins;
+
+      const bullImg = document.getElementById('bullzenFightImg');
+      const bearImg = document.getElementById('bearakuFightImg');
+      const flash   = document.getElementById('bbFlash');
+
+      // Latest signal drives active fighter
+      const latest = logs[logs.length-1];
+      const sig = latest?.signal;
+      const isBull = sig === 'BUY';
+      const isBear = sig === 'SELL';
+
+      if (isBull) {
+        bullImg.style.transform = 'translateX(14px) scale(1.1)';
+        bullImg.style.filter    = 'drop-shadow(0 0 24px #39d98a)';
+        bearImg.style.transform = 'translateX(6px) scale(0.9)';
+        bearImg.style.filter    = 'drop-shadow(0 0 6px #ff5d5d44)';
+        document.getElementById('bullzenFightStatus').textContent = '⚔️ ATTACKING';
+        document.getElementById('bearakuFightStatus').textContent = '🩸 HIT';
+        flash.style.background = 'rgba(57,217,138,0.06)';
+        flash.style.opacity = '1';
+        setTimeout(()=>{ flash.style.opacity='0'; }, 300);
+      } else if (isBear) {
+        bearImg.style.transform = 'translateX(-14px) scale(1.1)';
+        bearImg.style.filter    = 'drop-shadow(0 0 24px #ff5d5d)';
+        bullImg.style.transform = 'translateX(-6px) scale(0.9)';
+        bullImg.style.filter    = 'drop-shadow(0 0 6px #39d98a44)';
+        document.getElementById('bearakuFightStatus').textContent = '⚔️ ATTACKING';
+        document.getElementById('bullzenFightStatus').textContent = '🩸 HIT';
+        flash.style.background = 'rgba(255,93,93,0.06)';
+        flash.style.opacity = '1';
+        setTimeout(()=>{ flash.style.opacity='0'; }, 300);
+      } else {
+        bullImg.style.transform = 'none';
+        bearImg.style.transform = 'none';
+        bullImg.style.filter    = 'drop-shadow(0 0 10px #39d98a66)';
+        bearImg.style.filter    = 'drop-shadow(0 0 10px #ff5d5d66)';
+        document.getElementById('bullzenFightStatus').textContent = 'READY';
+        document.getElementById('bearakuFightStatus').textContent = 'READY';
+      }
+
+      // Winner display
+      const bigEl  = document.getElementById('bbWinnerBig');
+      const lblEl  = document.getElementById('bbWinnerLabel');
+      const cmEl   = document.getElementById('bbCommentary');
+      if (bullWins > bearWins) {
+        bigEl.textContent  = '⚡ BULLZEN LEADS';
+        bigEl.style.color  = '#39d98a';
+        lblEl.textContent  = 'BULLS in control · ' + bullWins + ' hours won';
+        lblEl.style.color  = '#39d98a';
+        cmEl.innerHTML = '<span style="color:#39d98a">⚡ Bullzen dominates — '+bullWins+' bull hours vs '+bearWins+' bear hours</span>';
+        document.getElementById('bbArenaBadge').textContent = 'BULL DOMINANT';
+        document.getElementById('bbArenaBadge').style.color = '#39d98a';
+      } else if (bearWins > bullWins) {
+        bigEl.textContent  = '🔥 BEARAKU LEADS';
+        bigEl.style.color  = '#ff5d5d';
+        lblEl.textContent  = 'BEARS in control · ' + bearWins + ' hours won';
+        lblEl.style.color  = '#ff5d5d';
+        cmEl.innerHTML = '<span style="color:#ff5d5d">🔥 Bearaku dominates — '+bearWins+' bear hours vs '+bullWins+' bull hours</span>';
+        document.getElementById('bbArenaBadge').textContent = 'BEAR DOMINANT';
+        document.getElementById('bbArenaBadge').style.color = '#ff5d5d';
+      } else {
+        bigEl.textContent = '⚖️ CONTESTED';
+        bigEl.style.color = '#f6c453';
+        lblEl.textContent = 'Even battle — ' + bullWins + ' each';
+        lblEl.style.color = '#f6c453';
+        cmEl.innerHTML = '<span style="color:#f6c453">⚖️ Neither side has the edge — '+bullWins+':'+bearWins+'</span>';
+        document.getElementById('bbArenaBadge').textContent = 'CONTESTED';
+        document.getElementById('bbArenaBadge').style.color = '#f6c453';
+      }
+
+      // Hour-by-hour ownership bar
+      const barEl = document.getElementById('bbHourlyBar');
+      if (barEl) {
+        barEl.innerHTML = hourKeys.map(hr => {
+          const h = byHour[hr];
+          const dominant = h.buy>h.sell?'bull': h.sell>h.buy?'bear':'tie';
+          const col = dominant==='bull'?'#39d98a': dominant==='bear'?'#ff5d5d':'#333';
+          const icon = dominant==='bull'?'⚡': dominant==='bear'?'🔥':'—';
+          const fighter = dominant==='bull'?'Bullzen':'Bearaku';
+          return `<div title="${hr}:00 — ${fighter} (${h.buy}B/${h.sell}S)" style="width:28px;height:38px;background:${col};border-radius:3px;opacity:.8;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;gap:1px;cursor:default;">
+            <span>${icon}</span><span style="color:#000;font-weight:700;font-size:9px;">${hr}</span>
+          </div>`;
+        }).join('');
+      }
     }
 
     function buildDayRecap(logs) {
