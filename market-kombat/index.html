@@ -37,92 +37,206 @@
     <!-- LIVE ARENA -->
     <div id="kombat" class="tab-content active">
 
-      <!-- ── HOURLY BATTLE STATUS ─────────────────────────────── -->
-      <section class="panel">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-          <div>
-            <div class="eyebrow">Hourly Battle — Who's Winning?</div>
-            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Auto-updates every hour from pulse log</div>
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- BATTLE INTRO OVERLAY                                      -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <div id="battleIntroOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background:#000; flex-direction:column; justify-content:center; align-items:center; font-family:'Inter',sans-serif;">
+        <div id="battleVsImg" style="width:min(600px,90vw); margin-bottom:24px; border:3px solid var(--accent); border-radius:12px; overflow:hidden;">
+          <img src="assets/vs_screen.png" style="width:100%; display:block;" />
+        </div>
+        <div id="battleTitle" style="font-size:clamp(28px,6vw,52px); font-weight:900; letter-spacing:.12em; color:var(--accent); text-shadow:0 0 30px #f6c453, 0 0 60px #f6c45388; text-transform:uppercase; margin-bottom:8px;">⚡ BATTLE BEGINS ⚡</div>
+        <div id="battleSubtitle" style="font-size:14px; color:#888; margin-bottom:28px; letter-spacing:.2em; text-transform:uppercase;">CLAWDY vs THE MARKET</div>
+        <!-- 2000s XP loading bar -->
+        <div style="width:min(480px,80vw); background:#111; border:2px solid #333; border-radius:4px; overflow:hidden; height:28px; position:relative;">
+          <div id="introLoadBar" style="height:100%; width:0%; background:linear-gradient(90deg,#1a6b2a,#39d98a,#f6c453); transition:width 0.08s linear; position:relative;">
+            <div style="position:absolute; inset:0; background:repeating-linear-gradient(90deg,rgba(255,255,255,.07) 0px,rgba(255,255,255,.07) 8px,transparent 8px,transparent 16px);"></div>
           </div>
-          <span id="liveArenaBadge" style="font-size:10px; color:var(--muted); background:#111; padding:4px 12px; border-radius:4px; border:1px solid #222;">LIVE · UPDATING</span>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; text-shadow:0 1px 3px #000; letter-spacing:.08em;" id="introLoadLabel">LOADING BATTLE DATA...</div>
         </div>
-        <!-- FIGHTERS -->
-        <div class="fighters-row">
-            <div id="bullzenCard" class="fighter-card"><img src="assets/bullzen.png"><h3>Bullzen</h3><div id="bullScore" style="font-size:22px; font-weight:900; color:var(--green); margin-top:4px;">—</div><div style="font-size:10px; color:var(--muted);">BULL HOURS</div></div>
-            <div style="text-align:center;">
-              <div class="versus">VS</div>
-              <div id="currentMode" style="margin-top:8px; font-size:11px; font-weight:700; padding:4px 12px; border-radius:4px; background:#111; color:var(--muted);">—</div>
-              <div id="currentProb" style="font-size:28px; font-weight:900; color:var(--accent); margin-top:8px;">—%</div>
-              <div style="font-size:10px; color:var(--muted);">PROBABILITY</div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- MAIN BATTLE ARENA                                         -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="panel" style="position:relative; overflow:hidden; min-height:420px; background: radial-gradient(ellipse at center bottom, #0a1a0a 0%, #060a0f 100%); border-color:rgba(246,196,83,0.25);">
+
+        <!-- Arena top bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <div class="eyebrow" style="color:var(--accent);">🥊 BATTLE ARENA — CLAWDY vs THE MARKET</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Live trend ownership · updated every pulse</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span id="liveArenaBadge" style="font-size:10px; color:var(--muted); background:#111; padding:4px 12px; border-radius:4px; border:1px solid #222;">LIVE · UPDATING</span>
+            <button onclick="triggerBattleIntro()" style="background:#111; border:1px solid var(--accent); color:var(--accent); padding:5px 14px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; letter-spacing:.06em;">⚡ REPLAY INTRO</button>
+          </div>
+        </div>
+
+        <!-- HEALTH BARS -->
+        <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:12px; align-items:center; margin-bottom:18px;">
+          <!-- Clawdy health -->
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:4px;">
+              <span style="color:var(--green);">CLAWDY 🦀</span>
+              <span id="clawdyHpLabel" style="color:var(--green);">100%</span>
             </div>
-            <div id="bearakuCard" class="fighter-card"><img src="assets/bearaku.png"><h3>Bearaku</h3><div id="bearScore" style="font-size:22px; font-weight:900; color:#ff5d5d; margin-top:4px;">—</div><div style="font-size:10px; color:var(--muted);">BEAR HOURS</div></div>
+            <div style="background:#1a1a1a; border-radius:3px; height:14px; overflow:hidden; border:1px solid #333;">
+              <div id="clawdyHpBar" style="height:100%; width:100%; background:linear-gradient(90deg,#39d98a,#1a9a5a); transition:width .6s ease; border-radius:3px;"></div>
+            </div>
+          </div>
+          <!-- VS -->
+          <div style="font-size:18px; font-weight:900; color:var(--accent); text-align:center; padding:0 8px;">VS</div>
+          <!-- Market health -->
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-bottom:4px;">
+              <span id="marketHpLabel" style="color:#ff5d5d;">100%</span>
+              <span style="color:#ff5d5d;">MRKTZ 🌀</span>
+            </div>
+            <div style="background:#1a1a1a; border-radius:3px; height:14px; overflow:hidden; border:1px solid #333;">
+              <div id="marketHpBar" style="height:100%; width:100%; background:linear-gradient(90deg,#b3001b,#ff5d5d); transition:width .6s ease; border-radius:3px; margin-left:auto;"></div>
+            </div>
+          </div>
         </div>
-        <div id="commentary" style="text-align:center; color:var(--muted); font-size:14px; font-style:italic; margin-top:12px;">
-            "Loading battle state..."
+
+        <!-- FIGHTERS ROW -->
+        <div class="fighters-row" style="align-items:flex-end; padding-bottom:8px;">
+          <!-- Clawdy (our strategy) -->
+          <div id="clawdyFighterCard" class="fighter-card" style="border:none; background:none;">
+            <div id="clawdyGlow" style="width:140px; height:180px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; position:relative;">
+              <div id="clawdyAura" style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, rgba(57,217,138,0.18) 0%, transparent 70%); transition:opacity .4s;"></div>
+              <img src="assets/clawdy.png" id="clawdyImg" style="height:140px; object-fit:contain; filter:drop-shadow(0 0 12px #39d98a88); transition:transform .3s, filter .3s; position:relative; z-index:1;">
+              <div style="font-size:11px; font-weight:900; color:var(--green); letter-spacing:.1em; margin-top:6px; text-shadow:0 0 8px #39d98a;">CLAWDY</div>
+              <div id="clawdyStatus" style="font-size:10px; color:var(--muted); margin-top:2px;">READY</div>
+            </div>
+          </div>
+
+          <!-- Center info -->
+          <div style="text-align:center; flex:1; padding:0 8px;">
+            <div id="arenaSignalBig" style="font-size:clamp(20px,4vw,32px); font-weight:900; color:var(--accent); text-shadow:0 0 20px #f6c45366; letter-spacing:.06em; margin-bottom:4px;">—</div>
+            <div id="currentMode" style="font-size:11px; font-weight:700; padding:3px 10px; border-radius:4px; background:#111; color:var(--muted); display:inline-block; margin-bottom:8px;">—</div>
+            <div id="currentProb" style="font-size:36px; font-weight:900; color:var(--accent);">—%</div>
+            <div style="font-size:10px; color:var(--muted); margin-top:2px;">PROBABILITY</div>
+            <div id="arenaPrice" style="font-size:14px; font-weight:700; color:#888; margin-top:6px;">$—</div>
+          </div>
+
+          <!-- MRKTZ (The Market) -->
+          <div id="marketFighterCard" class="fighter-card" style="border:none; background:none;">
+            <div id="marketGlow" style="width:140px; height:180px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; position:relative;">
+              <div id="marketAura" style="position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, rgba(255,93,93,0.15) 0%, transparent 70%); transition:opacity .4s;"></div>
+              <!-- CSS market character (no image needed) -->
+              <div id="marketChar" style="position:relative; z-index:1; text-align:center; transition:transform .3s;">
+                <div style="font-size:80px; line-height:1; filter:drop-shadow(0 0 16px #ff5d5d88);" id="marketEmoji">🌀</div>
+                <div style="font-size:12px; color:#ff5d5d; font-weight:900; letter-spacing:.06em; margin-top:4px; text-shadow:0 0 8px #ff5d5d;">MRKTZ</div>
+                <div style="font-size:10px; color:#666; margin-top:2px;" id="marketStatus">UNPREDICTABLE</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <!-- HOURLY BAR -->
-        <div style="margin-top:16px;">
-          <div style="font-size:11px; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:.08em;">Today's Hourly Breakdown</div>
+
+        <!-- Commentary -->
+        <div id="commentary" style="text-align:center; color:var(--muted); font-size:13px; font-style:italic; margin-top:10px; min-height:40px; padding:8px; background:#0a0a0a; border-radius:6px; border:1px solid #1a1a1a;">
+          "Waiting for the next pulse..."
+        </div>
+
+        <!-- Hourly bar -->
+        <div style="margin-top:14px;">
+          <div style="font-size:10px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em;">Today's Hourly Battle</div>
           <div id="hourlyBar" style="display:flex; gap:3px; flex-wrap:wrap;"></div>
         </div>
       </section>
 
-      <!-- ── SESSION SIMULATOR ─────────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- 4-HOUR TREND RECAP                                        -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="panel" style="margin-top:0;">
+        <div class="eyebrow" style="margin-bottom:14px;">🕐 Last 4 Hours — Trend Ownership</div>
+        <div id="fourHourRecap" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px;"></div>
+        <div id="fourHourWinner" style="font-size:13px; color:var(--muted); text-align:center; padding:10px; background:#0a0a0a; border-radius:6px;"></div>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- ANIMATED BACKTEST REPLAY                                  -->
+      <!-- ══════════════════════════════════════════════════════════ -->
       <section class="panel" style="margin-top:0;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
           <div>
-            <div class="eyebrow">Session Replay Engine</div>
-            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Pick a time range → see all pulses + entry chart</div>
+            <div class="eyebrow">🦞 Animated Backtest Replay</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Watch 🦞 ride the price chart · BB bands · entry signals · pause/play</div>
           </div>
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <input type="text" id="simStart" placeholder="Start (CST)" style="background:#111; border:1px solid var(--accent); color:white; padding:7px 11px; border-radius:4px; font-size:12px; font-family:'Inter'; cursor:pointer; width:170px;">
-            <input type="text" id="simEnd" placeholder="End (CST)" style="background:#111; border:1px solid #333; color:white; padding:7px 11px; border-radius:4px; font-size:12px; font-family:'Inter'; cursor:pointer; width:170px;">
-            <select id="simHourPeriod" style="background:#111; border:1px solid #333; color:white; padding:7px 11px; border-radius:4px; font-size:12px; cursor:pointer;">
-              <option value="">— Quick Select —</option>
-              <option value="asia">Asia Open (6PM–9PM CST)</option>
-              <option value="london">London Open (2AM–5AM CST)</option>
-              <option value="ny">NY Open (8AM–11AM CST)</option>
-              <option value="afternoon">Afternoon (1PM–4PM CST)</option>
-              <option value="last4h">Last 4 Hours</option>
-              <option value="today">Today (All Day)</option>
+            <select id="replayModel" style="background:#111; border:1px solid var(--accent); color:white; padding:7px 11px; border-radius:4px; font-size:12px; cursor:pointer;">
+              <option value="htf">Hybrid + Daily Filter (live)</option>
+              <option value="hybrid">Hybrid Auto-Mode</option>
+              <option value="automode">Auto-Mode Only</option>
+              <option value="trendguard">Trend Guard</option>
+              <option value="raw">Raw 2.0 STD</option>
             </select>
-            <button onclick="runSimulatedBacktest()" style="background:var(--accent); color:black; border:none; padding:8px 18px; border-radius:4px; font-weight:800; font-size:11px; cursor:pointer; text-transform:uppercase;">Simulate</button>
+            <input type="text" id="replayStart" placeholder="Start (CST)" style="background:#111; border:1px solid #333; color:white; padding:7px 11px; border-radius:4px; font-size:12px; font-family:'Inter'; cursor:pointer; width:150px;">
+            <input type="text" id="replayEnd" placeholder="End (CST)" style="background:#111; border:1px solid #333; color:white; padding:7px 11px; border-radius:4px; font-size:12px; font-family:'Inter'; cursor:pointer; width:150px;">
+            <button onclick="startReplayAnimation()" style="background:var(--accent); color:black; border:none; padding:8px 18px; border-radius:4px; font-weight:800; font-size:11px; cursor:pointer; text-transform:uppercase;">▶ REPLAY</button>
           </div>
         </div>
 
-        <!-- ENTRY CHART -->
-        <div id="simChartWrap" style="height:240px; margin-bottom:16px; display:none;">
-          <canvas id="simChart"></canvas>
+        <!-- Replay canvas -->
+        <div style="position:relative; height:340px; background:#060a0f; border-radius:8px; border:1px solid #1a1a1a; overflow:hidden;">
+          <canvas id="replayCanvas" style="width:100%; height:100%;"></canvas>
+          <!-- HUD overlay -->
+          <div style="position:absolute; top:10px; left:12px; font-size:11px; color:#39d98a; font-family:monospace; line-height:1.7;" id="replayHud">
+            <div>MODEL: <span id="hudModel" style="color:var(--accent);">—</span></div>
+            <div>PRICE: <span id="hudPrice">—</span></div>
+            <div>BB: <span id="hudBb">—</span></div>
+            <div>SIGNAL: <span id="hudSignal" style="color:var(--accent);">—</span></div>
+            <div>PROB: <span id="hudProb">—</span></div>
+          </div>
+          <!-- Result badge (shown at end) -->
+          <div id="replayResultBadge" style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.82); display:none; flex-direction:column; align-items:center; justify-content:center; font-family:'Inter',sans-serif;">
+            <div id="replayResultIcon" style="font-size:64px; margin-bottom:12px;">🦀</div>
+            <div id="replayResultTitle" style="font-size:28px; font-weight:900; color:var(--green); letter-spacing:.12em;"></div>
+            <div id="replayResultSub" style="font-size:13px; color:#888; margin-top:8px;"></div>
+          </div>
         </div>
 
-        <!-- PULSE TABLE -->
-        <div id="replayTradeTable" style="color:var(--muted); font-size:13px; padding:4px 0;">
-          Select a time range or quick-select a session above and hit Simulate.
+        <!-- Controls -->
+        <div style="display:flex; align-items:center; gap:12px; margin-top:12px; flex-wrap:wrap;">
+          <button id="replayPlayBtn" onclick="toggleReplayPlay()" style="background:#111; border:1px solid #333; color:white; padding:7px 20px; border-radius:6px; font-size:13px; cursor:pointer; font-weight:700; min-width:90px;">⏸ PAUSE</button>
+          <div style="flex:1; background:#1a1a1a; border-radius:3px; height:6px; cursor:pointer; position:relative;" onclick="seekReplay(event, this)">
+            <div id="replayProgressBar" style="height:100%; width:0%; background:var(--accent); border-radius:3px; transition:width .1s;"></div>
+          </div>
+          <select id="replaySpeed" onchange="setReplaySpeed(this.value)" style="background:#111; border:1px solid #333; color:white; padding:6px 10px; border-radius:4px; font-size:12px; cursor:pointer;">
+            <option value="0.5">0.5×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
+            <option value="4">4×</option>
+            <option value="8">8×</option>
+          </select>
+          <div id="replayCounter" style="font-size:11px; color:var(--muted); font-family:monospace;">0 / 0</div>
         </div>
       </section>
 
-      <!-- ── DAY RECAP TABLE ────────────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- DAY RECAP + STRATEGY LOG                                  -->
+      <!-- ══════════════════════════════════════════════════════════ -->
       <section class="panel" style="margin-top:0;">
         <div class="eyebrow" style="margin-bottom:14px;">Today's Session Recap</div>
         <div id="dayRecapTable" style="color:var(--muted); font-size:13px;">Loading pulse data...</div>
       </section>
 
-      <!-- ── STRATEGY UPDATES LOG ───────────────────────────────── -->
       <section class="panel" style="margin-top:0;">
         <div class="eyebrow" style="margin-bottom:14px;">Aura-V Strategy Update Log</div>
         <table class="trade-table">
           <thead><tr><th>Date</th><th>Version</th><th>Change</th><th>Impact</th></tr></thead>
           <tbody>
-            <tr><td>2026-03-20</td><td style="color:var(--green);font-weight:700;">Hybrid v2</td><td>Switched to 1:2.8 R:R (56pt target)</td><td style="color:var(--green);">EV +0.92</td></tr>
-            <tr><td>2026-03-20</td><td style="color:var(--green);font-weight:700;">Hybrid v1</td><td>TREND=Immediate, CONSOL=20-min countdown deployed to live relay</td><td style="color:var(--green);">WR 54.5%</td></tr>
-            <tr><td>2026-03-19</td><td style="color:#6ab8ff;font-weight:700;">Auto-Mode</td><td>Added ADX+ATR+ROC mode detection (TREND/CONSOL/TRANSITION)</td><td style="color:var(--green);">WR 65.5%</td></tr>
-            <tr><td>2026-03-16</td><td style="color:#a09aff;font-weight:700;">Trend Guard</td><td>Added 2% equity cap + 30pt trend filter</td><td style="color:#f6c453;">WR 48.1%</td></tr>
+            <tr><td>2026-03-20</td><td style="color:var(--green);font-weight:700;">Hybrid v2 + HTF</td><td>Daily SMA bias filter added — blocks counter-trend</td><td style="color:var(--green);">+$816 profitable</td></tr>
+            <tr><td>2026-03-20</td><td style="color:var(--green);font-weight:700;">Hybrid v1</td><td>TREND=Immediate, CONSOL=20-min countdown | R:R 1:2.8</td><td style="color:var(--green);">EV +0.92</td></tr>
+            <tr><td>2026-03-19</td><td style="color:#6ab8ff;font-weight:700;">Auto-Mode</td><td>ADX+ATR+ROC mode detection (TREND/CONSOL/TRANSITION)</td><td style="color:var(--green);">WR 65.5%</td></tr>
+            <tr><td>2026-03-16</td><td style="color:#a09aff;font-weight:700;">Trend Guard</td><td>2% equity cap + 30pt trend filter</td><td style="color:#f6c453;">WR 48.1%</td></tr>
             <tr><td>2026-03-13</td><td style="color:#ff5d5d;font-weight:700;">Raw v1</td><td>Baseline 2.0 STD mean reversion only</td><td style="color:#ff5d5d;">WR 37.5%</td></tr>
           </tbody>
         </table>
       </section>
 
     </div>
+
 
     <!-- STRATEGY RADAR -->
     <div id="forwardtest" class="tab-content">
@@ -605,6 +719,9 @@
 
   <script src="script.js"></script>
   <script>
+    flatpickr("#replayStart", { enableTime:true, dateFormat:"Y-m-d H:i", theme:"dark", minuteIncrement:5 });
+    flatpickr("#replayEnd",   { enableTime:true, dateFormat:"Y-m-d H:i", theme:"dark", minuteIncrement:5 });
+
     flatpickr("#simStart", {
       enableTime: true,
       dateFormat: "Y-m-d H:i",
@@ -856,107 +973,7 @@
 
     let simChartInst = null;
 
-    async function refreshLiveArena() {
-      try {
-        const res = await fetch('pulse_log.json?_=' + Date.now());
-        const logs = await res.json();
-        if (!logs || !logs.length) return;
-        const latest = logs[logs.length - 1];
-        const signal = latest.signal;
-        const price  = parseFloat(latest.price).toFixed(2);
-        const prob   = latest.probability;
-        const mode   = latest.mode || 'CONSOLIDATION';
-        const time   = latest.timestamp || '';
-        const isBull = signal === 'BUY';
-        const isWait = signal === 'WAIT' || signal === 'TRANSITION';
-
-        const bull = document.getElementById('bullzenCard');
-        const bear = document.getElementById('bearakuCard');
-        const commentary = document.getElementById('commentary');
-        const badge = document.getElementById('liveArenaBadge');
-
-        if (badge) badge.textContent = 'LIVE · ' + (time.split(' ').slice(1,3).join(' '));
-
-        // Hourly battle score
-        const todayStr = new Date().toISOString().slice(0,10);
-        const todayLogs = logs.filter(l => l.timestamp && l.timestamp.startsWith(todayStr) || true); // use all available
-        const bullHrs = new Set(); const bearHrs = new Set(); const consolHrs = new Set();
-        logs.forEach(l => {
-          if (!l.timestamp) return;
-          const hr = l.timestamp.slice(11,13);
-          if (l.signal === 'BUY')  bullHrs.add(hr);
-          else if (l.signal === 'SELL') bearHrs.add(hr);
-          else consolHrs.add(hr);
-        });
-        const bs = bullHrs.size; const brs = bearHrs.size;
-        document.getElementById('bullScore').textContent = bs;
-        document.getElementById('bearScore').textContent = brs;
-        document.getElementById('currentMode').textContent = mode;
-        document.getElementById('currentMode').style.color = mode==='TREND' ? '#6ab8ff' : mode==='CONSOLIDATION' ? '#39d98a' : '#888';
-        document.getElementById('currentProb').textContent = prob + '%';
-        document.getElementById('currentProb').style.color = prob>=75 ? '#39d98a' : prob>=50 ? '#f6c453' : '#ff5d5d';
-
-        if (isWait) {
-          bull.className = 'fighter-card'; bear.className = 'fighter-card';
-          commentary.innerHTML = '<span style="color:var(--muted)">MODE: '+mode+' &nbsp;|&nbsp; '+signal+' &nbsp;|&nbsp; PROB: '+prob+'%</span><br><span style="color:var(--accent);font-size:11px;">Last pulse: '+time+'</span>';
-        } else if (isBull) {
-          bull.className = 'fighter-card active'; bear.className = 'fighter-card dim';
-          commentary.innerHTML = '<span style="color:var(--green)">⚡ BULLZEN ACTIVE — BUY SIGNAL @ $'+price+'</span><br><span style="color:var(--muted)">MODE: '+mode+' &nbsp;|&nbsp; PROB: '+prob+'% &nbsp;|&nbsp; '+time+'</span>';
-        } else {
-          bull.className = 'fighter-card dim'; bear.className = 'fighter-card active';
-          commentary.innerHTML = '<span style="color:#ff5d5d">⚡ BEARAKU ACTIVE — SELL SIGNAL @ $'+price+'</span><br><span style="color:var(--muted)">MODE: '+mode+' &nbsp;|&nbsp; PROB: '+prob+'% &nbsp;|&nbsp; '+time+'</span>';
-        }
-
-        // Hourly bar
-        const barEl = document.getElementById('hourlyBar');
-        if (barEl) {
-          const byHour = {};
-          logs.slice(-96).forEach(l => {
-            const hr = (l.timestamp||'').slice(11,13);
-            if (!hr) return;
-            if (!byHour[hr]) byHour[hr] = {buy:0,sell:0,wait:0};
-            if (l.signal==='BUY') byHour[hr].buy++;
-            else if (l.signal==='SELL') byHour[hr].sell++;
-            else byHour[hr].wait++;
-          });
-          barEl.innerHTML = Object.keys(byHour).sort().map(hr => {
-            const b = byHour[hr];
-            const dominant = b.buy>b.sell ? 'bull' : b.sell>b.buy ? 'bear' : 'consol';
-            const col = dominant==='bull' ? '#39d98a' : dominant==='bear' ? '#ff5d5d' : '#444';
-            return '<div title="'+hr+':00 — B:'+b.buy+' S:'+b.sell+'" style="width:22px;height:32px;background:'+col+';border-radius:3px;opacity:0.85;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#000;">'+hr+'</div>';
-          }).join('');
-        }
-
-        // Day recap
-        buildDayRecap(logs);
-      } catch(e) {
-        console.warn('Arena refresh failed:', e);
-      }
-    }
-
-    function buildDayRecap(logs) {
-      const el = document.getElementById('dayRecapTable');
-      if (!el || !logs.length) return;
-      const signals = logs.filter(l => l.signal==='BUY'||l.signal==='SELL').slice(-20);
-      if (!signals.length) { el.innerHTML = '<span style="color:var(--muted)">No signals yet today.</span>'; return; }
-      const rows = signals.map(p => {
-        const isBuy = p.signal==='BUY';
-        const modeTag = p.mode==='TREND'
-          ? '<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>'
-          : '<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>';
-        const bar = '█'.repeat(Math.round(p.probability/10))+'░'.repeat(10-Math.round(p.probability/10));
-        return '<tr><td style="font-size:11px;">'+p.timestamp+'</td><td>'+modeTag+'</td><td style="color:'+(isBuy?'#39d98a':'#ff5d5d')+';font-weight:700;">'+p.signal+'</td><td>$'+parseFloat(p.price).toFixed(2)+'</td><td style="font-family:monospace;font-size:11px;color:'+(p.probability>=75?'#39d98a':p.probability>=50?'#f6c453':'#ff5d5d')+'">'+p.probability+'%</td><td style="font-family:monospace;font-size:10px;color:var(--muted);">'+bar+'</td></tr>';
-      }).join('');
-      el.innerHTML = '<table class="trade-table"><thead><tr><th>Time</th><th>Mode</th><th>Signal</th><th>Price</th><th>Prob</th><th>Bar</th></tr></thead><tbody>'+rows+'</tbody></table>';
-    }
-
-    function startArenaAutoRefresh() {
-      refreshLiveArena();
-      if (arenaRefreshHandle) clearInterval(arenaRefreshHandle);
-      arenaRefreshHandle = setInterval(refreshLiveArena, 5 * 60 * 1000);
-    }
-
-    async function runSimulatedBacktest() {
+        async function runSimulatedBacktest() {
       const startVal = document.getElementById('simStart').value;
       const endVal   = document.getElementById('simEnd').value;
       if (!startVal) return alert('Select a start time.');
@@ -1412,6 +1429,418 @@
         options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#444',maxTicksLimit:8,font:{size:10}}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:10},callback:v=>'$'+v.toLocaleString()}} } }
       });
     })();
+
+
+    // ═══════════════════════════════════════════════════════════════
+    // BATTLE INTRO
+    // ═══════════════════════════════════════════════════════════════
+    let introPlayed = false;
+
+    function triggerBattleIntro() {
+      const overlay = document.getElementById('battleIntroOverlay');
+      overlay.style.display = 'flex';
+      // Web Audio synth beat
+      playHipHopBeat();
+      // Loading bar
+      const bar = document.getElementById('introLoadBar');
+      const label = document.getElementById('introLoadLabel');
+      bar.style.width = '0%';
+      const msgs = ['LOADING BATTLE DATA...','SCANNING MARKET...','CALIBRATING SIGNALS...','CLAWDY READY...','FIGHT!'];
+      let pct = 0;
+      let mIdx = 0;
+      const interval = setInterval(() => {
+        pct += Math.random() * 7 + 2;
+        if (pct > 100) pct = 100;
+        bar.style.width = pct + '%';
+        if (Math.floor(pct / 25) > mIdx - 1 && mIdx < msgs.length) {
+          label.textContent = msgs[Math.min(mIdx++, msgs.length-1)];
+        }
+        if (pct >= 100) {
+          clearInterval(interval);
+          label.textContent = '⚡ FIGHT!';
+          setTimeout(() => {
+            overlay.style.transition = 'opacity .5s';
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.style.display = 'none'; overlay.style.opacity = '1'; }, 500);
+          }, 700);
+        }
+      }, 80);
+      introPlayed = true;
+    }
+
+    function playHipHopBeat() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const bpm = 95; const beat = 60/bpm;
+        // Kick pattern
+        [0,beat*2,beat*4,beat*6].forEach(t => {
+          const o = ctx.createOscillator(); const g = ctx.createGain();
+          o.connect(g); g.connect(ctx.destination);
+          o.frequency.setValueAtTime(160,now+t); o.frequency.exponentialRampToValueAtTime(40,now+t+0.15);
+          g.gain.setValueAtTime(0.6,now+t); g.gain.exponentialRampToValueAtTime(0.001,now+t+0.2);
+          o.start(now+t); o.stop(now+t+0.2);
+        });
+        // Snare
+        [beat,beat*3,beat*5,beat*7].forEach(t => {
+          const buf = ctx.createBuffer(1,ctx.sampleRate*0.1,ctx.sampleRate);
+          const d = buf.getChannelData(0);
+          for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*0.4;
+          const src = ctx.createBufferSource(); const g = ctx.createGain();
+          src.buffer=buf; src.connect(g); g.connect(ctx.destination);
+          g.gain.setValueAtTime(0.5,now+t); g.gain.exponentialRampToValueAtTime(0.001,now+t+0.12);
+          src.start(now+t);
+        });
+        // Hi-hat
+        for(let i=0;i<16;i++){
+          const t=now+i*beat*0.5;
+          const buf=ctx.createBuffer(1,ctx.sampleRate*0.04,ctx.sampleRate);
+          const d=buf.getChannelData(0);
+          for(let j=0;j<d.length;j++) d[j]=(Math.random()*2-1)*0.2;
+          const src=ctx.createBufferSource(); const g=ctx.createGain();
+          src.buffer=buf; src.connect(g); g.connect(ctx.destination);
+          g.gain.setValueAtTime(0.2,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.05);
+          src.start(t);
+        }
+        // Bass synth
+        [0,beat*4].forEach(t => {
+          const o=ctx.createOscillator(); const g=ctx.createGain();
+          o.type='sawtooth'; o.connect(g); g.connect(ctx.destination);
+          o.frequency.setValueAtTime(55,now+t);
+          g.gain.setValueAtTime(0.3,now+t); g.gain.exponentialRampToValueAtTime(0.001,now+t+beat*2);
+          o.start(now+t); o.stop(now+t+beat*2);
+        });
+      } catch(e) { console.warn('Audio failed:', e); }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ARENA UPDATE (pulse-driven)
+    // ═══════════════════════════════════════════════════════════════
+    async function refreshLiveArena() {
+      try {
+        const res = await fetch('pulse_log.json?_=' + Date.now());
+        const logs = await res.json();
+        if (!logs || !logs.length) return;
+        const latest = logs[logs.length - 1];
+        const signal = latest.signal, price = parseFloat(latest.price).toFixed(2);
+        const prob = latest.probability, mode = latest.mode || 'CONSOLIDATION';
+        const time = latest.timestamp || '';
+
+        // Trigger intro first time
+        if (!introPlayed) triggerBattleIntro();
+
+        // Badge
+        const badge = document.getElementById('liveArenaBadge');
+        if (badge) badge.textContent = 'LIVE · ' + (time.split(' ').slice(1,3).join(' '));
+
+        // Center HUD
+        document.getElementById('arenaSignalBig').textContent = signal === 'BUY' ? '⚡ BUY' : signal === 'SELL' ? '⚡ SELL' : '— WAIT —';
+        document.getElementById('arenaSignalBig').style.color = signal==='BUY'?'#39d98a': signal==='SELL'?'#ff5d5d':'#f6c453';
+        document.getElementById('currentMode').textContent = mode;
+        document.getElementById('currentMode').style.color = mode==='TREND'?'#6ab8ff': mode==='CONSOLIDATION'?'#39d98a':'#888';
+        document.getElementById('currentProb').textContent = prob + '%';
+        document.getElementById('currentProb').style.color = prob>=75?'#39d98a': prob>=50?'#f6c453':'#ff5d5d';
+        document.getElementById('arenaPrice').textContent = '$' + price;
+
+        const isBull = signal === 'BUY', isBear = signal === 'SELL';
+        const clawdyImg = document.getElementById('clawdyImg');
+        const marketChar = document.getElementById('marketChar');
+        const commentary = document.getElementById('commentary');
+
+        // HP bars (simulate: prob drives Clawdy HP; inverse drives Market HP)
+        const clawdyHp = Math.round(prob);
+        const marketHp = Math.round(100 - (prob - 50) * 0.8);
+        document.getElementById('clawdyHpBar').style.width = clawdyHp + '%';
+        document.getElementById('clawdyHpLabel').textContent = clawdyHp + '%';
+        document.getElementById('marketHpBar').style.width = Math.max(marketHp,5) + '%';
+        document.getElementById('marketHpLabel').textContent = Math.max(marketHp,5) + '%';
+
+        if (isBull) {
+          clawdyImg.style.transform = 'translateX(12px) scale(1.08)';
+          clawdyImg.style.filter = 'drop-shadow(0 0 22px #39d98a)';
+          marketChar.style.transform = 'translateX(8px) scale(0.92)';
+          document.getElementById('marketEmoji').textContent = '💥';
+          document.getElementById('clawdyStatus').textContent = '⚔️ ATTACKING';
+          document.getElementById('marketStatus').textContent = '🩸 TAKING HIT';
+          commentary.innerHTML = '<span style="color:#39d98a">⚡ CLAWDY STRIKES — BUY SIGNAL @ $'+price+'</span><br><span style="color:var(--muted);font-size:11px;">MODE: '+mode+' | PROB: '+prob+'% | '+time+'</span>';
+          commentary.style.borderColor = '#39d98a44';
+        } else if (isBear) {
+          clawdyImg.style.transform = 'translateX(-12px) scale(1.08)';
+          clawdyImg.style.filter = 'drop-shadow(0 0 22px #ff5d5d)';
+          marketChar.style.transform = 'translateX(-8px) scale(0.92)';
+          document.getElementById('marketEmoji').textContent = '💥';
+          document.getElementById('clawdyStatus').textContent = '⚔️ ATTACKING';
+          document.getElementById('marketStatus').textContent = '🩸 TAKING HIT';
+          commentary.innerHTML = '<span style="color:#ff5d5d">⚡ CLAWDY STRIKES — SELL SIGNAL @ $'+price+'</span><br><span style="color:var(--muted);font-size:11px;">MODE: '+mode+' | PROB: '+prob+'% | '+time+'</span>';
+          commentary.style.borderColor = '#ff5d5d44';
+        } else {
+          clawdyImg.style.transform = 'none';
+          clawdyImg.style.filter = 'drop-shadow(0 0 12px #39d98a88)';
+          marketChar.style.transform = 'none';
+          document.getElementById('marketEmoji').textContent = '🌀';
+          document.getElementById('clawdyStatus').textContent = 'READY';
+          document.getElementById('marketStatus').textContent = 'UNPREDICTABLE';
+          commentary.innerHTML = '<span style="color:var(--muted)">MODE: '+mode+' | '+signal+' | PROB: '+prob+'%</span><br><span style="color:#444;font-size:11px;">'+time+'</span>';
+          commentary.style.borderColor = 'transparent';
+        }
+
+        // Hourly bar
+        const barEl = document.getElementById('hourlyBar');
+        if (barEl) {
+          const byHour = {};
+          logs.slice(-96).forEach(l => {
+            const hr=(l.timestamp||'').slice(11,13); if(!hr) return;
+            if(!byHour[hr]) byHour[hr]={buy:0,sell:0,wait:0};
+            if(l.signal==='BUY') byHour[hr].buy++; else if(l.signal==='SELL') byHour[hr].sell++; else byHour[hr].wait++;
+          });
+          barEl.innerHTML = Object.keys(byHour).sort().map(hr => {
+            const b=byHour[hr], dominant=b.buy>b.sell?'bull':b.sell>b.buy?'bear':'consol';
+            const col=dominant==='bull'?'#39d98a':dominant==='bear'?'#ff5d5d':'#333';
+            const icon=dominant==='bull'?'🦀':dominant==='bear'?'🌀':'—';
+            return '<div title="'+hr+':00 CST — Clawdy:'+b.buy+' Market:'+b.sell+'" style="width:26px;height:36px;background:'+col+';border-radius:3px;opacity:.85;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:default;">'+icon+'</div>';
+          }).join('');
+        }
+
+        // 4-Hour recap
+        build4HRecap(logs);
+        // Day recap
+        buildDayRecap(logs);
+
+      } catch(e) { console.warn('Arena refresh failed:', e); }
+    }
+
+    function build4HRecap(logs) {
+      const el = document.getElementById('fourHourRecap');
+      const winner = document.getElementById('fourHourWinner');
+      if (!el) return;
+      const now = new Date();
+      const hours = [3,2,1,0].map(h => {
+        const start = new Date(now.getTime() - (h+1)*60*60*1000);
+        const end   = new Date(now.getTime() - h*60*60*1000);
+        const slice = logs.filter(l => { const d=new Date(l.timestamp); return d>=start && d<end; });
+        const buys=slice.filter(l=>l.signal==='BUY').length;
+        const sells=slice.filter(l=>l.signal==='SELL').length;
+        const dominant = buys>sells?'clawdy': sells>buys?'market':'neutral';
+        const label = `${start.getHours().toString().padStart(2,'0')}:00–${end.getHours().toString().padStart(2,'0')}:00`;
+        const col = dominant==='clawdy'?'rgba(57,217,138,.12)': dominant==='market'?'rgba(255,93,93,.12)':'rgba(255,255,255,.04)';
+        const icon = dominant==='clawdy'?'🦀 CLAWDY': dominant==='market'?'🌀 MRKTZ':'— TIE';
+        const tCol = dominant==='clawdy'?'#39d98a': dominant==='market'?'#ff5d5d':'#888';
+        return { label, dominant, icon, tCol, col, buys, sells, total:slice.length };
+      });
+      el.innerHTML = hours.map(h => `
+        <div style="background:${h.col}; border:1px solid ${h.tCol}44; border-radius:8px; padding:12px; text-align:center;">
+          <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${h.label} CST</div>
+          <div style="font-size:18px; font-weight:900; color:${h.tCol};">${h.icon}</div>
+          <div style="font-size:10px; color:var(--muted); margin-top:4px;">${h.buys}B · ${h.sells}S · ${h.total} pulses</div>
+        </div>`).join('');
+      const cWins = hours.filter(h=>h.dominant==='clawdy').length;
+      const mWins = hours.filter(h=>h.dominant==='market').length;
+      winner.innerHTML = cWins>mWins
+        ? '<span style="color:#39d98a;font-weight:700;">🦀 CLAWDY controls the last 4 hours ('+cWins+'/4)</span>'
+        : mWins>cWins
+        ? '<span style="color:#ff5d5d;font-weight:700;">🌀 MRKTZ controls the last 4 hours ('+mWins+'/4)</span>'
+        : '<span style="color:#f6c453;font-weight:700;">⚖️ CONTESTED — even battle (2/2)</span>';
+    }
+
+    function buildDayRecap(logs) {
+      const el = document.getElementById('dayRecapTable');
+      if (!el || !logs.length) return;
+      const signals = logs.filter(l=>l.signal==='BUY'||l.signal==='SELL').slice(-20);
+      if (!signals.length) { el.innerHTML='<span style="color:var(--muted)">No signals yet.</span>'; return; }
+      const rows = signals.map(p => {
+        const isBuy=p.signal==='BUY';
+        const modeTag=p.mode==='TREND'
+          ?'<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>'
+          :'<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>';
+        const bar='█'.repeat(Math.round(p.probability/10))+'░'.repeat(10-Math.round(p.probability/10));
+        return '<tr><td style="font-size:11px;">'+p.timestamp+'</td><td>'+modeTag+'</td><td style="color:'+(isBuy?'#39d98a':'#ff5d5d')+';font-weight:700;">'+p.signal+'</td><td>$'+parseFloat(p.price).toFixed(2)+'</td><td style="font-family:monospace;font-size:11px;color:'+(p.probability>=75?'#39d98a':p.probability>=50?'#f6c453':'#ff5d5d')+'">'+p.probability+'%</td><td style="font-family:monospace;font-size:10px;color:var(--muted);">'+bar+'</td></tr>';
+      }).join('');
+      el.innerHTML='<table class="trade-table"><thead><tr><th>Time</th><th>Mode</th><th>Signal</th><th>Price</th><th>Prob</th><th>Bar</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // ANIMATED REPLAY ENGINE
+    // ═══════════════════════════════════════════════════════════════
+    let replayState = null; // { trades, prices, idx, playing, speed, raf, canvas, ctx }
+
+    // Pre-compiled model results
+    const MODEL_RESULTS = {
+      htf:       { trades:39, wins:13, wr:33.3, net:816,   grade:'C', label:'Hybrid+Daily Filter' },
+      hybrid:    { trades:42, wins:12, wr:28.6, net:-1230, grade:'D', label:'Hybrid Auto-Mode' },
+      automode:  { trades:29, wins:19, wr:65.5, net:2677,  grade:'B+',label:'Auto-Mode' },
+      trendguard:{ trades:27, wins:13, wr:48.1, net:-497,  grade:'D', label:'Trend Guard' },
+      raw:       { trades:32, wins:12, wr:37.5, net:-2338, grade:'F', label:'Raw 2.0 STD' }
+    };
+
+    async function startReplayAnimation() {
+      const modelKey = document.getElementById('replayModel').value;
+      const model = MODEL_RESULTS[modelKey];
+      const canvas = document.getElementById('replayCanvas');
+      const resultBadge = document.getElementById('replayResultBadge');
+      resultBadge.style.display = 'none';
+      canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+      const ctx = canvas.getContext('2d');
+
+      // Update HUD
+      document.getElementById('hudModel').textContent = model.label;
+
+      // Generate synthetic price path for animation (smooth random walk around realistic gold price)
+      const N = 200;
+      const prices = []; let p = 4800 + Math.random()*400;
+      const upper = [], lower = [], sma = [];
+      const window_sz = 20;
+      const pArr = [];
+      for (let i=0; i<N; i++) {
+        p += (Math.random()-0.5)*8 + (Math.random()>0.5?0.3:-0.3);
+        pArr.push(p);
+      }
+      // Calculate BB
+      for (let i=0; i<N; i++) {
+        const slice = pArr.slice(Math.max(0,i-window_sz+1),i+1);
+        const avg = slice.reduce((a,b)=>a+b,0)/slice.length;
+        const std = Math.sqrt(slice.reduce((a,b)=>a+(b-avg)**2,0)/slice.length);
+        sma.push(avg); upper.push(avg+std*2); lower.push(avg-std*2);
+      }
+
+      // Generate fake trades based on model win rate
+      const fakeTrades = [];
+      for (let i=20; i<N-10; i+=Math.floor(N/model.trades)) {
+        const isWin = Math.random() < (model.wr/100);
+        const dir = pArr[i] < lower[i] ? 'BUY' : pArr[i] > upper[i] ? 'SELL' : null;
+        if (!dir) continue;
+        fakeTrades.push({ idx: i, dir, isWin, prob: Math.round(70+Math.random()*25) });
+      }
+
+      if (replayState?.raf) cancelAnimationFrame(replayState.raf);
+      replayState = { pArr, sma, upper, lower, fakeTrades, idx:0, playing:true, speed:parseFloat(document.getElementById('replaySpeed').value), canvas, ctx, model, modelKey, N };
+      document.getElementById('replayPlayBtn').textContent = '⏸ PAUSE';
+      replayLoop();
+    }
+
+    function replayLoop() {
+      if (!replayState) return;
+      const { pArr, sma, upper, lower, fakeTrades, canvas, ctx, N, model } = replayState;
+      if (!replayState.playing) return;
+
+      const stepsPerFrame = Math.max(1, Math.floor(replayState.speed));
+      for (let s=0; s<stepsPerFrame; s++) {
+        if (replayState.idx < N) replayState.idx++;
+      }
+      const i = replayState.idx;
+
+      // Draw
+      const W=canvas.width, H=canvas.height;
+      ctx.clearRect(0,0,W,H);
+
+      // Background grid
+      ctx.strokeStyle='#0d1117'; ctx.lineWidth=1;
+      for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+      const visible = pArr.slice(0, i);
+      if (visible.length < 2) { replayState.raf=requestAnimationFrame(replayLoop); return; }
+
+      const minP = Math.min(...lower.slice(0,i).filter(Boolean)) - 5;
+      const maxP = Math.max(...upper.slice(0,i).filter(Boolean)) + 5;
+      const scaleY = v => H - ((v-minP)/(maxP-minP))*H*0.85 - H*0.05;
+      const scaleX = idx => (idx/(N-1))*W;
+
+      // Draw BB bands (filled)
+      ctx.beginPath();
+      for(let j=window_sz;j<i;j++) ctx.lineTo(scaleX(j), scaleY(upper[j]));
+      for(let j=i-1;j>=window_sz;j--) ctx.lineTo(scaleX(j), scaleY(lower[j]));
+      ctx.closePath();
+      ctx.fillStyle='rgba(57,217,138,0.05)'; ctx.fill();
+
+      // BB upper line
+      ctx.beginPath(); ctx.strokeStyle='rgba(57,217,138,0.35)'; ctx.lineWidth=1;
+      for(let j=window_sz;j<i;j++){j===window_sz?ctx.moveTo(scaleX(j),scaleY(upper[j])):ctx.lineTo(scaleX(j),scaleY(upper[j]));}
+      ctx.stroke();
+
+      // BB lower line
+      ctx.beginPath(); ctx.strokeStyle='rgba(57,217,138,0.35)'; ctx.lineWidth=1;
+      for(let j=window_sz;j<i;j++){j===window_sz?ctx.moveTo(scaleX(j),scaleY(lower[j])):ctx.lineTo(scaleX(j),scaleY(lower[j]));}
+      ctx.stroke();
+
+      // SMA line
+      ctx.beginPath(); ctx.strokeStyle='rgba(246,196,83,0.4)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+      for(let j=window_sz;j<i;j++){j===window_sz?ctx.moveTo(scaleX(j),scaleY(sma[j])):ctx.lineTo(scaleX(j),scaleY(sma[j]));}
+      ctx.stroke(); ctx.setLineDash([]);
+
+      // Price line
+      ctx.beginPath(); ctx.strokeStyle='#39d98a'; ctx.lineWidth=2;
+      visible.forEach((v,j)=>{ j===0?ctx.moveTo(scaleX(j),scaleY(v)):ctx.lineTo(scaleX(j),scaleY(v)); });
+      ctx.stroke();
+
+      // Trade markers
+      fakeTrades.filter(t=>t.idx<i).forEach(t => {
+        const x=scaleX(t.idx), y=scaleY(pArr[t.idx]);
+        const col=t.dir==='BUY'?'#39d98a':'#ff5d5d';
+        ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2);
+        ctx.fillStyle=t.isWin?col:'#333'; ctx.strokeStyle=col; ctx.lineWidth=2;
+        ctx.fill(); ctx.stroke();
+        // Arrow
+        ctx.fillStyle=col; ctx.font='bold 14px Inter';
+        ctx.fillText(t.dir==='BUY'?'▲':'▼', x-5, t.dir==='BUY'?y-12:y+20);
+      });
+
+      // 🦞 Lobster crawls along price line
+      const lobX = scaleX(i-1), lobY = scaleY(pArr[i-1]);
+      ctx.font = '22px serif';
+      ctx.save();
+      // Slight wobble
+      ctx.translate(lobX, lobY-14);
+      ctx.rotate(Math.sin(i*0.3)*0.18);
+      ctx.fillText('🦞', -10, 0);
+      ctx.restore();
+
+      // Update HUD
+      document.getElementById('hudPrice').textContent = '$'+pArr[i-1].toFixed(2);
+      document.getElementById('hudBb').textContent = lower[i-1]?.toFixed(1)+' / '+upper[i-1]?.toFixed(1);
+      const lastTrade = fakeTrades.slice().reverse().find(t=>t.idx<=i);
+      if (lastTrade) {
+        document.getElementById('hudSignal').textContent = lastTrade.dir + (lastTrade.isWin?' ✅':' ❌');
+        document.getElementById('hudSignal').style.color = lastTrade.dir==='BUY'?'#39d98a':'#ff5d5d';
+        document.getElementById('hudProb').textContent = lastTrade.prob+'%';
+      }
+
+      // Progress bar
+      document.getElementById('replayProgressBar').style.width = (i/N*100)+'%';
+      document.getElementById('replayCounter').textContent = i + ' / ' + N;
+
+      if (i >= N) {
+        // Show result
+        const badge = document.getElementById('replayResultBadge');
+        badge.style.display = 'flex';
+        const profitable = model.net > 0;
+        document.getElementById('replayResultIcon').textContent = profitable ? '🦀' : '🌀';
+        document.getElementById('replayResultTitle').textContent = profitable ? 'CLAWDY WINS!' : 'MARKET WINS';
+        document.getElementById('replayResultTitle').style.color = profitable ? '#39d98a' : '#ff5d5d';
+        document.getElementById('replayResultSub').textContent = model.label + ' · ' + model.trades + ' trades · ' + model.wr + '% WR · Net $' + (model.net >= 0 ? '+' : '') + model.net + ' · Grade: ' + model.grade;
+        return;
+      }
+
+      replayState.raf = requestAnimationFrame(replayLoop);
+    }
+
+    function toggleReplayPlay() {
+      if (!replayState) return;
+      replayState.playing = !replayState.playing;
+      document.getElementById('replayPlayBtn').textContent = replayState.playing ? '⏸ PAUSE' : '▶ PLAY';
+      if (replayState.playing) replayLoop();
+    }
+
+    function setReplaySpeed(v) {
+      if (replayState) replayState.speed = parseFloat(v);
+    }
+
+    function seekReplay(e, bar) {
+      if (!replayState) return;
+      const rect = bar.getBoundingClientRect();
+      const pct = (e.clientX - rect.left) / rect.width;
+      replayState.idx = Math.round(pct * replayState.N);
+    }
+
 
   </script>
 </body>
