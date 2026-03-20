@@ -90,5 +90,13 @@
     "signal": "WAIT",
     "mode": "TRANSITION",
     "status": "WAIT"
+  },
+  {
+    "timestamp": "2026-03-20 02:59 CST",
+    "price": 4696.9,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
+    "status": "WAIT"
   }
 ]
