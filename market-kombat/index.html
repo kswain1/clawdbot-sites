@@ -600,6 +600,67 @@
       </div>
 
 
+      <!-- HTF TIMEFRAME SWEEP PANEL -->
+      <div class="panel" style="margin-top:20px; border-color: rgba(246,196,83,0.3);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
+          <div>
+            <div class="eyebrow">HTF Trend Filter Sweep — 15min / 30min / 1H / 2H / 4H</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:3px;">Each filter blocks counter-trend signals using HTF SMA bias · Risk=20pts · R:R=1:2.8</div>
+          </div>
+          <span style="background:rgba(246,196,83,.1); border:1px solid rgba(246,196,83,.3); padding:6px 14px; border-radius:6px; font-size:12px; color:var(--accent); font-weight:700;">🏆 4H Best EV</span>
+        </div>
+        <table class="trade-table" style="margin-bottom:16px;">
+          <thead>
+            <tr><th>Timeframe</th><th>Trades</th><th>Blocked</th><th>Win Rate</th><th>Net PnL</th><th>Max DD</th><th>EV Ratio</th><th>Grade</th><th>vs Baseline</th></tr>
+          </thead>
+          <tbody>
+            <tr style="opacity:.65;">
+              <td>Baseline (no filter)</td><td>120</td><td>—</td><td>25.0%</td>
+              <td style="color:#ff5d5d;">-$1,200</td><td>24.4%</td>
+              <td style="color:#ff5d5d;">-0.05</td><td style="color:#ff5d5d;">D</td><td>—</td>
+            </tr>
+            <tr>
+              <td style="color:#6ab8ff;font-weight:700;">15-min HTF</td><td>81</td><td>138</td><td>32.1%</td>
+              <td style="color:#39d98a;">+$3,560</td><td>20.3%</td>
+              <td style="color:#39d98a;">+0.22</td><td style="color:#39d98a;">B</td>
+              <td style="color:#39d98a;font-size:11px;">✅ +$4,760 / EV +0.27</td>
+            </tr>
+            <tr>
+              <td style="color:#ff5d5d;">30-min HTF</td><td>61</td><td>158</td><td>23.0%</td>
+              <td style="color:#ff5d5d;">-$1,560</td><td>33.2%</td>
+              <td style="color:#ff5d5d;">-0.13</td><td style="color:#ff5d5d;">D</td>
+              <td style="color:#ff5d5d;font-size:11px;">❌ -$360 / EV -0.08</td>
+            </tr>
+            <tr>
+              <td style="color:#39d98a;font-weight:700;">1H HTF</td><td>69</td><td>150</td><td>33.3%</td>
+              <td style="color:#39d98a;">+$3,680</td><td>11.0%</td>
+              <td style="color:#39d98a;">+0.27</td><td style="color:#39d98a;">B</td>
+              <td style="color:#39d98a;font-size:11px;">✅ +$4,880 / EV +0.32</td>
+            </tr>
+            <tr>
+              <td style="color:#a09aff;font-weight:700;">2H HTF</td><td>67</td><td>152</td><td>28.4%</td>
+              <td style="color:#39d98a;">+$1,040</td><td>13.9%</td>
+              <td style="color:#39d98a;">+0.08</td><td style="color:#f6c453;">C</td>
+              <td style="color:#39d98a;font-size:11px;">✅ +$2,240 / EV +0.13</td>
+            </tr>
+            <tr style="background:rgba(246,196,83,0.07); border:1px solid rgba(246,196,83,0.25);">
+              <td style="color:var(--accent);font-weight:700;">4H HTF 🏆</td><td>92</td><td>127</td><td>33.7%</td>
+              <td style="color:#39d98a;">+$5,160</td><td>19.6%</td>
+              <td style="color:#39d98a;">+0.28</td><td style="color:#39d98a;">B</td>
+              <td style="color:#39d98a;font-size:11px;">✅ +$6,360 / EV +0.33</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- Verdict box -->
+        <div style="background:#0a0f0a; border:1px solid rgba(57,217,138,.2); border-radius:8px; padding:14px 16px; font-size:13px; line-height:1.8;">
+          <div style="color:var(--accent); font-weight:800; margin-bottom:6px; letter-spacing:.05em;">KEY FINDINGS</div>
+          <div>🏆 <strong style="color:#39d98a;">4H HTF wins</strong> — highest absolute return (+$5,160) and best delta vs baseline (+$6,360). 92 trades, 33.7% WR, EV +0.28, Grade B. Lowest signal blocking (127 filtered) = most trade opportunities kept.</div>
+          <div style="margin-top:6px;">✅ <strong style="color:#6ab8ff;">1H HTF</strong> — best EV improvement (+0.32 delta), lowest drawdown (11.0%). Safer profile, fewer trades (69).</div>
+          <div style="margin-top:6px;">❌ <strong style="color:#ff5d5d;">30-min HTF</strong> — only filter that made things WORSE. More signals blocked (158) but DD increased to 33.2%.</div>
+          <div style="margin-top:6px;">📌 <strong>Recommendation:</strong> Deploy <strong style="color:var(--accent);">4H HTF bias filter</strong> for max return, or <strong style="color:#39d98a;">1H HTF</strong> for safer/lower-DD profile. Avoid 30-min.</div>
+        </div>
+      </div>
+
       <!-- HTF DAILY FILTER PANEL -->
       <div class="panel" style="margin-top:20px; border-color: rgba(57,217,138,0.3);">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
