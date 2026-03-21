@@ -200,8 +200,8 @@
         </div>
 
         <!-- Replay canvas -->
-        <div style="position:relative; height:340px; background:#060a0f; border-radius:8px; border:1px solid #1a1a1a; overflow:hidden;">
-          <canvas id="replayCanvas" style="width:100%; height:100%;"></canvas>
+        <div id="replayCanvasWrap" style="position:relative; height:340px; background:#060a0f; border-radius:8px; border:1px solid #1a1a1a; overflow:hidden;">
+          <canvas id="replayCanvas" style="display:block; width:100%; height:100%;"></canvas>
           <!-- HUD overlay -->
           <div style="position:absolute; top:10px; left:12px; font-size:11px; color:#39d98a; font-family:monospace; line-height:1.7;" id="replayHud">
             <div>MODEL: <span id="hudModel" style="color:var(--accent);">—</span></div>
@@ -917,6 +917,14 @@
 
   <script src="script.js"></script>
   <script>
+    // Pre-fill replay date range: last 24h
+    (function() {
+      const now = new Date();
+      const yesterday = new Date(now.getTime() - 24*60*60*1000);
+      const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+      document.getElementById('replayStart').value = fmt(yesterday);
+      document.getElementById('replayEnd').value   = fmt(now);
+    })();
     flatpickr("#replayStart", { enableTime:true, dateFormat:"Y-m-d H:i", theme:"dark", minuteIncrement:5 });
     flatpickr("#replayEnd",   { enableTime:true, dateFormat:"Y-m-d H:i", theme:"dark", minuteIncrement:5 });
 
@@ -2095,14 +2103,26 @@
     };
 
     async function startReplayAnimation() {
+      // Wait for next paint so getBoundingClientRect is accurate on mobile
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
       const modelKey = document.getElementById('replayModel').value;
       const model = MODEL_RESULTS[modelKey];
       const canvas = document.getElementById('replayCanvas');
+      const wrap   = document.getElementById('replayCanvasWrap');
       const resultBadge = document.getElementById('replayResultBadge');
       resultBadge.style.display = 'none';
-      canvas.width  = canvas.parentElement.offsetWidth  || 600;
-      canvas.height = canvas.parentElement.offsetHeight || 340;
+
+      // Resolve canvas pixel dimensions from bounding rect
+      const rect = wrap.getBoundingClientRect();
+      const W = Math.round(rect.width)  || 600;
+      const H = Math.round(rect.height) || 340;
+      canvas.width  = W * (window.devicePixelRatio || 1);
+      canvas.height = H * (window.devicePixelRatio || 1);
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
       const ctx = canvas.getContext('2d');
+      ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
 
       document.getElementById('hudModel').textContent = model.label;
       document.getElementById('replayPlayBtn').textContent = '⏸ PAUSE';
@@ -2169,6 +2189,7 @@
 
       if (replayState?.raf) cancelAnimationFrame(replayState.raf);
       replayState = { pArr, sma, upper, lower, fakeTrades, idx:0, playing:true,
+        W, H,
         speed: parseFloat(document.getElementById('replaySpeed').value),
         canvas, ctx, model, modelKey, N };
       replayLoop();
@@ -2186,7 +2207,8 @@
       const i = replayState.idx;
 
       // Draw
-      const W=canvas.width, H=canvas.height;
+      const W = replayState.W || canvas.parentElement.getBoundingClientRect().width  || 600;
+      const H = replayState.H || canvas.parentElement.getBoundingClientRect().height || 340;
       ctx.clearRect(0,0,W,H);
 
       // Background grid
