@@ -125,10 +125,10 @@ jobs:
           git diff --staged --quiet && echo "No changes" || git commit -m "AutoResearch $(date -u '+%Y-%m-%d'): EV $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(f\"+{d['best']['ev']:.3f}\")" 2>/dev/null || echo 'update') Grade $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(d['best']['grade'])" 2>/dev/null || echo '?')"
           git push
 
-      - name: Post results to Discord
+      - name: Post results to Discord daily-digest
         if: always()
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
+          DISCORD_WEBHOOK: "https://discord.com/api/webhooks/1484817995024039988/qlkO2bRGHba4iDQ5AHpbbkm-SjGexVGBz39K0ux2g7s1FDHjWa9DcuBFjoo15AWnnRP_"
         run: |
           python3 - << 'EOF'
           import json, os, requests
