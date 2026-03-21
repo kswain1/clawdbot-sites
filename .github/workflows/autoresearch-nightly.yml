@@ -1,0 +1,172 @@
+name: Nightly AutoResearch — Strategy Optimizer
+
+on:
+  schedule:
+    - cron: '0 4 * * *'    # 4:00 AM UTC = 10 PM CST (runs while Kehlin sleeps)
+  workflow_dispatch:        # manual trigger anytime
+
+permissions:
+  contents: write
+
+jobs:
+  autoresearch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: pip install yfinance requests
+
+      - name: Run AutoResearch 180-Day Sweep
+        run: |
+          cd autoresearch
+          python autorun_180.py 2>&1 | tee /tmp/autoresearch_run.log
+          echo "Exit code: $?"
+
+      - name: Update autoresearch_results.json
+        run: |
+          cp /tmp/autoresearch_180d_results.json autoresearch/autoresearch_latest.json
+
+      - name: Update strategy_params.py with best found config
+        run: |
+          python3 - << 'EOF'
+          import json
+
+          with open('autoresearch/autoresearch_latest.json') as f:
+              data = json.load(f)
+
+          best = data['best']
+          params = best['params']
+          ev = best['ev']
+          grade = best['grade']
+          net = best['net']
+          wr = best['wr']
+          trades = best['trades']
+          regimes = best.get('regimes', {})
+
+          from datetime import datetime
+          date_str = datetime.utcnow().strftime('%Y-%m-%d')
+
+          # Read existing file to get log
+          try:
+              with open('autoresearch/strategy_params.py') as f:
+                  existing = f.read()
+              # Count existing log entries
+              gen_num = existing.count('"gen":') + 1
+          except:
+              gen_num = 1
+
+          # Regime summary
+          regime_lines = []
+          for name, emoji in [('bull','🐂'),('chop','〰️'),('bear','🐻'),('recovery','🔄')]:
+              s = regimes.get(name, {})
+              if s:
+                  regime_lines.append(f'#     {emoji} {name}: {s.get("wr",0)}% WR | ${s.get("net",0):+,.0f} | EV {s.get("ev",0):+.3f}')
+
+          regime_block = '\n'.join(regime_lines)
+
+          content = f'''"""
+          strategy_params.py — AutoResearch Best Config
+          Last run: {date_str} | EV {ev:+.4f} | Grade {grade} | Net ${net:+,.0f}
+          """
+
+          PARAMS = {{
+              "bb_period":    {params.get("bb_period", 20)},
+              "bb_std":       {params.get("bb_std", 2.0)},
+              "rr":           {params.get("rr", 2.8)},
+              "htf_bars":     {params.get("htf_bars", 48)},
+              "min_prob":     {params.get("min_prob", 0.25)},
+              "entry_hours":  {params.get("entry_hours", [8,9,18,19,20])},
+          }}
+
+          # 180-Day regime breakdown (last run)
+          # {regime_block}
+
+          EXPERIMENT_LOG = [
+          '''
+
+          with open('autoresearch/strategy_params.py', 'r') as f:
+              src = f.read()
+
+          # Append new entry to log
+          log_start = src.find('EXPERIMENT_LOG = [')
+          log_end = src.rfind(']')
+          log_block = src[log_start:log_end+1]
+
+          # New entry
+          import re
+          gens = re.findall(r'"gen":\s*(\d+)', log_block)
+          next_gen = int(gens[-1]) + 1 if gens else 1
+
+          new_entry = f'    {{"gen": {next_gen}, "ev": {ev}, "grade": "{grade}", "net": {net}, "wr": {wr}, "trades": {trades}, "date": "{date_str}", "params": {json.dumps(params)}, "note": "nightly autoresearch 180D"}},'
+
+          # Inject at end of log
+          new_log = log_block[:-1] + '\n' + new_entry + '\n]'
+          new_src = src[:log_start] + new_log
+          with open('autoresearch/strategy_params.py', 'w') as f:
+              f.write(new_src)
+
+          print(f"Updated strategy_params.py — Gen {next_gen}: EV {ev:+.4f} Grade {grade}")
+          EOF
+
+      - name: Commit results
+        run: |
+          git config --local user.email "aura@clawdbot.com"
+          git config --local user.name "Aura AutoResearch"
+          git add autoresearch/autoresearch_latest.json autoresearch/strategy_params.py
+          git diff --staged --quiet && echo "No changes" || git commit -m "AutoResearch $(date -u '+%Y-%m-%d'): EV $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(f\"+{d['best']['ev']:.3f}\")" 2>/dev/null || echo 'update') Grade $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(d['best']['grade'])" 2>/dev/null || echo '?')"
+          git push
+
+      - name: Post results to Discord
+        if: always()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
+        run: |
+          python3 - << 'EOF'
+          import json, os, requests
+
+          webhook = os.environ.get('DISCORD_WEBHOOK', '')
+          if not webhook:
+              print("No webhook configured"); exit(0)
+
+          try:
+              with open('autoresearch/autoresearch_latest.json') as f:
+                  data = json.load(f)
+              best = data['best']
+              rg = best.get('regimes', {})
+
+              def regime_line(name, emoji):
+                  s = rg.get(name, {})
+                  verdict = '✅' if s.get('net',0) > 0 else '❌'
+                  return f"{emoji} {name.upper():<10}: {s.get('wr',0):.0f}% WR | ${s.get('net',0):+,.0f} | EV {s.get('ev',0):+.3f} {verdict}"
+
+              msg = f"""🔬 **NIGHTLY AUTORESEARCH COMPLETE**
+
+          **Best Config (180D / 4-Regime):**
+          ```
+          EV:     {best['ev']:+.4f}   Grade: {best['grade']}
+          Net:    ${best['net']:+,.0f}
+          WR:     {best['wr']}%   Trades: {best['trades']}   Max DD: {best.get('max_dd',0)}%
+          Params: rr={best['params'].get('rr')} | min_prob={best['params'].get('min_prob')} | htf={best['params'].get('htf_bars')} | bb={best['params'].get('bb_period')}
+          ```
+          **Regime Breakdown:**
+          ```
+          {regime_line('bull', '🐂')}
+          {regime_line('chop', '〰️')}
+          {regime_line('bear', '🐻')}
+          {regime_line('recovery', '🔄')}
+          ```"""
+
+              requests.post(webhook, json={'content': msg}, timeout=10)
+              print("Discord notified")
+          except Exception as e:
+              print(f"Discord notify failed: {e}")
+          EOF

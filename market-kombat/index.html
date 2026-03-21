@@ -1243,30 +1243,18 @@
     }
 
     function buildEntryTable(data) {
-      const tbody = document.getElementById('liveEntryLog');
-      const recent = [...data].reverse().slice(0, 20);
-
-      tbody.innerHTML = recent.map(d => {
-        const badgeClass = d.signal === 'BUY' ? 'badge-buy' :
-                           d.signal === 'SELL' ? 'badge-sell' :
-                           d.signal === 'PREPARE' ? 'badge-prepare' : 'badge-wait';
-        const probColor = d.probability > 75 ? '#39d98a' : d.probability > 50 ? '#f6c453' : '#888';
-        const probBar = '█'.repeat(Math.floor(d.probability / 10)) + '░'.repeat(10 - Math.floor(d.probability / 10));
-        const action = (d.signal === 'BUY' || d.signal === 'SELL') && d.probability > 75
-          ? '<span style="color:#39d98a; font-weight:800; font-size:11px;">ENTER NOW</span>'
-          : d.signal === 'PREPARE'
-          ? '<span style="color:#f6c453; font-weight:800; font-size:11px;">GET READY</span>'
-          : '<span style="color:#555; font-size:11px;">WAIT</span>';
-
-        return `<tr>
-          <td style="font-size:12px;">${d.timestamp}</td>
-          <td><span class="action-badge ${badgeClass}">${d.signal}</span></td>
-          <td style="font-weight:700;">$${d.price}</td>
-          <td style="color:${probColor}; font-size:11px; font-family:monospace;">${d.probability}%<br>${probBar}</td>
-          <td style="font-size:11px; color:var(--muted);">${d.status || '--'}</td>
-          <td>${action}</td>
-        </tr>`;
-      }).join('');
+      const rows = [...data].reverse();
+      const renderEntry = d => {
+        const bc = d.signal==='BUY'?'badge-buy':d.signal==='SELL'?'badge-sell':d.signal==='PREPARE'?'badge-prepare':'badge-wait';
+        const pc = d.probability>75?'#39d98a':d.probability>50?'#f6c453':'#888';
+        const pb = '█'.repeat(Math.floor(d.probability/10))+'░'.repeat(10-Math.floor(d.probability/10));
+        const ac = (d.signal==='BUY'||d.signal==='SELL')&&d.probability>75
+          ?'<span style="color:#39d98a;font-weight:800;font-size:11px;">ENTER NOW</span>'
+          :d.signal==='PREPARE'?'<span style="color:#f6c453;font-weight:800;font-size:11px;">GET READY</span>'
+          :'<span style="color:#555;font-size:11px;">WAIT</span>';
+        return `<tr><td style="font-size:12px;">${d.timestamp}</td><td><span class="action-badge ${bc}">${d.signal}</span></td><td style="font-weight:700;">$${d.price}</td><td style="color:${pc};font-size:11px;font-family:monospace;">${d.probability}%<br>${pb}</td><td style="font-size:11px;color:var(--muted);">${d.status||'--'}</td><td>${ac}</td></tr>`;
+      };
+      paginateTable('liveEntryLog', rows, renderEntry);
     }
 
     updatePulseFeed();
@@ -1276,9 +1264,73 @@
     // ── R:R SWEEP TABLE ──
     (function buildRRTable(){
       const d=[{rr:"1:1.0",t:16,w:11,wr:68.8,net:1292,eq:11292,aw:239,al:267,ev:0.30,g:"C"},{rr:"1:1.1",t:15,w:9,wr:60.0,net:736,eq:10736,aw:254,al:259,ev:0.19,g:"D"},{rr:"1:1.2",t:14,w:9,wr:64.3,net:1011,eq:11011,aw:262,al:270,ev:0.27,g:"C"},{rr:"1:1.3",t:13,w:7,wr:53.8,net:724,eq:10724,aw:329,al:264,ev:0.21,g:"C"},{rr:"1:1.4",t:13,w:7,wr:53.8,net:839,eq:10839,aw:346,al:264,ev:0.24,g:"C"},{rr:"1:1.5",t:13,w:7,wr:53.8,net:904,eq:10904,aw:355,al:264,ev:0.26,g:"C"},{rr:"1:1.6",t:13,w:7,wr:53.8,net:1145,eq:11145,aw:371,al:242,ev:0.36,g:"C"},{rr:"1:1.7",t:13,w:7,wr:53.8,net:1213,eq:11213,aw:381,al:242,ev:0.39,g:"C"},{rr:"1:1.8",t:13,w:6,wr:46.2,net:924,eq:10924,aw:441,al:246,ev:0.29,g:"C"},{rr:"1:1.9",t:13,w:6,wr:46.2,net:924,eq:10924,aw:441,al:246,ev:0.29,g:"C"},{rr:"1:2.0",t:13,w:6,wr:46.2,net:1318,eq:11318,aw:502,al:242,ev:0.42,g:"C"},{rr:"1:2.1",t:13,w:6,wr:46.2,net:1344,eq:11344,aw:506,al:242,ev:0.43,g:"C"},{rr:"1:2.2",t:13,w:6,wr:46.2,net:1493,eq:11493,aw:531,al:242,ev:0.48,g:"C"},{rr:"1:2.3",t:13,w:6,wr:46.2,net:1501,eq:11501,aw:532,al:242,ev:0.48,g:"C"},{rr:"1:2.4",t:12,w:6,wr:50.0,net:1847,eq:11847,aw:554,al:246,ev:0.62,g:"B"},{rr:"1:2.5",t:12,w:6,wr:50.0,net:1966,eq:11966,aw:574,al:246,ev:0.67,g:"B"},{rr:"1:2.6",t:12,w:6,wr:50.0,net:1966,eq:11966,aw:574,al:246,ev:0.67,g:"B"},{rr:"1:2.7",t:12,w:6,wr:50.0,net:2046,eq:12046,aw:587,al:246,ev:0.69,g:"B"},{rr:"1:2.8",t:11,w:6,wr:54.5,net:2447,eq:12447,aw:610,al:242,ev:0.92,g:"B+",win:true},{rr:"1:2.9",t:11,w:5,wr:45.5,net:1556,eq:11556,aw:622,al:259,ev:0.55,g:"B"},{rr:"1:3.0",t:10,w:5,wr:50.0,net:1551,eq:11551,aw:552,al:242,ev:0.64,g:"B"}];
-      const tb=document.getElementById("rrSweepBody"); if(!tb) return;
-      tb.innerHTML=d.map(r=>{const gc=r.g==="B+"?"#39d98a":r.g==="B"?"#6ab8ff":r.g==="C"?"#f6c453":"#ff5d5d";const ec=r.ev>=0.7?"#39d98a":r.ev>=0.4?"#f6c453":"#888";return`<tr style="${r.win?"background:rgba(57,217,138,0.06);":""}"><td><strong>${r.rr}</strong>${r.win?" D83CDFC6":""}</td><td>${r.t}</td><td>${r.w}</td><td>${r.wr.toFixed(1)}%</td><td style="color:${r.net>0?"#39d98a":"#ff5d5d"};font-weight:700;">+$${r.net.toLocaleString()}</td><td>$${r.eq.toLocaleString()}</td><td style="color:#39d98a;">+$${r.aw}</td><td style="color:#ff5d5d;">-$${r.al}</td><td style="color:${ec};font-weight:700;">+${r.ev.toFixed(2)}</td><td><span style="background:${gc}22;color:${gc};padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid ${gc}44;">${r.g}</span></td></tr>`;}).join("");
+      const renderRR = r => { const gc=r.g==="B+"?"#39d98a":r.g==="B"?"#6ab8ff":r.g==="C"?"#f6c453":"#ff5d5d";const ec=r.ev>=0.7?"#39d98a":r.ev>=0.4?"#f6c453":"#888";return`<tr style="${r.win?"background:rgba(57,217,138,0.06);":""}"><td><strong>${r.rr}</strong>${r.win?" 🏆":""}</td><td>${r.t}</td><td>${r.w}</td><td>${r.wr.toFixed(1)}%</td><td style="color:${r.net>0?"#39d98a":"#ff5d5d"};font-weight:700;">+$${r.net.toLocaleString()}</td><td>$${r.eq.toLocaleString()}</td><td style="color:#39d98a;">+$${r.aw}</td><td style="color:#ff5d5d;">-$${r.al}</td><td style="color:${ec};font-weight:700;">+${r.ev.toFixed(2)}</td><td><span style="background:${gc}22;color:${gc};padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;border:1px solid ${gc}44;">${r.g}</span></td></tr>`; };
+      // defer until pagination utility is ready
+      setTimeout(() => paginateTable('rrSweepBody', d, renderRR), 50);
     })();
+
+    // ═══════════════════════════════════════════════════════════════
+    // PAGINATION UTILITY — paginate any table tbody, 15 rows/page
+    // Usage: paginateTable('tbodyId', rows_array, renderFn, pageSize=15)
+    // ═══════════════════════════════════════════════════════════════
+    const PAGE_SIZE = 15;
+    const paginationState = {};
+
+    function paginateTable(tbodyId, rows, renderRow, pageSize) {
+      pageSize = pageSize || PAGE_SIZE;
+      paginationState[tbodyId] = { rows, renderRow, pageSize, page: 1 };
+      renderPage(tbodyId);
+    }
+
+    function renderPage(tbodyId) {
+      const s = paginationState[tbodyId];
+      if (!s) return;
+      const tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      const totalPages = Math.max(1, Math.ceil(s.rows.length / s.pageSize));
+      s.page = Math.max(1, Math.min(s.page, totalPages));
+      const start = (s.page - 1) * s.pageSize;
+      const slice = s.rows.slice(start, start + s.pageSize);
+      tbody.innerHTML = slice.map(s.renderRow).join('');
+
+      // Remove old pagination bar
+      const wrap = tbody.closest('table')?.parentElement;
+      if (!wrap) return;
+      const oldBar = wrap.querySelector('.pg-bar[data-for="'+tbodyId+'"]');
+      if (oldBar) oldBar.remove();
+
+      if (totalPages <= 1) return;
+      const bar = document.createElement('div');
+      bar.className = 'pg-bar';
+      bar.setAttribute('data-for', tbodyId);
+      bar.style.cssText = 'display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:8px;flex-wrap:wrap;';
+
+      const info = document.createElement('span');
+      info.style.cssText = 'font-size:11px;color:var(--muted);margin-right:auto;';
+      info.textContent = `Showing ${start+1}–${Math.min(start+s.pageSize,s.rows.length)} of ${s.rows.length}`;
+      bar.appendChild(info);
+
+      const btn = (label, page, active, disabled) => {
+        const b = document.createElement('button');
+        b.textContent = label;
+        b.disabled = disabled;
+        b.style.cssText = `background:${active?'rgba(246,196,83,.2)':'#0a0a0a'};border:1px solid ${active?'rgba(246,196,83,.5)':'#222'};color:${active?'var(--accent)':'#888'};padding:3px 9px;border-radius:4px;cursor:${disabled?'default':'pointer'};font-size:11px;font-family:monospace;`;
+        if (!disabled) b.onclick = () => { paginationState[tbodyId].page = page; renderPage(tbodyId); };
+        return b;
+      };
+
+      bar.appendChild(btn('«', 1,         false, s.page===1));
+      bar.appendChild(btn('‹', s.page-1,  false, s.page===1));
+
+      // Page number buttons (show up to 5 around current)
+      const startP = Math.max(1, s.page-2), endP = Math.min(totalPages, startP+4);
+      for (let p = startP; p <= endP; p++) bar.appendChild(btn(p, p, p===s.page, false));
+
+      bar.appendChild(btn('›', s.page+1,       false, s.page===totalPages));
+      bar.appendChild(btn('»', totalPages,      false, s.page===totalPages));
+
+      wrap.appendChild(bar);
+    }
 
     function showTab(id) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1748,11 +1800,12 @@
       const btn = el.previousElementSibling;
       btn.textContent = el.style.display==='none' ? '📋 Show 39 Trades ▾' : '📋 Hide Trades ▲';
       if (el.style.display==='block' && !document.getElementById('btFilterBody').innerHTML) {
-        document.getElementById('btFilterBody').innerHTML = btFilterTrades.map(t => {
+        const renderBtTrade = t => {
           const win=t.result==='WIN';
           const modeTag=t.mode==='TREND'?'<span style="background:#1a2a3a;color:#6ab8ff;padding:2px 6px;border-radius:3px;font-size:10px;">TREND</span>':'<span style="background:#1a1a2a;color:#a09aff;padding:2px 6px;border-radius:3px;font-size:10px;">CONSOL</span>';
           return '<tr><td>'+t.date+'</td><td style="font-size:11px;">'+t.time+'</td><td>'+modeTag+'</td><td style="color:'+(t.dir==='BUY'?'#39d98a':'#ff5d5d')+';font-weight:700;">'+t.dir+'</td><td>$'+t.entry.toFixed(2)+'</td><td>$'+t.exit.toFixed(2)+'</td><td style="color:'+(t.pts>=0?'#39d98a':'#ff5d5d')+'">'+(t.pts>=0?'+':'')+t.pts+'</td><td style="color:'+(t.usd>=0?'#39d98a':'#ff5d5d')+'">'+(t.usd>=0?'+':'')+t.usd+'</td><td><span class="pill '+(win?'pill-win':'pill-loss')+'">'+t.result+'</span></td><td>$'+Math.round(t.equity).toLocaleString()+'</td></tr>';
-        }).join('');
+        };
+        paginateTable('btFilterBody', btFilterTrades, renderBtTrade);
       }
     }
 
