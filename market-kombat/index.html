@@ -2332,6 +2332,25 @@
       replayState.idx = Math.round(pct * replayState.N);
     }
 
+    // ═══════════════════════════════════════════════════════════════
+    // BOOT — wire everything up on page load
+    // ═══════════════════════════════════════════════════════════════
+    (async function boot() {
+      // 1. Initial arena + day recap load
+      await refreshLiveArena();
+
+      // 2. Auto-refresh arena every 5 minutes
+      setInterval(refreshLiveArena, 5 * 60 * 1000);
+
+      // 3. Strategy table + R:R sweep
+      if (typeof populateStrategyTable === 'function') populateStrategyTable();
+      if (typeof buildRRSweep         === 'function') buildRRSweep();
+
+      // 4. Forward test pulse feed (pre-load data)
+      if (typeof updatePulseFeed === 'function') updatePulseFeed();
+
+      console.log('🧿 Market Kombat booted');
+    })();
 
   </script>
 </body>
