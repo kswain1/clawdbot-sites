@@ -1,12 +1,5 @@
 [
   {
-    "timestamp": "2026-03-19 23:17 CST",
-    "price": 4711.0,
-    "probability": 40.6,
-    "signal": "WAIT",
-    "status": "CONSOLIDATION"
-  },
-  {
     "timestamp": "2026-03-19 23:40 CST",
     "price": 4712.2,
     "probability": 40.9,
@@ -795,5 +788,13 @@
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
     "status": "PREPARE"
+  },
+  {
+    "timestamp": "2026-03-21 09:58 CST",
+    "price": 4496.3,
+    "probability": 48.4,
+    "signal": "WAIT",
+    "mode": "CONSOLIDATION",
+    "status": "WAIT"
   }
 ]
