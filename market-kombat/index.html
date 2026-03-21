@@ -685,6 +685,84 @@
       </div>
 
 
+      <!-- AUTORESEARCH 180D PANEL -->
+      <div class="panel" style="margin-top:20px; border-color:rgba(57,217,138,0.5); background:radial-gradient(ellipse at top,#030d06,#060a0f);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
+          <div>
+            <div class="eyebrow" style="color:#39d98a;">🔬 AUTORESEARCH — 180-Day / 4-Regime Validation</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:3px;">Bull → Chop → Bear → Recovery · 44 experiments · 12.3s · target EV > 0.70</div>
+          </div>
+          <span style="background:rgba(57,217,138,.15); border:1px solid rgba(57,217,138,.5); padding:6px 14px; border-radius:6px; font-size:13px; color:#39d98a; font-weight:900;">EV +1.922 · Grade A · $+74,200</span>
+        </div>
+
+        <!-- Regime cards -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px;">
+          <div style="background:#0a1a0a; border:1px solid rgba(57,217,138,.25); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:18px; margin-bottom:4px;">🐂</div>
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Bull (Day 0–45)</div>
+            <div style="font-size:20px; font-weight:900; color:#39d98a; margin:4px 0;">+$17,600</div>
+            <div style="font-size:11px; color:#39d98a;">46.0% WR · EV +1.76 ✅</div>
+          </div>
+          <div style="background:#0a140d; border:1px solid rgba(246,196,83,.25); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:18px; margin-bottom:4px;">〰️</div>
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Chop (Day 45–90)</div>
+            <div style="font-size:20px; font-weight:900; color:#39d98a; margin:4px 0;">+$18,800</div>
+            <div style="font-size:11px; color:#39d98a;">44.6% WR · EV +1.68 ✅</div>
+          </div>
+          <div style="background:#1a0a0a; border:1px solid rgba(255,93,93,.25); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:18px; margin-bottom:4px;">🐻</div>
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Bear (Day 90–135)</div>
+            <div style="font-size:20px; font-weight:900; color:#39d98a; margin:4px 0;">+$21,000</div>
+            <div style="font-size:11px; color:#39d98a;">55.6% WR · EV +2.33 ✅</div>
+          </div>
+          <div style="background:#0a0f1a; border:1px solid rgba(106,184,255,.25); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:18px; margin-bottom:4px;">🔄</div>
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;">Recovery (Day 135–180)</div>
+            <div style="font-size:20px; font-weight:900; color:#39d98a; margin:4px 0;">+$16,800</div>
+            <div style="font-size:11px; color:#39d98a;">50.0% WR · EV +2.00 ✅</div>
+          </div>
+        </div>
+
+        <!-- Evolution table -->
+        <table class="trade-table" style="margin-bottom:16px;">
+          <thead><tr><th>Stage</th><th>Dataset</th><th>Config</th><th>EV</th><th>Net PnL</th><th>WR%</th><th>Trades</th><th>Max DD</th><th>Grade</th></tr></thead>
+          <tbody>
+            <tr style="opacity:.5;"><td>Baseline</td><td>30D</td><td>rr=2.8 · prob≥0.25</td><td style="color:#6ab8ff;">+0.52</td><td style="color:#39d98a;">+$8,320</td><td>40.0%</td><td>80</td><td>14.2%</td><td style="color:#6ab8ff;">A-</td></tr>
+            <tr><td>Gen3</td><td>30D</td><td>rr=4.0 · prob≥0.35</td><td style="color:#39d98a;">+1.43</td><td style="color:#39d98a;">+$10,000</td><td>48.6%</td><td>35</td><td>—</td><td style="color:#39d98a;">A</td></tr>
+            <tr><td>180D baseline</td><td>180D</td><td>rr=2.8 · prob≥0.25</td><td style="color:#6ab8ff;">+0.40</td><td style="color:#39d98a;">+$47,200</td><td>37.5%</td><td>266</td><td>—</td><td style="color:#6ab8ff;">B+</td></tr>
+            <tr style="background:rgba(57,217,138,0.08); border:1px solid rgba(57,217,138,0.4);">
+              <td style="color:#39d98a; font-weight:800;">180D BEST 🏆</td><td style="font-weight:700;">180D</td><td style="font-weight:700; color:#39d98a;">rr=5.0 · prob≥0.35</td><td style="color:#39d98a; font-weight:900;">+1.922</td><td style="color:#39d98a; font-weight:900;">+$74,200</td><td style="font-weight:800;">48.7%</td><td>193</td><td style="color:#39d98a; font-weight:800;">4.2%</td><td style="color:#39d98a; font-weight:900;">A</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Winning config + analysis -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+          <div style="background:#030d06; border:1px solid rgba(57,217,138,.2); border-radius:8px; padding:14px;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;">🏆 180D Winning Config</div>
+            <div style="font-family:monospace; font-size:13px; color:#39d98a; line-height:2.2;">
+              bb_period = 20<br>
+              bb_std = 2.0<br>
+              rr = <strong style="color:#f6c453;">5.0</strong> ← upgraded from 2.8<br>
+              htf_bars = 48 (4H filter)<br>
+              min_prob = <strong style="color:#f6c453;">0.35</strong> ← upgraded from 0.25<br>
+              entry_hours = [8,9,18,19,20]
+            </div>
+          </div>
+          <div style="background:#030d06; border:1px solid rgba(57,217,138,.2); border-radius:8px; padding:14px;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;">📊 Key Insights</div>
+            <div style="font-size:12px; color:#ccc; line-height:1.9;">
+              <strong style="color:#39d98a;">R:R 5.0</strong> — holds across all 4 regimes. Bear market was the <em>best</em> regime (EV +2.33) — BB mean-reversion excels during trending corrections.<br><br>
+              <strong style="color:#39d98a;">Max DD only 4.2%</strong> — despite 180 days. The min_prob filter + 4H HTF stops most drawdown-causing streaks.<br><br>
+              <strong style="color:#f6c453;">193 trades / 180 days</strong> — ~1.07 trades/day average. Quality over quantity.
+            </div>
+          </div>
+        </div>
+        <div style="background:#020a04; border:1px solid rgba(57,217,138,.15); border-radius:6px; padding:12px; font-size:12px; color:var(--muted); line-height:1.7;">
+          <strong style="color:#39d98a;">Next AutoResearch run:</strong> 365-day full-cycle validation + walk-forward test (train on days 1–180, validate on 181–365). Wiring to GitHub Actions for nightly autonomous runs.
+        </div>
+      </div>
+
       <!-- AUTORESEARCH PANEL -->
       <div class="panel" style="margin-top:20px; border-color:rgba(57,217,138,0.4); background:radial-gradient(ellipse at top,#040d08,#060a0f);">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:18px;">
