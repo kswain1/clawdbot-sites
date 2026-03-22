@@ -1,86 +1,28 @@
 {
-  "days": 180,
-  "regimes": [
-    "bull(0-44)",
-    "chop(45-89)",
-    "bear(90-134)",
-    "recovery(135-179)"
-  ],
+  "version": "expanded_v1",
+  "experiments": 279,
+  "elapsed_s": 35.3,
+  "train_days": 120,
+  "val_days": 60,
   "baseline": {
     "ev": 0.4019,
     "grade": "B+",
-    "net": 24840.0,
-    "regimes": {
-      "bull": {
-        "wr": 37.2,
-        "net": 6440.0,
-        "trades": 78,
-        "ev": 0.413
-      },
-      "chop": {
-        "wr": 38.3,
-        "net": 7360.0,
-        "trades": 81,
-        "ev": 0.454
-      },
-      "bear": {
-        "wr": 40.8,
-        "net": 8360.0,
-        "trades": 76,
-        "ev": 0.55
-      },
-      "recovery": {
-        "wr": 31.1,
-        "net": 2680.0,
-        "trades": 74,
-        "ev": 0.181
-      }
-    }
-  },
-  "gen3_30d": {
-    "ev": 1.4352,
-    "grade": "A",
-    "net": 55400.0,
-    "regimes": {
-      "bull": {
-        "wr": 46.0,
-        "net": 13000.0,
-        "trades": 50,
-        "ev": 1.3
-      },
-      "chop": {
-        "wr": 44.6,
-        "net": 13800.0,
-        "trades": 56,
-        "ev": 1.232
-      },
-      "bear": {
-        "wr": 55.6,
-        "net": 16000.0,
-        "trades": 45,
-        "ev": 1.778
-      },
-      "recovery": {
-        "wr": 50.0,
-        "net": 12600.0,
-        "trades": 42,
-        "ev": 1.5
-      }
-    }
+    "net": 24840.0
   },
   "best": {
-    "ev": 1.9223,
+    "ev_train": 3.8667,
+    "ev": 4.84,
     "grade": "A",
-    "net": 74200.0,
-    "wr": 48.7,
-    "trades": 193,
-    "max_dd": 4.2,
+    "net": 9680.0,
+    "wr": 80.0,
+    "trades": 10,
+    "max_dd": 3.6,
     "params": {
-      "bb_period": 20,
-      "bb_std": 2.0,
-      "rr": 5.0,
+      "bb_period": 13,
+      "bb_std": 2.5,
+      "rr": 6.3,
       "htf_bars": 48,
-      "min_prob": 0.35,
+      "min_prob": 0.44,
       "entry_hours": [
         8,
         9,
@@ -91,96 +33,330 @@
     },
     "regimes": {
       "bull": {
-        "wr": 46.0,
-        "net": 17600.0,
-        "trades": 50,
-        "ev": 1.76
+        "wr": 100.0,
+        "net": 1260.0,
+        "trades": 1,
+        "ev": 0
       },
       "chop": {
-        "wr": 44.6,
-        "net": 18800.0,
-        "trades": 56,
-        "ev": 1.679
+        "wr": 0.0,
+        "net": -400.0,
+        "trades": 2,
+        "ev": -1.0
       },
       "bear": {
-        "wr": 55.6,
-        "net": 21000.0,
-        "trades": 45,
-        "ev": 2.333
+        "wr": 100.0,
+        "net": 5040.0,
+        "trades": 4,
+        "ev": 0
       },
       "recovery": {
-        "wr": 50.0,
-        "net": 16800.0,
-        "trades": 42,
-        "ev": 2.0
+        "wr": 100.0,
+        "net": 3780.0,
+        "trades": 3,
+        "ev": 0
       }
     }
   },
-  "winners": [
+  "walk_forward": [
+    {
+      "label": "BEST (this run)",
+      "params": {
+        "bb_period": 13,
+        "bb_std": 2.5,
+        "rr": 6.3,
+        "htf_bars": 48,
+        "min_prob": 0.44,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 3.8667,
+        "wr": 66.7,
+        "net": 4640.0
+      },
+      "val": {
+        "ev": 4.475,
+        "wr": 75.0,
+        "net": 3580.0
+      },
+      "full": {
+        "ev": 4.84,
+        "wr": 80.0,
+        "net": 9680.0
+      },
+      "decay": 1.157,
+      "robust": true
+    },
+    {
+      "label": "BASELINE",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 2.8,
+        "htf_bars": 48,
+        "min_prob": 0.25,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 0.4575,
+        "wr": 38.4,
+        "net": 20040.0
+      },
+      "val": {
+        "ev": 0.5,
+        "wr": 39.5,
+        "net": 7600.0
+      },
+      "full": {
+        "ev": 0.4019,
+        "wr": 36.9,
+        "net": 24840.0
+      },
+      "decay": 1.093,
+      "robust": true
+    },
+    {
+      "label": "GEN3",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 5.0,
+        "htf_bars": 48,
+        "min_prob": 0.35,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 1.8531,
+        "wr": 47.6,
+        "net": 53000.0
+      },
+      "val": {
+        "ev": 1.9455,
+        "wr": 49.1,
+        "net": 21400.0
+      },
+      "full": {
+        "ev": 1.9223,
+        "wr": 48.7,
+        "net": 74200.0
+      },
+      "decay": 1.05,
+      "robust": true
+    },
+    {
+      "label": "P1-rr=6.0",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 6.0,
+        "htf_bars": 48,
+        "min_prob": 0.25,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 1.6849,
+        "wr": 38.4,
+        "net": 73800.0
+      },
+      "val": {
+        "ev": 1.7632,
+        "wr": 39.5,
+        "net": 26800.0
+      },
+      "full": {
+        "ev": 1.5825,
+        "wr": 36.9,
+        "net": 97800.0
+      },
+      "decay": 1.046,
+      "robust": true
+    },
+    {
+      "label": "P1-rr=5.5",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 5.5,
+        "htf_bars": 48,
+        "min_prob": 0.25,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 1.4932,
+        "wr": 38.4,
+        "net": 65400.0
+      },
+      "val": {
+        "ev": 1.5658,
+        "wr": 39.5,
+        "net": 23800.0
+      },
+      "full": {
+        "ev": 1.3981,
+        "wr": 36.9,
+        "net": 86400.0
+      },
+      "decay": 1.049,
+      "robust": true
+    },
+    {
+      "label": "P1-rr=5.0",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 5.0,
+        "htf_bars": 48,
+        "min_prob": 0.25,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "train": {
+        "ev": 1.3014,
+        "wr": 38.4,
+        "net": 57000.0
+      },
+      "val": {
+        "ev": 1.3684,
+        "wr": 39.5,
+        "net": 20800.0
+      },
+      "full": {
+        "ev": 1.2136,
+        "wr": 36.9,
+        "net": 75000.0
+      },
+      "decay": 1.051,
+      "robust": true
+    }
+  ],
+  "top_singles": [
+    {
+      "param": "rr",
+      "value": 6.0,
+      "ev": 1.6849,
+      "delta": 1.2274
+    },
+    {
+      "param": "rr",
+      "value": 5.5,
+      "ev": 1.4932,
+      "delta": 1.0357
+    },
     {
       "param": "rr",
       "value": 5.0,
-      "ev": 1.2136,
-      "delta": 0.8117000000000001
+      "ev": 1.3014,
+      "delta": 0.8438999999999999
     },
     {
       "param": "rr",
       "value": 4.5,
-      "ev": 1.0291,
-      "delta": 0.6272
-    },
-    {
-      "param": "min_prob",
-      "value": 0.35,
-      "ev": 0.8508,
-      "delta": 0.4489
+      "ev": 1.1096,
+      "delta": 0.6520999999999999
     },
     {
       "param": "rr",
       "value": 4.0,
-      "ev": 0.8447,
-      "delta": 0.4428
+      "ev": 0.9178,
+      "delta": 0.46029999999999993
     },
     {
       "param": "bb_std",
       "value": 2.5,
-      "ev": 0.7538,
-      "delta": 0.35190000000000005
-    },
-    {
-      "param": "min_prob",
-      "value": 0.4,
-      "ev": 0.7406,
-      "delta": 0.33870000000000006
-    },
-    {
-      "param": "min_prob",
-      "value": 0.3,
-      "ev": 0.6635,
-      "delta": 0.2616
-    },
-    {
-      "param": "rr",
-      "value": 3.5,
-      "ev": 0.6602,
-      "delta": 0.25830000000000003
+      "ev": 0.8732,
+      "delta": 0.41569999999999996
     },
     {
       "param": "entry_hours",
       "value": [
-        8,
-        9
+        18,
+        19
       ],
-      "ev": 0.5926,
-      "delta": 0.19070000000000004
+      "ev": 0.8568,
+      "delta": 0.3993
     },
     {
-      "param": "htf_bars",
-      "value": 96,
-      "ev": 0.5225,
-      "delta": 0.12059999999999998
+      "param": "rr",
+      "value": 3.8,
+      "ev": 0.8411,
+      "delta": 0.38359999999999994
+    },
+    {
+      "param": "min_prob",
+      "value": 0.35,
+      "ev": 0.807,
+      "delta": 0.34950000000000003
+    },
+    {
+      "param": "min_prob",
+      "value": 0.4,
+      "ev": 0.7667,
+      "delta": 0.30920000000000003
+    },
+    {
+      "param": "min_prob",
+      "value": 0.3,
+      "ev": 0.7554,
+      "delta": 0.29789999999999994
+    },
+    {
+      "param": "min_prob",
+      "value": 0.38,
+      "ev": 0.7516,
+      "delta": 0.29410000000000003
+    },
+    {
+      "param": "rr",
+      "value": 3.5,
+      "ev": 0.726,
+      "delta": 0.26849999999999996
+    },
+    {
+      "param": "min_prob",
+      "value": 0.32,
+      "ev": 0.7034,
+      "delta": 0.2459
+    },
+    {
+      "param": "bb_period",
+      "value": 18,
+      "ev": 0.6871,
+      "delta": 0.22960000000000003
     }
-  ],
-  "experiments": 44,
-  "elapsed_s": 12.3
+  ]
 }

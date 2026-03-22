@@ -28,12 +28,12 @@ jobs:
       - name: Run AutoResearch 180-Day Sweep
         run: |
           cd autoresearch
-          python autorun_180.py 2>&1 | tee /tmp/autoresearch_run.log
+          python autorun_expanded.py 2>&1 | tee /tmp/autoresearch_run.log
           echo "Exit code: $?"
 
       - name: Update autoresearch_results.json
         run: |
-          cp /tmp/autoresearch_180d_results.json autoresearch/autoresearch_latest.json
+          cp /tmp/autoresearch_expanded_results.json autoresearch/autoresearch_latest.json
 
       - name: Update strategy_params.py with best found config
         run: |
