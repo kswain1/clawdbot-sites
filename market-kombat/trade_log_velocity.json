@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "V001",
+    "opened_at": "2026-03-23T08:08:00",
+    "closed_at": "2026-03-23T09:14:00",
+    "hold_min": 66,
+    "signal": "BUY",
+    "mode": "TREND",
+    "entry": 3080.2,
+    "target": 3170.2,
+    "stop": 3073.1,
+    "risk_pts": 20,
+    "rr": 4.5,
+    "exit": 3170.2,
+    "exit_reason": "TARGET",
+    "pnl_pts": 90.0,
+    "pnl_usd": 900.0,
+    "result": "WIN",
+    "probability": 0.52,
+    "contract": 10.0
+  },
+  {
+    "id": "V002",
+    "opened_at": "2026-03-21T18:14:00",
+    "closed_at": "2026-03-21T18:56:00",
+    "hold_min": 42,
+    "signal": "SELL",
+    "mode": "TREND",
+    "entry": 3101.5,
+    "target": 3011.5,
+    "stop": 3108.6,
+    "risk_pts": 20,
+    "rr": 4.5,
+    "exit": 3108.6,
+    "exit_reason": "STOP",
+    "pnl_pts": -20.0,
+    "pnl_usd": -200.0,
+    "result": "LOSS",
+    "probability": 0.29,
+    "contract": 10.0
+  }
+]
