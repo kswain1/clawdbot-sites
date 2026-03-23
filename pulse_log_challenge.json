@@ -277,5 +277,14 @@
     "signal": "WAIT",
     "mode": "CONSOLIDATION",
     "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-03-23 14:00 CST",
+    "strategy": "CHALLENGE",
+    "price": 4415.6,
+    "probability": 38.6,
+    "signal": "WAIT",
+    "mode": "CONSOLIDATION",
+    "bias": "BULL"
   }
 ]
