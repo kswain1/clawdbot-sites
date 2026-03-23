@@ -106,5 +106,14 @@
     "signal": "WAIT",
     "mode": "TREND",
     "bias": "BULL"
+  },
+  {
+    "timestamp": "2026-03-23 06:30 CST",
+    "strategy": "CHALLENGE",
+    "price": 4404.6,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "BULL"
   }
 ]
