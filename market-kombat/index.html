@@ -236,6 +236,57 @@
       </section>
 
       <!-- ══════════════════════════════════════════════════════════ -->
+      <!-- LIVE TRADE LOG                                            -->
+      <!-- ══════════════════════════════════════════════════════════ -->
+      <section class="panel" id="liveTradePanel" style="margin-top:20px; border-color:rgba(246,196,83,0.4); background:radial-gradient(ellipse at top,#0d0a00,#060a0f);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <div>
+            <div class="eyebrow" style="color:#f6c453;">📋 LIVE TRADE LOG</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:2px;">Auto paper-tracked — every ENTER NOW signal logged with real outcome</div>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <span id="tradeStatusBadge" style="background:#111; border:1px solid #222; padding:5px 12px; border-radius:5px; font-size:12px; color:var(--muted);">LOADING...</span>
+            <span id="tradeNetBadge"    style="background:#111; border:1px solid #333; padding:5px 12px; border-radius:5px; font-size:12px; color:#888;">NET —</span>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px;" id="tradeStatsRow">
+          <div style="background:#0d0a00; border:1px solid rgba(246,196,83,.2); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em;">Trades</div>
+            <div id="statTrades" style="font-size:22px; font-weight:900; color:#f6c453; margin-top:4px;">—</div>
+          </div>
+          <div style="background:#0d0a00; border:1px solid rgba(57,217,138,.2); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em;">Win Rate</div>
+            <div id="statWR" style="font-size:22px; font-weight:900; color:#39d98a; margin-top:4px;">—%</div>
+          </div>
+          <div style="background:#0d0a00; border:1px solid rgba(106,184,255,.2); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em;">Net P&amp;L</div>
+            <div id="statNet" style="font-size:22px; font-weight:900; color:#6ab8ff; margin-top:4px;">$—</div>
+          </div>
+          <div style="background:#0d0a00; border:1px solid rgba(57,217,138,.2); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em;">Wins</div>
+            <div id="statWins" style="font-size:22px; font-weight:900; color:#39d98a; margin-top:4px;">—</div>
+          </div>
+          <div style="background:#0d0a00; border:1px solid rgba(255,93,93,.2); border-radius:8px; padding:12px; text-align:center;">
+            <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em;">Losses</div>
+            <div id="statLosses" style="font-size:22px; font-weight:900; color:#ff5d5d; margin-top:4px;">—</div>
+          </div>
+        </div>
+
+        <!-- Open trade indicator -->
+        <div id="openTradeRow" style="display:none; background:rgba(246,196,83,0.08); border:1px solid rgba(246,196,83,0.5); border-radius:8px; padding:12px; margin-bottom:14px; font-size:13px; color:#f6c453;">
+          <strong>⚡ TRADE IN PROGRESS</strong> — <span id="openTradeDetail">monitoring target / stop...</span>
+        </div>
+
+        <!-- Trade history table -->
+        <table class="trade-table">
+          <thead><tr><th>#</th><th>Signal</th><th>Mode</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&amp;L (pts)</th><th>P&amp;L (USD)</th><th>Hold</th><th>Reason</th><th>Time</th></tr></thead>
+          <tbody id="tradeLogBody"><tr><td colspan="11" style="text-align:center; color:var(--muted); padding:20px;">No trades logged yet — waiting for first ENTER NOW signal</td></tr></tbody>
+        </table>
+      </section>
+
+      <!-- ══════════════════════════════════════════════════════════ -->
       <!-- ══════════════════════════════════════════════════════════ -->
       <!-- BULLZEN vs BEARAKU — HOURLY BATTLE SCREEN                 -->
       <!-- ══════════════════════════════════════════════════════════ -->
@@ -2630,6 +2681,75 @@
     // ═══════════════════════════════════════════════════════════════
     // BOOT — wire everything up on page load
     // ═══════════════════════════════════════════════════════════════
+    // ── LIVE TRADE LOG ──────────────────────────────────────────────────────
+    async function refreshTradeLog() {
+      try {
+        const res = await fetch('trade_log.json?_=' + Date.now());
+        if (!res.ok) return;
+        const log = await res.json();
+
+        const closed = log.filter(t => t.result === 'WIN' || t.result === 'LOSS');
+        const open   = log.find(t => t.result === 'OPEN');
+        const wins   = closed.filter(t => t.result === 'WIN').length;
+        const losses = closed.length - wins;
+        const net    = closed.reduce((s,t) => s + (t.pnl_usd||0), 0);
+        const wr     = closed.length ? (wins/closed.length*100).toFixed(1) : '—';
+
+        // Stats
+        document.getElementById('statTrades').textContent = closed.length || '0';
+        document.getElementById('statWR').textContent     = closed.length ? wr + '%' : '—%';
+        const netEl = document.getElementById('statNet');
+        netEl.textContent = closed.length ? '$' + net.toFixed(0) : '$—';
+        netEl.style.color = net >= 0 ? '#39d98a' : '#ff5d5d';
+        document.getElementById('statWins').textContent   = wins;
+        document.getElementById('statLosses').textContent = losses;
+
+        // Badges
+        const badge = document.getElementById('tradeStatusBadge');
+        if (open) {
+          badge.textContent = '⚡ TRADE LIVE';
+          badge.style.background = 'rgba(246,196,83,0.15)';
+          badge.style.color = '#f6c453';
+          badge.style.borderColor = 'rgba(246,196,83,0.5)';
+          document.getElementById('openTradeRow').style.display = 'block';
+          document.getElementById('openTradeDetail').textContent =
+            `${open.signal} @ $${open.entry} | Target $${open.target} | Stop $${open.stop} | Opened ${open.opened_at}`;
+        } else {
+          badge.textContent = closed.length ? 'MONITORING' : 'WAITING';
+          badge.style.background = '#111'; badge.style.color = 'var(--muted)';
+          document.getElementById('openTradeRow').style.display = 'none';
+        }
+        const netBadge = document.getElementById('tradeNetBadge');
+        netBadge.textContent = 'NET ' + (closed.length ? (net >= 0 ? '+$' : '-$') + Math.abs(net).toFixed(0) : '—');
+        netBadge.style.color = net >= 0 ? '#39d98a' : '#ff5d5d';
+
+        // Table — show last 20 trades newest first
+        const tbody = document.getElementById('tradeLogBody');
+        const display = [...closed].reverse().slice(0, 20);
+        if (!display.length) return;
+        tbody.innerHTML = display.map(t => {
+          const win = t.result === 'WIN';
+          const pnlColor = win ? '#39d98a' : '#ff5d5d';
+          const icon = win ? '✅' : '❌';
+          return `<tr>
+            <td style="color:#888;">${t.id}</td>
+            <td style="color:${t.signal==='BUY'?'#39d98a':'#ff5d5d'};font-weight:700;">${t.signal}</td>
+            <td style="color:var(--muted);font-size:11px;">${t.mode}</td>
+            <td>$${t.entry}</td>
+            <td>$${t.exit}</td>
+            <td style="color:${pnlColor};font-weight:800;">${icon} ${t.result}</td>
+            <td style="color:${pnlColor};font-weight:700;">${t.pnl_pts > 0 ? '+' : ''}${t.pnl_pts}</td>
+            <td style="color:${pnlColor};font-weight:700;">${t.pnl_usd >= 0 ? '+' : ''}$${t.pnl_usd?.toFixed(2)}</td>
+            <td style="color:var(--muted);">${t.hold_min}m</td>
+            <td style="color:var(--muted);font-size:11px;">${t.exit_reason}</td>
+            <td style="color:var(--muted);font-size:10px;">${(t.opened_at||'').slice(5,16)}</td>
+          </tr>`;
+        }).join('');
+      } catch(e) {
+        console.warn('trade_log.json not yet available', e);
+      }
+    }
+
     (async function boot() {
       // 1. Initial arena + day recap load
       await refreshLiveArena();
@@ -2643,6 +2763,10 @@
 
       // 4. Forward test pulse feed (pre-load data)
       if (typeof updatePulseFeed === 'function') updatePulseFeed();
+
+      // 5. Live trade log
+      await refreshTradeLog();
+      setInterval(refreshTradeLog, 5 * 60 * 1000);
 
       console.log('🧿 Market Kombat booted');
     })();

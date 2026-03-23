@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
 """
 Aura-V 2.0 HYBRID Pulse Relay
-- TREND mode     → IMMEDIATE entry (catch momentum)
-- CONSOLIDATION  → 20-MIN countdown (filter fakeouts)
+- TREND mode     → 15-MIN countdown (3 steps: 15→10→5→ENTER) so you never miss entry
+- CONSOLIDATION  → 20-MIN countdown (4 steps: 20→15→10→5→ENTER) filter fakeouts
 - TRANSITION     → WAIT (sit out)
 """
-import os, json, requests
+import os, json, requests, sys
 import yfinance as yf
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from trade_logger import process_pulse, get_stats
+    TRADE_LOGGING = True
+except ImportError:
+    TRADE_LOGGING = False
+    print("trade_logger not found — trade logging disabled")
 from datetime import datetime, timezone, timedelta
 
 CST = timedelta(hours=-6)
@@ -234,6 +241,39 @@ def embed_countdown(data, step, entry_time_cst, sp):
         "footer": {"text": f"CONSOLIDATION Mode: 20-Min Confirmation Filter | Step {5-step}/5"}
     }
 
+def embed_trend_countdown(data, step, entry_time_cst, sp):
+    """TREND 15-min countdown: step 3=15min, 2=10min, 1=5min, 0=ENTER"""
+    color = 0x39d98a if data['signal'] == 'BUY' else 0xff5d5d
+    risk  = data['risk']
+    tgt   = round(sp + risk * 2.8, 2) if data['signal'] == 'BUY' else round(sp - risk * 2.8, 2)
+    stp   = round(sp - risk, 2)       if data['signal'] == 'BUY' else round(sp + risk, 2)
+
+    labels = {
+        3: ('🔔', '15 MIN WARNING',   'TREND signal locked. Prep your chart now.'),
+        2: ('⏳', '10 MIN REMAINING', 'Confirm price still near BB band.'),
+        1: ('🔴', '5 MIN REMAINING',  'Final sizing check. Finger on trigger.'),
+        0: ('🟢', 'ENTER NOW',        'Execute TREND entry. 15-second window.'),
+    }
+    emoji, label, desc = labels.get(step, ('📡', 'TREND SIGNAL', ''))
+
+    return {
+        "title": f"TREND {emoji} {label} — {data['signal']}",
+        "description": desc,
+        "color": color,
+        "fields": [
+            {"name": "MODE",        "value": "```\nTREND — 15-MIN COUNTDOWN\n```",        "inline": True},
+            {"name": "SIGNAL",      "value": f"```\n{data['signal']}\n```",                "inline": True},
+            {"name": "PROBABILITY", "value": f"```\n{data['probability']}%\n{prob_bar(data['probability'])}\n```", "inline": True},
+            {"name": "ENTRY PRICE", "value": f"```\n${sp}\n```",                           "inline": True},
+            {"name": "TARGET",      "value": f"```\n${tgt} (+{round(risk*2.8,1)} pts)\n```", "inline": True},
+            {"name": "STOP LOSS",   "value": f"```\n${stp} (-{risk} pts)\n```",            "inline": True},
+            {"name": "SIGNAL TIME", "value": f"```\n{entry_time_cst}\n```",                "inline": True},
+            {"name": "STEP",        "value": f"```\n{4-step} of 4\n```",                  "inline": True},
+        ],
+        "timestamp": now_utc().isoformat(),
+        "footer": {"text": f"TREND Mode: 15-Min Entry Countdown | Step {4-step}/4"}
+    }
+
 # ── MAIN ──
 def main():
     print("Aura-V 2.0 Hybrid Pulse starting...")
@@ -248,21 +288,37 @@ def main():
 
     if high_conviction:
         if data['mode'] == 'TREND':
-            # ── TREND: IMMEDIATE ENTRY ──
-            # Only fire if not already in a trend signal for same direction
-            if state.get('active_signal') != f"TREND_{data['signal']}":
+            # ── TREND: 15-MIN COUNTDOWN (3=15min, 2=10min, 1=5min, 0=ENTER) ──
+            prev_signal = state.get('active_signal')
+            prev_mode   = state.get('entry_mode')
+
+            if prev_signal != f"TREND_{data['signal']}" or prev_mode != 'TREND':
+                # NEW trend signal — start at step 3 (15 min out)
                 state = {
                     'active_signal': f"TREND_{data['signal']}",
                     'signal_time': now_cst_str,
                     'signal_price': data['price'],
-                    'countdown_step': 0,
+                    'countdown_step': 3,
                     'entry_mode': 'TREND'
                 }
-                print(f"TREND IMMEDIATE: {data['signal']} @ ${data['price']}")
-                send(webhook, embed_trend_immediate(data, now_cst_str))
+                print(f"TREND 15MIN START: {data['signal']} @ ${data['price']} — Step 3 (15 min)")
+                send(webhook, embed_trend_countdown(data, 3, now_cst_str, data['price']))
             else:
-                # Already alerted this trend — send monitoring pulse
-                send(webhook, embed_monitoring(data))
+                # CONTINUING countdown
+                step = max(0, state['countdown_step'] - 1)
+                state['countdown_step'] = step
+                sp   = state['signal_price']
+                print(f"TREND Countdown Step: {step}")
+                send(webhook, embed_trend_countdown(data, step, state['signal_time'], sp))
+
+                if step == 0:
+                    # Fire 15-second entry window
+                    send(webhook, embed_fifteen_sec(data, sp))
+                    # LOG TRADE ENTRY
+                    if TRADE_LOGGING:
+                        process_pulse(data['signal'], 'TREND', float(sp), data['probability'], enter_now=True)
+                    state = {'active_signal': None, 'signal_time': None,
+                             'signal_price': None, 'countdown_step': 0, 'entry_mode': None}
 
         elif data['mode'] == 'CONSOLIDATION':
             # ── CONSOLIDATION: 20-MIN COUNTDOWN ──
@@ -291,6 +347,9 @@ def main():
                 if step == 0:
                     # Fire 15-second window immediately after ENTER NOW
                     send(webhook, embed_fifteen_sec(data, sp))
+                    # LOG TRADE ENTRY
+                    if TRADE_LOGGING:
+                        process_pulse(data['signal'], 'CONSOLIDATION', float(sp), data['probability'], enter_now=True)
                     # Reset state
                     state = {'active_signal': None, 'signal_time': None,
                              'signal_price': None, 'countdown_step': 0, 'entry_mode': None}
@@ -308,6 +367,11 @@ def main():
 
     save_state(state)
     save_log(data)
+
+    # ── TRADE MONITORING PULSE (check open trade target/stop on every pulse) ──
+    if TRADE_LOGGING:
+        process_pulse(data['signal'], data['mode'], float(data['price']), data['probability'], enter_now=False)
+
     print("Done.")
 
 if __name__ == "__main__":

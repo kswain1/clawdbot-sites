@@ -2,7 +2,6 @@ name: Aura-V 2.0 Pulse Relay
 
 on:
   schedule:
-    # Run every 5 minutes
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
@@ -26,17 +25,20 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install yfinance requests
+          pip install yfinance requests numpy
 
-      - name: Execute Aura-V Pulse
+      - name: Execute Aura-V Pulse + Trade Logger
         env:
           DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
-        run: python alert_relay.py
+          DISCORD_WEBHOOK_TRADE_LOG: https://discord.com/api/webhooks/1485448651362013194/2goZ_3_asEnwJQeraqB2nLQXRCrtkyYKg7lhNC7K-qHDdXHyLyQs-13eIuNpCO1ZvYx3
+        run: |
+          cp trade_logger.py . 2>/dev/null || true
+          python alert_relay.py
 
       - name: Commit Data Update
         run: |
           git config --local user.email "aura@clawdbot.com"
           git config --local user.name "Aura Relay"
-          git add -A
+          git add pulse_log.json trade_log.json trade_state.json 2>/dev/null || git add -A
           git diff --staged --quiet || git commit -m "Pulse Update: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
