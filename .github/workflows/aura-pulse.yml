@@ -1,4 +1,4 @@
-name: Aura-V 2.0 Pulse Relay
+name: Aura-V Multi-Strategy Relay
 
 on:
   schedule:
@@ -27,18 +27,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install yfinance requests numpy
 
-      - name: Execute Aura-V Pulse + Trade Logger
+      - name: Run Multi-Strategy Relay
         env:
-          DISCORD_WEBHOOK_ALERTS: ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
-          DISCORD_WEBHOOK_TRADE_LOG: https://discord.com/api/webhooks/1485448651362013194/2goZ_3_asEnwJQeraqB2nLQXRCrtkyYKg7lhNC7K-qHDdXHyLyQs-13eIuNpCO1ZvYx3
-        run: |
-          cp trade_logger.py . 2>/dev/null || true
-          python alert_relay.py
+          DISCORD_WEBHOOK_ALERTS:    ${{ secrets.DISCORD_WEBHOOK_ALERTS }}
+          DISCORD_WEBHOOK_VELOCITY:  ${{ secrets.DISCORD_WEBHOOK_VELOCITY }}
+          DISCORD_WEBHOOK_CHALLENGE: ${{ secrets.DISCORD_WEBHOOK_CHALLENGE }}
+          DISCORD_BOT_TOKEN:         ${{ secrets.DISCORD_BOT_TOKEN }}
+        run: python alert_relay.py
 
       - name: Commit Data Update
         run: |
           git config --local user.email "aura@clawdbot.com"
           git config --local user.name "Aura Relay"
-          git add pulse_log.json trade_log.json trade_state.json 2>/dev/null || git add -A
-          git diff --staged --quiet || git commit -m "Pulse Update: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git add -A
+          git diff --staged --quiet || git commit -m "Multi-Strategy Pulse: $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
