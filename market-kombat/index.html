@@ -482,6 +482,121 @@
 
       </div><!-- /strat-grid -->
 
+      <!-- STRATEGY BACKTEST REGISTRY — same as Backtest tab -->
+      <div class="panel" style="margin-top:4px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div class="eyebrow">Strategy Backtest Registry — Week of Mar 13–20, 2026</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:3px;">Click any row to open deep dive · Double-click strategy name for full profile</div>
+          </div>
+          <a href="strategy-explained.html" style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--accent); text-decoration:none; font-weight:700; background:#111; padding:8px 16px; border-radius:8px; border:1px solid rgba(246,196,83,.4); white-space:nowrap;">📖 Strategy Explainer →</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="trade-table" id="strategyCompareTable2">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Strategy</th>
+                <th>Entry Type</th>
+                <th>Countdown</th>
+                <th>Trades</th>
+                <th>Win Rate</th>
+                <th>Net PnL</th>
+                <th style="text-align:center;">EV Ratio</th>
+                <th style="text-align:center;">Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="strategy-row" onclick="openDeepDive('raw')" style="cursor:pointer;">
+                <td style="color:var(--muted);">1</td>
+                <td ondblclick="openStratProfile('raw');event.stopPropagation();" title="Double-click for full profile"><strong>Aura-V 2.0 Raw</strong><br><small style="color:var(--muted);">2.0 STD mean reversion only</small></td>
+                <td><span class="pill" style="background:#333;">Immediate</span></td>
+                <td style="color:var(--muted); font-size:12px;">None</td>
+                <td>32</td>
+                <td><span style="color:#ff5d5d;">37.5%</span></td>
+                <td><span style="color:#ff5d5d;">-$2,338</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-neg">-0.73</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-f">F</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('trendguard')" style="cursor:pointer;">
+                <td style="color:var(--muted);">2</td>
+                <td ondblclick="openStratProfile('trendguard');event.stopPropagation();" title="Double-click for full profile"><strong>Aura-V 2.0 + Trend Guard</strong><br><small style="color:var(--muted);">2% equity cap + 30pt trend filter</small></td>
+                <td><span class="pill" style="background:#333;">Immediate</span></td>
+                <td style="color:var(--muted); font-size:12px;">None</td>
+                <td>27</td>
+                <td><span style="color:#f6c453;">48.1%</span></td>
+                <td><span style="color:#ff5d5d;">-$497</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-neg">-0.18</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-d">D</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('automode')" style="cursor:pointer;">
+                <td style="color:var(--muted);">3</td>
+                <td ondblclick="openStratProfile('automode');event.stopPropagation();" title="Double-click for full profile"><strong>Aura-V 2.0 Auto-Mode</strong><br><small style="color:var(--muted);">ADX+ATR+ROC trend/consol switch</small></td>
+                <td><span class="pill" style="background:#333;">Immediate</span></td>
+                <td style="color:var(--muted); font-size:12px;">None</td>
+                <td>29</td>
+                <td><span style="color:#39d98a;">65.5%</span></td>
+                <td><span style="color:#39d98a;">+$2,677</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-pos">+0.88</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-b">B+</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('hybrid10')" style="cursor:pointer;">
+                <td style="color:var(--muted);">4</td>
+                <td ondblclick="openStratProfile('hybrid10');event.stopPropagation();" title="Double-click for full profile"><strong>Hybrid: TREND Immediate</strong><br><small style="color:var(--muted);">10-min CONSOL filter</small></td>
+                <td><span class="pill" style="background:#1a2a3a; color:#6ab8ff;">Hybrid</span></td>
+                <td style="color:#6ab8ff; font-size:12px; font-weight:700;">10 min</td>
+                <td>14</td>
+                <td><span style="color:#39d98a;">57.1%</span></td>
+                <td><span style="color:#39d98a;">+$2,889</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-pos">+0.83</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-b">B+</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('hybrid15')" style="cursor:pointer;">
+                <td style="color:var(--muted);">5</td>
+                <td ondblclick="openStratProfile('hybrid15');event.stopPropagation();" title="Double-click for full profile"><strong>Hybrid: TREND Immediate</strong><br><small style="color:var(--muted);">15-min CONSOL filter</small></td>
+                <td><span class="pill" style="background:#1a2a3a; color:#6ab8ff;">Hybrid</span></td>
+                <td style="color:#6ab8ff; font-size:12px; font-weight:700;">15 min</td>
+                <td>12</td>
+                <td><span style="color:#39d98a;">50.0%</span></td>
+                <td><span style="color:#39d98a;">+$2,130</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-pos">+0.70</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-b">B</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('hybrid20')" style="cursor:pointer; background:rgba(57,217,138,0.04);">
+                <td style="color:var(--muted);">6</td>
+                <td ondblclick="openStratProfile('hybrid20');event.stopPropagation();" title="Double-click for full profile">
+                  <strong style="color:#39d98a;">Hybrid: TREND Immediate ★ LIVE</strong><br>
+                  <small style="color:var(--muted);">20-min CONSOL filter (deployed)</small>
+                </td>
+                <td><span class="pill" style="background:#1a3a2a; color:#39d98a;">Hybrid</span></td>
+                <td style="color:#39d98a; font-size:12px; font-weight:700;">20 min 🏆</td>
+                <td>11</td>
+                <td><span style="color:#39d98a;">54.5%</span></td>
+                <td><span style="color:#39d98a;">+$2,447</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-pos">+0.92</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-b">B+</span></td>
+              </tr>
+              <tr class="strategy-row" onclick="openDeepDive('hybrid30')" style="cursor:pointer;">
+                <td style="color:var(--muted);">7</td>
+                <td ondblclick="openStratProfile('hybrid30');event.stopPropagation();" title="Double-click for full profile"><strong>Hybrid: TREND Immediate</strong><br><small style="color:var(--muted);">30-min CONSOL filter</small></td>
+                <td><span class="pill" style="background:#1a2a3a; color:#6ab8ff;">Hybrid</span></td>
+                <td style="color:#6ab8ff; font-size:12px; font-weight:700;">30 min</td>
+                <td>11</td>
+                <td><span style="color:#39d98a;">54.5%</span></td>
+                <td><span style="color:#39d98a;">+$2,356</span></td>
+                <td style="text-align:center;"><span class="ev-badge ev-pos">+0.82</span></td>
+                <td style="text-align:center;"><span class="grade-badge grade-b">B+</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:12px; font-size:11px; color:var(--muted); display:flex; gap:24px; flex-wrap:wrap;">
+          <span>EV Ratio = (Win Rate × Avg Win) − (Loss Rate × Avg Loss) ÷ Avg Loss</span>
+          <span style="color:#39d98a;">▲ Higher EV = More edge per dollar risked</span>
+          <span style="color:var(--muted);">Click any row to open deep dive ↗</span>
+        </div>
+      </div>
+
       <!-- HEAD-TO-HEAD COMPARISON TABLE -->
       <div class="panel" style="margin-top:4px; margin-bottom:20px;">
         <div class="eyebrow" style="margin-bottom:16px;">Strategy Comparison — Side by Side</div>
