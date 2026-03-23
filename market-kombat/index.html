@@ -1791,7 +1791,7 @@
 
     
     <!-- ═══════════════════════════════════ AUTORESEARCH TAB ═══════════════════════════════════ -->
-    <div id="autoresearch" class="tab-content" style="display:none;">
+    <div id="autoresearch" class="tab-content">
 
       <!-- HERO HEADER -->
       <div class="panel" style="border-color:rgba(106,184,255,0.5); background:radial-gradient(ellipse at top left,#020c18,#060a0f); margin-bottom:20px;">
@@ -2414,7 +2414,7 @@
     // Hash routing on page load
     (function() {
       const hash = window.location.hash.replace('#', '');
-      const valid = ['kombat','strategies','propfirm','forwardtest','backtest','intelligence'];
+      const valid = ['kombat','strategies','propfirm','forwardtest','backtest','autoresearch','intelligence'];
       if (hash && valid.includes(hash)) {
         showTab(hash);
       }
