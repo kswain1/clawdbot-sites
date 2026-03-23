@@ -346,13 +346,14 @@
     <!-- ═══════════════════════════════════ STRATEGIES TAB ═══════════════════════════════════ -->
     <div id="strategies" class="tab-content">
 
+      <!-- HERO HEADER -->
       <div style="margin-bottom:24px;">
-        <div class="eyebrow">Strategy Pipeline</div>
-        <h1 style="margin-top:4px;">Active Trading Strategies</h1>
-        <div style="font-size:13px; color:var(--muted); margin-top:6px;">Real-time performance across all 3 Aura-V strategies · pass rates from 360-day simulation</div>
+        <div style="font-size:11px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Aura-V Multi-Strategy System</div>
+        <div style="font-size:28px; font-weight:900; color:#e8eaf0;">Active Trading Strategies</div>
+        <div style="font-size:13px; color:var(--muted); margin-top:6px;">3 strategies running in parallel — each tuned for a different risk/reward profile · Live pulse every 5 min</div>
       </div>
 
-      <!-- STRATEGY CARDS -->
+      <!-- STRATEGY CARDS with donut rings -->
       <div class="strat-grid" id="stratCards">
 
         <!-- HYBRID -->
@@ -361,22 +362,15 @@
             <div>
               <div style="font-size:22px; margin-bottom:4px;">🤖</div>
               <div class="strat-name">HYBRID</div>
-              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Auto-Mode · TREND+CONSOL</div>
+              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Auto-Mode · TREND + CONSOL</div>
             </div>
-            <div>
-              <div class="strat-status-badge strat-status-live" id="hybridStatus">LIVE</div>
-            </div>
+            <div class="strat-status-badge strat-status-live" id="hybridStatus">LIVE</div>
           </div>
-          <!-- Donut ring: FTMO pass rate 76% -->
           <div class="strat-ring-wrap">
             <div class="ring-wrap">
               <svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120">
                 <circle class="ring-track" cx="60" cy="60" r="50"/>
-                <circle class="ring-progress" cx="60" cy="60" r="50"
-                  stroke="#39d98a"
-                  stroke-dasharray="314.16"
-                  stroke-dashoffset="75.4"
-                  id="hybridRing"/>
+                <circle class="ring-progress" cx="60" cy="60" r="50" stroke="#39d98a" stroke-dasharray="314.16" stroke-dashoffset="75.4" id="hybridRing"/>
               </svg>
               <div class="ring-label">
                 <div class="ring-label-pct" style="color:#39d98a;">76%</div>
@@ -384,29 +378,21 @@
               </div>
             </div>
           </div>
-          <div class="strat-stats">
-            <div class="strat-stat">
-              <div class="strat-stat-label">R:R Ratio</div>
-              <div class="strat-stat-value" style="color:#39d98a;">1:2.8</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Win Rate</div>
-              <div class="strat-stat-value">49%</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Days P1</div>
-              <div class="strat-stat-value">6d</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Trades P1</div>
-              <div class="strat-stat-value">8</div>
-            </div>
+          <!-- Param grid -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div class="strat-stat"><div class="strat-stat-label">R:R Ratio</div><div class="strat-stat-value" style="color:#39d98a;">1:2.8</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Win Rate</div><div class="strat-stat-value">49%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Min Prob</div><div class="strat-stat-value">0%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">BB Std</div><div class="strat-stat-value">2.0</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Days P1</div><div class="strat-stat-value">6d</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Trades P1</div><div class="strat-stat-value">8</div></div>
           </div>
-          <div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:var(--muted);">
-            <span>FP Pass Rate: <strong style="color:#39d98a;">71%</strong></span>
-            <span>Min Prob: <strong style="color:var(--text);">0%</strong></span>
+          <div style="background:rgba(57,217,138,0.06); border:1px solid rgba(57,217,138,0.2); border-radius:8px; padding:10px; margin-bottom:12px; font-size:11px; color:var(--muted); line-height:1.7;">
+            <strong style="color:#39d98a;">Entry Hours:</strong> All hours (no restriction)<br>
+            <strong style="color:#39d98a;">Filter:</strong> 4H HTF bias + 20-min CONSOL countdown<br>
+            <strong style="color:#39d98a;">FP Pass Rate:</strong> <span style="color:#39d98a; font-weight:700;">71%</span>
           </div>
-          <div style="margin-top:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
+          <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
             <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">Last 3 Trades</div>
             <div id="hybridLastTrades" style="font-size:11px; color:var(--muted);">Loading...</div>
           </div>
@@ -418,22 +404,15 @@
             <div>
               <div style="font-size:22px; margin-bottom:4px;">⚡</div>
               <div class="strat-name">VELOCITY</div>
-              <div style="font-size:11px; color:var(--muted); margin-top:2px;">High R:R · Selective entries</div>
+              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Speed pass · High R:R</div>
             </div>
-            <div>
-              <div class="strat-status-badge strat-status-armed" id="velocityStatus">ARMED</div>
-            </div>
+            <div class="strat-status-badge strat-status-armed" id="velocityStatus">ARMED</div>
           </div>
-          <!-- Donut ring: FTMO pass rate 95% -->
           <div class="strat-ring-wrap">
             <div class="ring-wrap">
               <svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120">
                 <circle class="ring-track" cx="60" cy="60" r="50"/>
-                <circle class="ring-progress" cx="60" cy="60" r="50"
-                  stroke="#f6c453"
-                  stroke-dasharray="314.16"
-                  stroke-dashoffset="15.71"
-                  id="velocityRing"/>
+                <circle class="ring-progress" cx="60" cy="60" r="50" stroke="#f6c453" stroke-dasharray="314.16" stroke-dashoffset="15.71" id="velocityRing"/>
               </svg>
               <div class="ring-label">
                 <div class="ring-label-pct" style="color:#f6c453;">95%</div>
@@ -441,29 +420,20 @@
               </div>
             </div>
           </div>
-          <div class="strat-stats">
-            <div class="strat-stat">
-              <div class="strat-stat-label">R:R Ratio</div>
-              <div class="strat-stat-value" style="color:#f6c453;">1:4.5</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Win Rate</div>
-              <div class="strat-stat-value">52%</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Days P1</div>
-              <div class="strat-stat-value">6.4d</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Trades P1</div>
-              <div class="strat-stat-value">7</div>
-            </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div class="strat-stat"><div class="strat-stat-label">R:R Ratio</div><div class="strat-stat-value" style="color:#f6c453;">1:4.5</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Win Rate</div><div class="strat-stat-value">52%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Min Prob</div><div class="strat-stat-value" style="color:#f6c453;">25%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">BB Std</div><div class="strat-stat-value">2.0</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Days P1</div><div class="strat-stat-value">6.4d</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Trades P1</div><div class="strat-stat-value">7</div></div>
           </div>
-          <div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:var(--muted);">
-            <span>FP Pass Rate: <strong style="color:#f6c453;">93.8%</strong></span>
-            <span>Min Prob: <strong style="color:var(--text);">25%</strong></span>
+          <div style="background:rgba(246,196,83,0.06); border:1px solid rgba(246,196,83,0.2); border-radius:8px; padding:10px; margin-bottom:12px; font-size:11px; color:var(--muted); line-height:1.7;">
+            <strong style="color:#f6c453;">Entry Hours:</strong> 8–10 AM, 6–8 PM CST<br>
+            <strong style="color:#f6c453;">Filter:</strong> min_prob ≥ 25% · BB period 16<br>
+            <strong style="color:#f6c453;">FP Pass Rate:</strong> <span style="color:#f6c453; font-weight:700;">93.8%</span>
           </div>
-          <div style="margin-top:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
+          <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
             <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">Last 3 Trades</div>
             <div id="velocityLastTrades" style="font-size:11px; color:var(--muted);">Loading...</div>
           </div>
@@ -475,22 +445,15 @@
             <div>
               <div style="font-size:22px; margin-bottom:4px;">🛡️</div>
               <div class="strat-name">CHALLENGE</div>
-              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Conservative · Prop-optimised</div>
+              <div style="font-size:11px; color:var(--muted); margin-top:2px;">Max pass rate · Capital preservation</div>
             </div>
-            <div>
-              <div class="strat-status-badge strat-status-ready" id="challengeStatus">READY</div>
-            </div>
+            <div class="strat-status-badge strat-status-ready" id="challengeStatus">READY</div>
           </div>
-          <!-- Donut ring: FTMO pass rate 98.8% -->
           <div class="strat-ring-wrap">
             <div class="ring-wrap">
               <svg class="ring-svg" width="120" height="120" viewBox="0 0 120 120">
                 <circle class="ring-track" cx="60" cy="60" r="50"/>
-                <circle class="ring-progress" cx="60" cy="60" r="50"
-                  stroke="#6ab8ff"
-                  stroke-dasharray="314.16"
-                  stroke-dashoffset="3.77"
-                  id="challengeRing"/>
+                <circle class="ring-progress" cx="60" cy="60" r="50" stroke="#6ab8ff" stroke-dasharray="314.16" stroke-dashoffset="3.77" id="challengeRing"/>
               </svg>
               <div class="ring-label">
                 <div class="ring-label-pct" style="color:#6ab8ff;">98.8%</div>
@@ -498,29 +461,20 @@
               </div>
             </div>
           </div>
-          <div class="strat-stats">
-            <div class="strat-stat">
-              <div class="strat-stat-label">R:R Ratio</div>
-              <div class="strat-stat-value" style="color:#6ab8ff;">1:4.5</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Win Rate</div>
-              <div class="strat-stat-value">65%</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Days P1</div>
-              <div class="strat-stat-value">27d</div>
-            </div>
-            <div class="strat-stat">
-              <div class="strat-stat-label">Avg Trades P1</div>
-              <div class="strat-stat-value">5</div>
-            </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div class="strat-stat"><div class="strat-stat-label">R:R Ratio</div><div class="strat-stat-value" style="color:#6ab8ff;">1:4.5</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Win Rate</div><div class="strat-stat-value">65%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Min Prob</div><div class="strat-stat-value" style="color:#6ab8ff;">42%</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">BB Std</div><div class="strat-stat-value" style="color:#6ab8ff;">2.5</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Days P1</div><div class="strat-stat-value">27d</div></div>
+            <div class="strat-stat"><div class="strat-stat-label">Avg Trades P1</div><div class="strat-stat-value">5</div></div>
           </div>
-          <div style="margin-top:12px; display:flex; justify-content:space-between; font-size:11px; color:var(--muted);">
-            <span>FP Pass Rate: <strong style="color:#6ab8ff;">100%</strong></span>
-            <span>Min Prob: <strong style="color:var(--text);">42%</strong></span>
+          <div style="background:rgba(106,184,255,0.06); border:1px solid rgba(106,184,255,0.2); border-radius:8px; padding:10px; margin-bottom:12px; font-size:11px; color:var(--muted); line-height:1.7;">
+            <strong style="color:#6ab8ff;">Entry Hours:</strong> 8–9 AM, 6–8 PM CST<br>
+            <strong style="color:#6ab8ff;">Filter:</strong> min_prob ≥ 42% · 4H HTF · BB std 2.5<br>
+            <strong style="color:#6ab8ff;">FP Pass Rate:</strong> <span style="color:#6ab8ff; font-weight:700;">100% ✅</span>
           </div>
-          <div style="margin-top:12px; padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
+          <div style="padding:10px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid var(--border);">
             <div style="font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px;">Last 3 Trades</div>
             <div id="challengeLastTrades" style="font-size:11px; color:var(--muted);">Loading...</div>
           </div>
@@ -528,86 +482,102 @@
 
       </div><!-- /strat-grid -->
 
+      <!-- HEAD-TO-HEAD COMPARISON TABLE -->
+      <div class="panel" style="margin-top:4px; margin-bottom:20px;">
+        <div class="eyebrow" style="margin-bottom:16px;">Strategy Comparison — Side by Side</div>
+        <div style="overflow-x:auto;">
+          <table class="trade-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th style="color:#39d98a;">🤖 Hybrid</th>
+                <th style="color:#f6c453;">⚡ Velocity</th>
+                <th style="color:#6ab8ff;">🛡️ Challenge</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="color:var(--muted);">BB Period</td><td>20</td><td>16</td><td style="color:#6ab8ff; font-weight:700;">20</td></tr>
+              <tr><td style="color:var(--muted);">BB Std Dev</td><td>2.0</td><td>2.0</td><td style="color:#6ab8ff; font-weight:700;">2.5</td></tr>
+              <tr><td style="color:var(--muted);">R:R</td><td style="color:#39d98a; font-weight:700;">1:2.8</td><td style="color:#f6c453; font-weight:700;">1:4.5</td><td style="color:#6ab8ff; font-weight:700;">1:4.5</td></tr>
+              <tr><td style="color:var(--muted);">Min Probability</td><td>None</td><td style="color:#f6c453;">≥ 25%</td><td style="color:#6ab8ff;">≥ 42%</td></tr>
+              <tr><td style="color:var(--muted);">HTF Filter</td><td>4H ✅</td><td>None</td><td style="color:#6ab8ff;">4H ✅</td></tr>
+              <tr><td style="color:var(--muted);">Entry Hours (CST)</td><td>All hours</td><td style="color:#f6c453;">8–10 AM, 6–8 PM</td><td style="color:#6ab8ff;">8–9 AM, 6–8 PM</td></tr>
+              <tr><td style="color:var(--muted);">Risk per Trade</td><td>20 pts</td><td>20 pts</td><td>20 pts</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Trades/Month (est)</td><td style="color:#39d98a;">~8–12</td><td style="color:#f6c453;">~5–8</td><td style="color:#6ab8ff;">~3–5</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Win Rate (sim)</td><td>49%</td><td>52%</td><td style="color:#6ab8ff; font-weight:700;">65%</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">FTMO $10K Pass</td><td style="color:#39d98a;">76%</td><td style="color:#f6c453; font-weight:700;">95%</td><td style="color:#6ab8ff; font-weight:800;">98.8%</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Funded Pips Pass</td><td style="color:#39d98a;">71%</td><td style="color:#f6c453; font-weight:700;">93.8%</td><td style="color:#6ab8ff; font-weight:800;">100% ✅</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Avg Days to Pass</td><td>6d</td><td>6.4d</td><td style="color:#f6c453;">27d</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Max DD (sim)</td><td style="color:#f6c453;">14.2%</td><td style="color:#39d98a;">8.1%</td><td style="color:#39d98a; font-weight:700;">3.6%</td></tr>
+              <tr style="background:rgba(255,255,255,0.02);"><td style="color:var(--muted);">Best For</td><td style="color:#39d98a; font-size:11px;">Consistent income, funded accts</td><td style="color:#f6c453; font-size:11px;">Fast challenges, cash flow</td><td style="color:#6ab8ff; font-size:11px;">Max pass rate, preserve capital</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WHICH STRATEGY GUIDE -->
+      <div class="panel" style="margin-bottom:20px; border-color:rgba(246,196,83,0.2);">
+        <div class="eyebrow" style="margin-bottom:16px; color:#f6c453;">Which Strategy Should I Use?</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
+          <div style="background:#0d1420; border:1px solid rgba(57,217,138,0.25); border-radius:10px; padding:16px;">
+            <div style="font-size:13px; font-weight:800; color:#39d98a; margin-bottom:8px;">🤖 Use HYBRID if...</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.8;">You want the most trade opportunities. Already funded and want consistent growth. You're comfortable with ~14% drawdown potential. Good for active daily monitoring.</div>
+          </div>
+          <div style="background:#0d1420; border:1px solid rgba(246,196,83,0.25); border-radius:10px; padding:16px;">
+            <div style="font-size:13px; font-weight:800; color:#f6c453; margin-bottom:8px;">⚡ Use VELOCITY if...</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.8;">You want to pass a challenge fast (~6 days). Cash flow is the priority. You can handle a slightly longer wait for the right setup. Best balance of speed and safety.</div>
+          </div>
+          <div style="background:#0d1420; border:1px solid rgba(106,184,255,0.25); border-radius:10px; padding:16px;">
+            <div style="font-size:13px; font-weight:800; color:#6ab8ff; margin-bottom:8px;">🛡️ Use CHALLENGE if...</div>
+            <div style="font-size:12px; color:var(--muted); line-height:1.8;">You need maximum pass rate — account preservation is paramount. You can wait 27 days for highly selective entries. Funded Pips: 100% pass rate. Best for risk-averse challenge mode.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- MULTI-STRATEGY TRADE MONITOR -->
-      <div class="panel" style="margin-top:4px;">
+      <div class="panel">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
           <div>
             <div class="eyebrow">📡 Multi-Strategy Trade Monitor</div>
-            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Live feeds from all 3 strategy log files · auto-refreshed every 5 min</div>
+            <div style="font-size:11px; color:var(--muted); margin-top:2px;">Live feeds from all 3 strategy trade log files · auto-refreshed every 5 min</div>
           </div>
           <button onclick="refreshStrategyMonitor()" style="background:var(--surface); border:1px solid var(--border); color:var(--muted); padding:6px 14px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">↻ REFRESH</button>
         </div>
         <div class="monitor-grid">
-          <!-- HYBRID col -->
           <div class="monitor-col" style="border-color:rgba(57,217,138,0.3);">
             <div class="monitor-col-header">
               <span class="pulse-dot" id="hybridPulseDot"></span>
               <span class="monitor-col-title" style="color:#39d98a;">🤖 HYBRID</span>
             </div>
-            <div id="hybridMonitorTrades">
-              <div style="color:var(--muted); font-size:12px; text-align:center; padding:12px 0;">Loading...</div>
-            </div>
+            <div id="hybridMonitorTrades"><div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0;">Loading...</div></div>
             <div class="monitor-stats-row">
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Trades</div>
-                <div class="monitor-stat-value" id="hybridMonTrades" style="color:#39d98a;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">WR</div>
-                <div class="monitor-stat-value" id="hybridMonWR" style="color:#39d98a;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Net P&amp;L</div>
-                <div class="monitor-stat-value" id="hybridMonPnl" style="color:#39d98a;">—</div>
-              </div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Trades</div><div class="monitor-stat-value" id="hybridMonTrades" style="color:#39d98a;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">WR</div><div class="monitor-stat-value" id="hybridMonWR" style="color:#39d98a;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Net P&amp;L</div><div class="monitor-stat-value" id="hybridMonPnl" style="color:#39d98a;">—</div></div>
             </div>
           </div>
-          <!-- VELOCITY col -->
           <div class="monitor-col" style="border-color:rgba(246,196,83,0.3);">
             <div class="monitor-col-header">
               <span class="pulse-dot gold" id="velocityPulseDot"></span>
               <span class="monitor-col-title" style="color:#f6c453;">⚡ VELOCITY</span>
             </div>
-            <div id="velocityMonitorTrades">
-              <div style="color:var(--muted); font-size:12px; text-align:center; padding:12px 0;">Loading...</div>
-            </div>
+            <div id="velocityMonitorTrades"><div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0;">Loading...</div></div>
             <div class="monitor-stats-row">
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Trades</div>
-                <div class="monitor-stat-value" id="velocityMonTrades" style="color:#f6c453;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">WR</div>
-                <div class="monitor-stat-value" id="velocityMonWR" style="color:#f6c453;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Net P&amp;L</div>
-                <div class="monitor-stat-value" id="velocityMonPnl" style="color:#f6c453;">—</div>
-              </div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Trades</div><div class="monitor-stat-value" id="velocityMonTrades" style="color:#f6c453;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">WR</div><div class="monitor-stat-value" id="velocityMonWR" style="color:#f6c453;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Net P&amp;L</div><div class="monitor-stat-value" id="velocityMonPnl" style="color:#f6c453;">—</div></div>
             </div>
           </div>
-          <!-- CHALLENGE col -->
           <div class="monitor-col" style="border-color:rgba(106,184,255,0.3);">
             <div class="monitor-col-header">
               <span class="pulse-dot blue" id="challengePulseDot"></span>
               <span class="monitor-col-title" style="color:#6ab8ff;">🛡️ CHALLENGE</span>
             </div>
-            <div id="challengeMonitorTrades">
-              <div style="color:var(--muted); font-size:12px; text-align:center; padding:12px 0;">Loading...</div>
-            </div>
+            <div id="challengeMonitorTrades"><div style="color:var(--muted);font-size:12px;text-align:center;padding:12px 0;">Loading...</div></div>
             <div class="monitor-stats-row">
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Trades</div>
-                <div class="monitor-stat-value" id="challengeMonTrades" style="color:#6ab8ff;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">WR</div>
-                <div class="monitor-stat-value" id="challengeMonWR" style="color:#6ab8ff;">—</div>
-              </div>
-              <div class="monitor-stat">
-                <div class="monitor-stat-label">Net P&amp;L</div>
-                <div class="monitor-stat-value" id="challengeMonPnl" style="color:#6ab8ff;">—</div>
-              </div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Trades</div><div class="monitor-stat-value" id="challengeMonTrades" style="color:#6ab8ff;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">WR</div><div class="monitor-stat-value" id="challengeMonWR" style="color:#6ab8ff;">—</div></div>
+              <div class="monitor-stat"><div class="monitor-stat-label">Net P&amp;L</div><div class="monitor-stat-value" id="challengeMonPnl" style="color:#6ab8ff;">—</div></div>
             </div>
           </div>
         </div>
