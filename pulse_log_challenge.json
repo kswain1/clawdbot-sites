@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "timestamp": "2026-03-23 01:08 CST",
+    "strategy": "CHALLENGE",
+    "price": 4230.4,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "BEAR"
+  }
+]
