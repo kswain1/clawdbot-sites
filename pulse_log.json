@@ -1635,5 +1635,14 @@
     "signal": "WAIT",
     "mode": "TREND",
     "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-03-24 14:59 CST",
+    "strategy": "HYBRID",
+    "price": 4464.5,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "NEUTRAL"
   }
 ]
