@@ -1401,5 +1401,14 @@
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
     "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-03-24 04:40 CST",
+    "strategy": "HYBRID",
+    "price": 4420.2,
+    "probability": 45.5,
+    "signal": "WAIT",
+    "mode": "CONSOLIDATION",
+    "bias": "NEUTRAL"
   }
 ]
