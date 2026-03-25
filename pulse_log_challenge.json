@@ -1303,5 +1303,14 @@
     "signal": "FILTERED",
     "mode": "CONSOLIDATION",
     "bias": "BEAR"
+  },
+  {
+    "timestamp": "2026-03-25 13:34 CST",
+    "strategy": "CHALLENGE",
+    "price": 4511.1,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "BEAR"
   }
 ]
