@@ -1195,5 +1195,14 @@
     "signal": "WAIT",
     "mode": "TRANSITION",
     "bias": "BEAR"
+  },
+  {
+    "timestamp": "2026-03-25 08:30 CST",
+    "strategy": "VELOCITY",
+    "price": 4557.1,
+    "probability": 46.2,
+    "signal": "WAIT",
+    "mode": "CONSOLIDATION",
+    "bias": "NEUTRAL"
   }
 ]
