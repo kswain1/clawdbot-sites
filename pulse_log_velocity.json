@@ -1294,5 +1294,14 @@
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
     "bias": "BEAR"
+  },
+  {
+    "timestamp": "2026-03-25 13:13 CST",
+    "strategy": "VELOCITY",
+    "price": 4530.1,
+    "probability": 80.2,
+    "signal": "FILTERED",
+    "mode": "CONSOLIDATION",
+    "bias": "BEAR"
   }
 ]
