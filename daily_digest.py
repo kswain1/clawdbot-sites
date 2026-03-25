@@ -4,10 +4,10 @@ daily_digest.py — Posts a consolidated daily summary to #daily-digest
 Reads: pulse_log.json, price_data.json, autoresearch/autoresearch_latest.json
 Runs via GitHub Actions on schedule or manual trigger
 """
-import json, os, requests
-from datetime import datetime, timezone
+import json, os, requests, statistics
+from datetime import datetime, timezone, timedelta
 
-WEBHOOK = "https://discord.com/api/webhooks/1484817995024039988/qlkO2bRGHba4iDQ5AHpbbkm-SjGexVGBz39K0ux2g7s1FDHjWa9DcuBFjoo15AWnnRP_"
+WEBHOOK = os.environ.get('DISCORD_WEBHOOK_DIGEST', 'https://discord.com/api/webhooks/1484817995024039988/qlkO2bRGHba4iDQ5AHpbbkm-SjGexVGBz39K0ux2g7s1FDHjWa9DcuBFjoo15AWnnRP_')
 
 def load_json(path, default=None):
     try:
@@ -16,59 +16,181 @@ def load_json(path, default=None):
     except:
         return default
 
+def market_analysis(price_data, pulse):
+    """Build a buyer/seller battle + S/R + signal summary from price_data.json + pulse_log."""
+    if not price_data:
+        return "No market data available."
+
+    cp       = float(price_data.get('current_price', 0))
+    bars     = price_data.get('bars_1h', []) or price_data.get('bars_5m', [])
+
+    # Bollinger — actual keys from price_data.json
+    bb_upper = float(price_data.get('bb_upper_5m', price_data.get('bb_upper', 0)) or 0)
+    bb_lower = float(price_data.get('bb_lower_5m', price_data.get('bb_lower', 0)) or 0)
+    bb_mid   = float(price_data.get('bb_mid_5m',   price_data.get('bb_mid',   (bb_upper+bb_lower)/2 if bb_upper else 0)) or 0)
+
+    # S/R — can be a list [{type,price}] or a dict
+    sr_raw  = price_data.get('sr_levels', price_data.get('support_resistance', []))
+    if isinstance(sr_raw, list) and sr_raw:
+        supports  = sorted([float(x['price']) for x in sr_raw if x.get('type') == 'S'], reverse=True)
+        resists   = sorted([float(x['price']) for x in sr_raw if x.get('type') == 'R'])
+        support   = supports[0]  if supports else 0.0
+        resist    = resists[0]   if resists  else 0.0
+        # Top 2 of each for display
+        sup_str = '  '.join([f'${s:.2f}' for s in supports[:3]])
+        res_str = '  '.join([f'${r:.2f}' for r in resists[:3]])
+    elif isinstance(sr_raw, dict):
+        support = float(sr_raw.get('support', 0))
+        resist  = float(sr_raw.get('resistance', 0))
+        sup_str = f'${support:.2f}'
+        res_str = f'${resist:.2f}'
+    else:
+        support = resist = 0.0
+        sup_str = res_str = 'N/A'
+
+    daily_high = float(price_data.get('daily_high', 0) or 0)
+    daily_low  = float(price_data.get('daily_low',  0) or 0)
+    change_pct = float(price_data.get('change_pct', 0) or 0)
+
+    # ── Buyer/Seller pressure from recent bars ──
+    if bars and len(bars) >= 10:
+        recent = bars[-20:]
+        # Support both long-key (open/close) and short-key (o/c) bar formats
+        def get_o(b): return float(b.get('open', b.get('o', 0)) or 0)
+        def get_c(b): return float(b.get('close', b.get('c', 0)) or 0)
+        def get_v(b): return float(b.get('volume', b.get('v', 1)) or 1)
+        bull_bars = [b for b in recent if get_c(b) > get_o(b)]
+        bear_bars = [b for b in recent if get_c(b) < get_o(b)]
+        bull_pct  = round(len(bull_bars) / len(recent) * 100)
+        bear_pct  = 100 - bull_pct
+
+        # Volume-weight if available
+        bull_vol = sum(get_v(b) for b in bull_bars)
+        bear_vol = sum(get_v(b) for b in bear_bars)
+        total_vol = bull_vol + bear_vol
+        bull_vol_pct = round(bull_vol / total_vol * 100) if total_vol else bull_pct
+        bear_vol_pct = 100 - bull_vol_pct
+
+        # Momentum: last 5 bars vs prior 5
+        if len(recent) >= 10:
+            last5  = [get_c(b) for b in recent[-5:]]
+            prior5 = [get_c(b) for b in recent[-10:-5]]
+            momentum = 'ACCELERATING ▲' if last5[-1] > prior5[-1] and last5[0] > prior5[0] else \
+                       'DECELERATING ▼' if last5[-1] < prior5[-1] else 'NEUTRAL →'
+        else:
+            momentum = 'NEUTRAL →'
+    else:
+        bull_pct = bear_pct = 50
+        bull_vol_pct = bear_vol_pct = 50
+        momentum = 'INSUFFICIENT DATA'
+
+    # ── Position vs key levels ──
+    pos_vs_bb  = 'ABOVE MID (bullish lean)' if cp > bb_mid else 'BELOW MID (bearish lean)'
+    pos_vs_sr  = ''
+    if support and resist:
+        range_size = resist - support
+        pos_in_range = (cp - support) / range_size * 100 if range_size > 0 else 50
+        if pos_in_range >= 80:
+            pos_vs_sr = f'Near RESISTANCE ${resist:.2f} — watch for rejection'
+        elif pos_in_range <= 20:
+            pos_vs_sr = f'Near SUPPORT ${support:.2f} — watch for bounce'
+        else:
+            pos_vs_sr = f'Mid-range ({pos_in_range:.0f}% of S/R range)'
+
+    # ── Key signals from pulse log ──
+    signals_today = []
+    if pulse:
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+        for p in pulse[-288:]:
+            sig = p.get('signal', '')
+            if sig in ('BUY', 'SELL'):
+                signals_today.append(p)
+
+    sig_summary = ''
+    if signals_today:
+        buys  = [p for p in signals_today if p['signal'] == 'BUY']
+        sells = [p for p in signals_today if p['signal'] == 'SELL']
+        last_sig = signals_today[-1]
+        sig_summary = (
+            f"Signals (24H): {len(buys)} BUY  {len(sells)} SELL\n"
+            f"Last Signal:   {last_sig.get('signal','—')} @ ${float(last_sig.get('price',0)):.2f} "
+            f"| Prob {last_sig.get('probability',0)}% | {last_sig.get('mode','—')}\n"
+        )
+    else:
+        sig_summary = "Signals (24H): No qualifying signals fired\n"
+
+    # ── Bias verdict ──
+    if bull_pct >= 60:
+        bias_verdict = '🐂 BUYERS IN CONTROL'
+    elif bear_pct >= 60:
+        bias_verdict = '🐻 SELLERS IN CONTROL'
+    else:
+        bias_verdict = '⚖️ CONTESTED — no clear edge'
+
+    # ── Bull/Bear bar visual ──
+    bull_blocks = round(bull_vol_pct / 10)
+    bear_blocks = 10 - bull_blocks
+    battle_bar  = '🟢' * bull_blocks + '🔴' * bear_blocks
+
+    lines = [
+        f"XAUUSD Price:  ${cp:.2f}",
+        f"Day Range:     ${daily_low:.2f}  —  ${daily_high:.2f}  ({change_pct:+.2f}%)",
+        f"BB Bands:      ${bb_lower:.1f}  /  ${bb_mid:.1f}  /  ${bb_upper:.1f}",
+        f"Support:       {sup_str}",
+        f"Resistance:    {res_str}",
+        f"Position:      {pos_vs_bb}",
+        f"               {pos_vs_sr}",
+        f"",
+        f"── BUYER vs SELLER BATTLE (last 20 bars) ──",
+        f"{battle_bar}",
+        f"Bulls: {bull_vol_pct}%  Bears: {bear_vol_pct}%  Momentum: {momentum}",
+        f"Verdict: {bias_verdict}",
+        f"",
+        f"── KEY SIGNALS ──",
+        sig_summary.rstrip(),
+    ]
+    return '\n'.join(lines)
+
+
 def build_digest():
-    now_utc = datetime.now(timezone.utc)
+    now_utc  = datetime.now(timezone.utc)
     date_str = now_utc.strftime('%A, %B %-d, %Y')
     time_str = now_utc.strftime('%I:%M %p UTC')
 
-    # ── Pulse log summary ──
-    pulse = load_json('pulse_log.json', [])
+    pulse      = load_json('pulse_log.json', [])
+    price_data = load_json('price_data.json', {})
+    ar         = load_json('autoresearch/autoresearch_latest.json', {})
+
+    # ── Market Analysis (new) ──
+    market_section = market_analysis(price_data, pulse)
+
+    # ── Pulse summary ──
     pulse_section = "No pulse data available."
     if pulse:
-        today_pulses = pulse[-288:]  # last 24h (5-min bars)
-        signals = [p for p in today_pulses if p.get('signal') in ('BUY','SELL')]
-        buys  = [p for p in signals if p.get('signal') == 'BUY']
-        sells = [p for p in signals if p.get('signal') == 'SELL']
         latest = pulse[-1]
         pulse_section = (
             f"Latest:   {latest.get('timestamp','—')} | "
             f"${float(latest.get('price',0)):.2f} | "
             f"Prob {latest.get('probability',0)}% | "
             f"{latest.get('signal','—')} | {latest.get('mode','—')}\n"
-            f"24H Signals: {len(buys)} BUY  {len(sells)} SELL  ({len(signals)} total)\n"
-            f"Total log entries: {len(pulse)}"
+            f"Log entries: {len(pulse)}"
         )
 
-    # ── Price data ──
-    price_data = load_json('price_data.json', {})
-    price_section = "No price data available."
-    if price_data:
-        cp = price_data.get('current_price')
-        sr = price_data.get('support_resistance', {})
-        bb = price_data.get('bollinger', {})
-        price_section = (
-            f"XAUUSD:  ${float(cp):.2f}\n"
-            f"BB:      {float(bb.get('lower',0)):.1f} / {float(bb.get('upper',0)):.1f}\n"
-            f"Support: ${float(sr.get('support',0)):.2f}   Resistance: ${float(sr.get('resistance',0)):.2f}"
-        ) if cp else "Price unavailable"
-
     # ── AutoResearch latest ──
-    ar = load_json('autoresearch/autoresearch_latest.json', {})
     ar_section = "No AutoResearch data."
     if ar:
         best = ar.get('best', {})
-        rg = best.get('regimes', {})
+        rg   = best.get('regimes', {})
         def rline(name, emoji):
             s = rg.get(name, {})
             verdict = '✅' if s.get('net', 0) > 0 else '❌'
             return f"{emoji} {name.upper():<10}: {s.get('wr',0):.0f}% WR | ${s.get('net',0):+,.0f} {verdict}"
         ar_section = (
-            f"Best Config: rr={best.get('params',{}).get('rr')} | "
+            f"Config: rr={best.get('params',{}).get('rr')} | "
             f"min_prob={best.get('params',{}).get('min_prob')} | "
             f"htf={best.get('params',{}).get('htf_bars')}\n"
             f"EV {best.get('ev',0):+.4f}  Grade {best.get('grade','?')}  "
-            f"Net ${best.get('net',0):+,.0f}  WR {best.get('wr',0)}%  "
-            f"DD {best.get('max_dd',0)}%\n"
+            f"Net ${best.get('net',0):+,.0f}  WR {best.get('wr',0)}%  DD {best.get('max_dd',0)}%\n"
             f"{rline('bull','🐂')}  {rline('chop','〰️')}\n"
             f"{rline('bear','🐻')}  {rline('recovery','🔄')}"
         )
@@ -76,11 +198,11 @@ def build_digest():
     msg = f"""📊 **AURA DAILY DIGEST** — {date_str}
 *Generated {time_str}*
 
-**Market Intelligence**
+**XAUUSD Market Report**
 ```
-{price_section}
+{market_section}
 ```
-**Strategy Pulse (24H)**
+**Strategy Pulse**
 ```
 {pulse_section}
 ```
