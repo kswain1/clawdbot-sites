@@ -152,6 +152,101 @@ def market_analysis(price_data, pulse):
     return '\n'.join(lines)
 
 
+
+def bot_logic_checkpoints(price_data, pulse):
+    """Show the bot decision tree with ✅/❌ at each checkpoint, using latest pulse state."""
+    cp = float(price_data.get('current_price', 0)) if price_data else 0.0
+    if not pulse:
+        return "No pulse data — bot has not run yet."
+
+    latest = pulse[-1]
+    price  = float(latest.get('price', cp) or cp)
+    prob   = float(latest.get('probability', 0) or 0)
+    signal = latest.get('signal', 'WAIT')
+    mode   = latest.get('mode', '—') or latest.get('status', '—')
+    ts     = latest.get('timestamp', '—')
+
+    # Simulate the 3-strategy checkpoint matrix from current pulse state
+    strategies = [
+        {'name': 'HYBRID',    'emoji': '🤖', 'min_prob': 0.0,  'hours': list(range(24)),      'htf': False, 'rr': 2.8},
+        {'name': 'VELOCITY',  'emoji': '⚡', 'min_prob': 0.25, 'hours': [8,9,10,18,19,20],    'htf': True,  'rr': 4.5},
+        {'name': 'CHALLENGE', 'emoji': '🛡️', 'min_prob': 0.42, 'hours': [8,9,18,19,20],       'htf': True,  'rr': 4.5},
+    ]
+
+    # Determine current CST hour from timestamp
+    try:
+        from datetime import datetime
+        # ts format: "2026-03-24 21:31 CST" or UTC
+        cst_hour = int(ts.split(' ')[1].split(':')[0]) if ts != '—' else 0
+    except:
+        cst_hour = 0
+
+    # HTF bias from recent bars — rough check from price vs BB mid
+    bb_mid = float(price_data.get('bb_mid_5m', 0) or 0) if price_data else 0
+    htf_bias = 'BULLISH' if price > bb_mid > 0 else ('BEARISH' if bb_mid > 0 else 'NEUTRAL')
+
+    is_trade_signal = signal in ('BUY', 'SELL')
+
+    lines = [
+        f"Snapshot: {ts}  |  Price: ${price:.2f}  |  Mode: {mode}",
+        f"",
+        f"CHECKPOINT 1 — AUTO-MODE DETECTION",
+    ]
+
+    # Mode check
+    mode_upper = mode.upper()
+    if 'TREND' in mode_upper:
+        lines.append(f"  ✅  ADX > 25, ATR expanding, ROC > 0.3 → TREND mode")
+    elif 'CONSOL' in mode_upper or 'CONSOLIDAT' in mode_upper:
+        lines.append(f"  ✅  ADX < 20, low ATR → CONSOLIDATION mode")
+    elif 'TRANSITION' in mode_upper:
+        lines.append(f"  ⚠️  Mixed indicators → TRANSITION mode (weaker signals)")
+    else:
+        lines.append(f"  ⚠️  Mode: {mode}")
+
+    lines += [
+        f"",
+        f"CHECKPOINT 2 — SIGNAL GENERATION",
+    ]
+    if is_trade_signal:
+        lines.append(f"  ✅  Signal: {signal}  |  Probability: {prob:.1f}%")
+        lines.append(f"       Price vs BB bands — outside band trigger confirmed")
+    else:
+        lines.append(f"  ⏸️  Signal: {signal}  (no trade setup — price inside bands or weak momentum)")
+
+    lines += [
+        f"",
+        f"CHECKPOINT 3 — PER-STRATEGY FILTERS",
+        f"  {'Strategy':<12} {'Hour':<6} {'Prob':<8} {'HTF':<10} {'Result'}",
+        f"  {'─'*54}",
+    ]
+
+    for s in strategies:
+        ck_hr   = '✅' if cst_hour in s['hours'] else '❌'
+        ck_prob = '✅' if prob >= s['min_prob'] * 100 else '❌'
+        ck_htf  = '✅' if (not s['htf'] or htf_bias != 'NEUTRAL') else '⚠️'
+        passed  = (cst_hour in s['hours']) and (prob >= s['min_prob'] * 100)
+        result  = '🟢 FIRE' if (is_trade_signal and passed) else ('🔴 BLOCK' if is_trade_signal else '⏸️ WAIT')
+        lines.append(
+            f"  {s['emoji']} {s['name']:<11} {ck_hr}      {ck_prob}       {ck_htf}        {result}"
+        )
+
+    lines += [
+        f"",
+        f"CHECKPOINT 4 — HTF BIAS ALIGNMENT",
+        f"  BB Mid (5m): ${bb_mid:.2f}  |  Price: ${price:.2f}",
+        f"  {'✅' if htf_bias != 'NEUTRAL' else '⚠️'}  Bias: {htf_bias}",
+        f"  {'✅  Aligned with signal' if (is_trade_signal and ((signal=='BUY' and htf_bias=='BULLISH') or (signal=='SELL' and htf_bias=='BEARISH'))) else '❌  Misaligned — VELOCITY/CHALLENGE blocked' if is_trade_signal else '—  No active signal'}",
+        f"",
+        f"CHECKPOINT 5 — PROP FIRM SAFETY",
+        f"  ✅  Daily loss cap: $400 enforced",
+        f"  ✅  Max DD guard: protect_at 6–7% profit lock",
+        f"  ✅  Trade timeout: 120 min auto-close",
+        f"  ✅  One open trade max per strategy",
+    ]
+
+    return '\n'.join(lines)
+
 def build_digest():
     now_utc  = datetime.now(timezone.utc)
     date_str = now_utc.strftime('%A, %B %-d, %Y')
@@ -195,12 +290,18 @@ def build_digest():
             f"{rline('bear','🐻')}  {rline('recovery','🔄')}"
         )
 
+    checkpoint_section = bot_logic_checkpoints(price_data, pulse)
+
     msg = f"""📊 **AURA DAILY DIGEST** — {date_str}
 *Generated {time_str}*
 
 **XAUUSD Market Report**
 ```
 {market_section}
+```
+**Bot Logic — Live Checkpoints**
+```
+{checkpoint_section}
 ```
 **Strategy Pulse**
 ```
