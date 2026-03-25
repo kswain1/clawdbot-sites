@@ -1,7 +1,7 @@
 {
   "version": "expanded_v1",
   "experiments": 279,
-  "elapsed_s": 29.9,
+  "elapsed_s": 30.0,
   "train_days": 120,
   "val_days": 60,
   "baseline": {

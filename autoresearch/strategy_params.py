@@ -23,4 +23,6 @@ EXPERIMENT_LOG = [
     {"gen": 5, "ev": 4.84, "grade": "A", "net": 9680.0, "wr": 80.0, "trades": 10, "date": "2026-03-23", "params": {"bb_period": 13, "bb_std": 2.5, "rr": 6.3, "htf_bars": 48, "min_prob": 0.44, "entry_hours": [8, 9, 18, 19, 20]}, "note": "nightly autoresearch 180D"},
 
     {"gen": 6, "ev": 4.84, "grade": "A", "net": 9680.0, "wr": 80.0, "trades": 10, "date": "2026-03-24", "params": {"bb_period": 13, "bb_std": 2.5, "rr": 6.3, "htf_bars": 48, "min_prob": 0.44, "entry_hours": [8, 9, 18, 19, 20]}, "note": "nightly autoresearch 180D"},
+
+    {"gen": 7, "ev": 4.84, "grade": "A", "net": 9680.0, "wr": 80.0, "trades": 10, "date": "2026-03-25", "params": {"bb_period": 13, "bb_std": 2.5, "rr": 6.3, "htf_bars": 48, "min_prob": 0.44, "entry_hours": [8, 9, 18, 19, 20]}, "note": "nightly autoresearch 180D"},
 ]
