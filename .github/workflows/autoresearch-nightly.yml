@@ -25,15 +25,27 @@ jobs:
       - name: Install Dependencies
         run: pip install yfinance requests
 
-      - name: Run AutoResearch 180-Day Sweep
+      - name: Run AutoResearch — Session Models (Asia / NY / Open)
         run: |
           cd autoresearch
-          python autorun_expanded.py 2>&1 | tee /tmp/autoresearch_run.log
+          echo "=== Running 3-Model Session AutoResearch ==="
+          python autorun_session.py 2>&1 | tee /tmp/autoresearch_run.log
           echo "Exit code: $?"
+          echo ""
+          echo "=== Session Results Summary ==="
+          python3 -c "
+          import json
+          d = json.load(open('/tmp/autoresearch_session_results.json'))
+          for sk, r in d['sessions'].items():
+              b = r['best']
+              print(f"{r['emoji']} {r['name']:<22}: EV {b['ev']:+.4f}  Grade {b['grade']}  WR {b['wr']}%  Net \${b['net']:+,.0f}  {'✅ ROBUST' if b['robust'] else '⚠️ DECAY'}")
+          print(f"Overall best: {d['overall_best']}")
+          "
 
       - name: Update autoresearch_results.json
         run: |
           cp /tmp/autoresearch_expanded_results.json autoresearch/autoresearch_latest.json
+          cp /tmp/autoresearch_session_results.json  autoresearch/autoresearch_session_latest.json
 
       - name: Update strategy_params.py with best found config
         run: |
@@ -163,9 +175,24 @@ jobs:
                   verdict = '✅' if s.get('net',0) > 0 else '❌'
                   return f"{emoji} {name.upper():<10}: {s.get('wr',0):.0f}% WR | ${s.get('net',0):+,.0f} | EV {s.get('ev',0):+.3f} {verdict}"
 
-              msg = f"""🔬 **NIGHTLY AUTORESEARCH COMPLETE**
+              # Session summary
+              sess_summary = data.get('session_summary', {})
+              sess_lines = []
+              for sk, s in sess_summary.items():
+                  flag = '✅' if s.get('robust', False) else '⚠️'
+                  emojis = {'asia':'🌏','ny':'🗽','open':'🌐'}
+                  names  = {'asia':'Asia Session','ny':'New York','open':'Open/Any'}
+                  sess_lines.append(f"{emojis.get(sk,'🔬')} {names.get(sk,sk):<14}: EV {s.get('ev',0):+.4f}  {s.get('grade','?')}  WR {s.get('wr',0)}%  Net ${s.get('net',0):+,.0f}  {flag}")
 
-          **Best Config (180D / 4-Regime):**
+              sess_block = chr(10).join(sess_lines) if sess_lines else "(no session data)"
+
+              msg = f"""🔬 **NIGHTLY AUTORESEARCH — SESSION MODELS**
+
+          **Session Comparison:**
+          ```
+          {sess_block}
+          ```
+          **Overall Best Config ({data.get('overall_best','?').upper()} SESSION):**
           ```
           EV:     {best['ev']:+.4f}   Grade: {best['grade']}
           Net:    ${best['net']:+,.0f}
