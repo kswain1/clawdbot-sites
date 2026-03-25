@@ -1,13 +1,5 @@
 [
   {
-    "timestamp": "2026-03-22 08:59 CST",
-    "price": 4574.9,
-    "probability": 95,
-    "signal": "SELL",
-    "mode": "CONSOLIDATION",
-    "status": "SIGNAL"
-  },
-  {
     "timestamp": "2026-03-22 09:11 CST",
     "price": 4574.9,
     "probability": 95,
@@ -1746,6 +1738,15 @@
     "probability": 30.0,
     "signal": "WAIT",
     "mode": "TREND",
+    "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-03-25 14:39 CST",
+    "strategy": "HYBRID",
+    "price": 4520.3,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
     "bias": "NEUTRAL"
   }
 ]
