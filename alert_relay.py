@@ -68,10 +68,10 @@ STRATEGIES = {
         'short':       'CHALLENGE',
         'emoji':       '🛡️',
         'bb_period':   20,
-        'bb_std':      2.5,
-        'rr':          4.5,
+        'bb_std':      2.0,       # NY session optimized (was 2.5)
+        'rr':          7.3,       # promoted from NY AutoResearch (was 4.5)
         'min_prob':    0.42,
-        'entry_hours': [8, 9, 18, 19, 20],
+        'entry_hours': [8, 9, 10], # NY session only: 8–10:30 AM CST (was [8,9,18,19,20])
         'risk':        20.0,
         'htf_bars':    48,
         'protect_at':  0.07,

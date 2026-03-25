@@ -1,17 +1,15 @@
 {
-  "current_ev": 4.84,
+  "current_ev": 3.691,
   "current_params": {
     "bb_period": 20,
-    "bb_std": 2.5,
-    "rr": 4.5,
-    "min_prob": 0.42,
+    "bb_std": 2.0,
+    "rr": 7.3,
     "htf_bars": 48,
+    "min_prob": 0.42,
     "entry_hours": [
       8,
       9,
-      18,
-      19,
-      20
+      10
     ]
   },
   "history": [
@@ -36,6 +34,27 @@
       "max_dd": 3.6,
       "grade": "A",
       "note": "initial promotion from AutoResearch Gen3 expanded 279-exp sweep"
+    },
+    {
+      "date": "2026-03-25 13:24 UTC",
+      "prev_ev": 4.84,
+      "new_ev": 3.691,
+      "session": "ny",
+      "note": "Promoted NY Session model \u2014 WF robust 93%, WR 56.5%, DD 1.7%, $+50,940/180D. Asia had higher EV but failed WF.",
+      "params": {
+        "bb_period": 20,
+        "bb_std": 2.0,
+        "rr": 7.3,
+        "htf_bars": 48,
+        "min_prob": 0.42,
+        "entry_hours": [
+          8,
+          9,
+          10
+        ]
+      },
+      "max_dd": 1.7,
+      "grade": "A"
     }
   ]
 }
