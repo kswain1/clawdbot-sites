@@ -1,0 +1,41 @@
+{
+  "current_ev": 4.84,
+  "current_params": {
+    "bb_period": 20,
+    "bb_std": 2.5,
+    "rr": 4.5,
+    "min_prob": 0.42,
+    "htf_bars": 48,
+    "entry_hours": [
+      8,
+      9,
+      18,
+      19,
+      20
+    ]
+  },
+  "history": [
+    {
+      "date": "2026-03-23 04:00 UTC",
+      "prev_ev": 0.52,
+      "new_ev": 4.84,
+      "params": {
+        "bb_period": 13,
+        "bb_std": 2.5,
+        "rr": 6.3,
+        "htf_bars": 48,
+        "min_prob": 0.44,
+        "entry_hours": [
+          8,
+          9,
+          18,
+          19,
+          20
+        ]
+      },
+      "max_dd": 3.6,
+      "grade": "A",
+      "note": "initial promotion from AutoResearch Gen3 expanded 279-exp sweep"
+    }
+  ]
+}

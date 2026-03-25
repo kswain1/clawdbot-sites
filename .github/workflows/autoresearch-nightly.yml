@@ -125,6 +125,21 @@ jobs:
           git diff --staged --quiet && echo "No changes" || git commit -m "AutoResearch $(date -u '+%Y-%m-%d'): EV $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(f\"+{d['best']['ev']:.3f}\")" 2>/dev/null || echo 'update') Grade $(python3 -c "import json; d=json.load(open('autoresearch/autoresearch_latest.json')); print(d['best']['grade'])" 2>/dev/null || echo '?')"
           git push
 
+
+      - name: Auto-Promote best config to CHALLENGE if improved
+        run: |
+          cd autoresearch
+          python auto_promote.py 2>&1 | tee /tmp/promote.log
+          cat /tmp/promote.log
+
+      - name: Commit promotion if it happened
+        run: |
+          git config --local user.email "aura@clawdbot.com"
+          git config --local user.name "Aura AutoResearch"
+          git add autoresearch/promotion_log.json alert_relay.py || true
+          git diff --staged --quiet && echo "No promotion this run" || git commit -m "Auto-Promote CHALLENGE config $(date -u '+%Y-%m-%d'): $(python3 -c "import json; d=json.load(open('autoresearch/promotion_log.json')); h=d['history']; e=h[-1] if h else {}; print(f\"EV {e.get(\"prev_ev\",0):+.3f} → {e.get(\"new_ev\",0):+.3f}\")" 2>/dev/null || echo 'update')"
+          git push || true
+
       - name: Post results to Discord daily-digest
         if: always()
         env:
