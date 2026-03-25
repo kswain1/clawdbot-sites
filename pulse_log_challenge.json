@@ -1321,5 +1321,14 @@
     "signal": "WAIT",
     "mode": "TREND",
     "bias": "BEAR"
+  },
+  {
+    "timestamp": "2026-03-25 14:05 CST",
+    "strategy": "CHALLENGE",
+    "price": 4516.0,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "BEAR"
   }
 ]
