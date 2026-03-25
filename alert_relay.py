@@ -276,22 +276,65 @@ def embed_signal(cfg, data, label, desc, step_label='', enter_now=False):
     risk  = data['risk']; rr = data['rr']; sp = data['price']
     tgt   = round(sp + risk * rr, 2) if data['signal'] == 'BUY' else round(sp - risk * rr, 2)
     stp   = round(sp - risk, 2)      if data['signal'] == 'BUY' else round(sp + risk, 2)
-    title = f"{'🟢 ENTER NOW' if enter_now else label} — {cfg['emoji']} {cfg['name']} | {data['signal']}"
+    prob  = data['probability']
+    bias  = data['bias']
+    mode  = data['mode']
+    sig   = data['signal']
+    min_p = cfg.get('min_prob', 0.0) * 100   # convert to percentage
+    htf   = cfg.get('htf_bars', 0)
+    entry_hours = cfg.get('entry_hours', list(range(24)))
+    cur_hour = cst(now_utc()).hour
+
+    # ── Signal Quality Gate Checks ──────────────────────────────────────────
+    gate_prob    = prob >= min_p
+    gate_htf     = (htf == 0) or (bias in ('BULLISH', 'BEARISH') and
+                    ((sig == 'BUY' and bias == 'BULLISH') or (sig == 'SELL' and bias == 'BEARISH')))
+    gate_hours   = cur_hour in entry_hours
+    gate_mode    = mode in ('TREND', 'CONSOL', 'RANGING')
+    gate_rr      = rr >= 2.8
+    gates_passed = sum([gate_prob, gate_htf, gate_hours, gate_mode, gate_rr])
+    gates_total  = 5
+
+    def ck(v): return '✅' if v else '❌'
+
+    # Gate scorecard as a compact block
+    ck_p  = '✅' if gate_prob  else '❌'
+    ck_h  = '✅' if gate_htf   else '❌'
+    ck_hr = '✅' if gate_hours else '❌'
+    ck_m  = '✅' if gate_mode  else '❌'
+    ck_r  = '✅' if gate_rr    else '❌'
+    ck_s  = '✅' if gates_passed == gates_total else '⚠️'
+    prob_cmp = '>=' if gate_prob  else '<'
+    htf_txt  = 'aligned'   if gate_htf   else 'MISALIGNED'
+    hr_txt   = 'in window' if gate_hours else 'OUTSIDE window'
+    rr_txt   = '>= min'    if gate_rr    else 'BELOW min'
+    scorecard = (
+        f"{ck_p}  Probability  {prob:.1f}% {prob_cmp} {min_p:.0f}% threshold\n"
+        f"{ck_h}  HTF Bias     {bias} ({htf_txt})\n"
+        f"{ck_hr}  Entry Hour   {cur_hour}:00 CST ({hr_txt})\n"
+        f"{ck_m}  Market Mode  {mode}\n"
+        f"{ck_r}  R:R Ratio    1:{rr} ({rr_txt})\n"
+        f"─────────────────────────────\n"
+        f"{ck_s}  Score: {gates_passed}/{gates_total} gates passed"
+    )
+
+    title = f"{'🟢 ENTER NOW' if enter_now else label} — {cfg['emoji']} {cfg['name']} | {sig}"
+
     fields = [
-        {"name": "STRATEGY",    "value": f"```\n{cfg['emoji']} {cfg['name']}\n```",  "inline": True},
-        {"name": "MODE",        "value": f"```\n{data['mode']}\n```",                "inline": True},
-        {"name": "SIGNAL",      "value": f"```\n{data['signal']}\n```",              "inline": True},
-        {"name": "ENTRY",       "value": f"```\n${sp}\n```",                         "inline": True},
-        {"name": "TARGET",      "value": f"```\n${tgt} (+{round(risk*rr,1)} pts)\n```", "inline": True},
-        {"name": "STOP",        "value": f"```\n${stp} (-{risk:.0f} pts)\n```",      "inline": True},
-        {"name": "R:R",         "value": f"```\n1:{rr}\n```",                        "inline": True},
-        {"name": "PROBABILITY", "value": f"```\n{data['probability']}%\n{prob_bar(data['probability'])}\n```", "inline": True},
-        {"name": "HTF BIAS",    "value": f"```\n{data['bias']}\n```",                "inline": True},
+        {"name": "ENTRY",   "value": f"```\n${sp}\n```",                              "inline": True},
+        {"name": "TARGET",  "value": f"```\n${tgt}  +{round(risk*rr,1)} pts\n```",   "inline": True},
+        {"name": "STOP",    "value": f"```\n${stp}  -{risk:.0f} pts\n```",            "inline": True},
+        {"name": "R:R",     "value": f"```\n1:{rr}\n```",                             "inline": True},
+        {"name": "MODE",    "value": f"```\n{mode}\n```",                              "inline": True},
+        {"name": "PROB",    "value": f"```\n{prob:.1f}%  {prob_bar(prob)}\n```",      "inline": True},
+        {"name": f"🔍 SIGNAL QUALITY — {gates_passed}/{gates_total}", 
+         "value": f"```\n{scorecard}\n```", "inline": False},
     ]
     if step_label:
-        fields.append({"name": "STEP", "value": f"```\n{step_label}\n```", "inline": True})
+        fields.append({"name": "STEP",   "value": f"```\n{step_label}\n```", "inline": True})
     if desc:
-        fields.append({"name": "ACTION", "value": f"```\n{desc}\n```", "inline": False})
+        fields.append({"name": "ACTION", "value": f"```\n{desc}\n```",       "inline": False})
+
     return {
         "title": title, "color": color, "fields": fields,
         "timestamp": now_utc().isoformat(),
@@ -303,7 +346,7 @@ RISK_PTS  = 20.0
 CONTRACT  = 10.0
 DAILY_CAP = 400.0
 TIMEOUT_M = 120
-TRADE_WH  = os.environ.get('DISCORD_WEBHOOK_TRADE_LOG', os.environ.get('DISCORD_WEBHOOK_ALERTS',''))
+TRADE_WH  = os.environ.get('DISCORD_WEBHOOK_TRADE_LOG', '')
 
 def trade_open(cfg, signal, price, prob, rr):
     state = load_json(cfg['trade_state'], {'open': None, 'next_id': 1, 'daily': {}})
@@ -454,7 +497,7 @@ def run_strategy(cfg_key, df):
 # ── DISCORD BOT STATUS UPDATE ─────────────────────────────────────────────────
 def update_bot_status():
     """Post current active strategies to a status embed in #alerts."""
-    token = os.environ.get('DISCORD_BOT_TOKEN','')
+    token = os.environ.get('DISCORD_BOT_TOKEN', '')
     channel_id = '1472714063690862633'  # #alerts
     status_lines = []
     for key, cfg in STRATEGIES.items():
