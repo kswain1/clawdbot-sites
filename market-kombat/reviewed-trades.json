@@ -1,0 +1,24 @@
+[
+  {
+    "id": "N001",
+    "strategy": "Novacane",
+    "session": "New York",
+    "result": "WIN",
+    "grade": "A",
+    "setup": "BB rejection",
+    "what_worked": "Bias aligned, clean NY rejection, no overmanagement.",
+    "lesson": "Trust aligned NY sniper entries when probability confirms.",
+    "replay": "../replays/2026-03-24/N001.json"
+  },
+  {
+    "id": "A001",
+    "strategy": "Asia Runner",
+    "session": "Asia",
+    "result": "WIN",
+    "grade": "A",
+    "setup": "Trend continuation",
+    "what_worked": "Held directional momentum cleanly during Asia session.",
+    "lesson": "Continuation works best when momentum is already established.",
+    "replay": "../replays/2026-03-24/A001.json"
+  }
+]

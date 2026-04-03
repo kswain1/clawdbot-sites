@@ -42,6 +42,7 @@
         <button class="tab-btn" onclick="showTab('propfirm')">Prop Firm</button>
         <button class="tab-btn" onclick="showTab('forwardtest')">Strategy Radar</button>
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
+        <button class="tab-btn" onclick="showTab('chartreview')" style="color:#b06aff;">Chart Review</button>
         <button class="tab-btn" onclick="showTab('autoresearch')" style="color:#6ab8ff;">AutoResearch</button>
         <button class="tab-btn" onclick="showTab('intelligence')">Algo Logic</button>
       </nav>
@@ -481,6 +482,37 @@
         </div>
 
       </div><!-- /strat-grid -->
+
+      <div class="panel" style="margin-top:18px; margin-bottom:20px; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(176,106,255,0.03));">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+          <div>
+            <div class="eyebrow" style="color:#b06aff;">Session Identity Layer</div>
+            <div style="font-size:24px; font-weight:900; color:#e8eaf0;">Named Strategy Modes</div>
+            <div style="font-size:13px; color:var(--muted); margin-top:6px; max-width:700px; line-height:1.6;">These are the product-facing strategy identities that should bridge AutoResearch, live alerts, Chart Review, and Discord summaries.</div>
+          </div>
+          <div style="font-size:12px; color:var(--muted);">Product direction: treat strategies like products, not config blobs.</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px;">
+          <div style="padding:16px; border-radius:14px; border:1px solid rgba(106,184,255,0.25); background:rgba(106,184,255,0.05);">
+            <div style="font-size:12px; color:#6ab8ff; text-transform:uppercase; letter-spacing:.1em;">Live</div>
+            <div style="font-size:22px; font-weight:900; margin-top:8px;">Novacane 💉</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:6px;">New York sniper mode</div>
+            <div style="margin-top:12px; font-size:13px; color:var(--muted); line-height:1.7;">Best for controlled, high-quality New York entries and replay-worthy A-grade setups.</div>
+          </div>
+          <div style="padding:16px; border-radius:14px; border:1px solid rgba(57,217,138,0.25); background:rgba(57,217,138,0.05);">
+            <div style="font-size:12px; color:#39d98a; text-transform:uppercase; letter-spacing:.1em;">Live</div>
+            <div style="font-size:22px; font-weight:900; margin-top:8px;">Asia Runner 🌏</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:6px;">Asia session runner</div>
+            <div style="margin-top:12px; font-size:13px; color:var(--muted); line-height:1.7;">Built for repeated Asia momentum with cleaner continuation-style entries and more frequent session action.</div>
+          </div>
+          <div style="padding:16px; border-radius:14px; border:1px solid rgba(246,196,83,0.25); background:rgba(246,196,83,0.05);">
+            <div style="font-size:12px; color:#f6c453; text-transform:uppercase; letter-spacing:.1em;">Candidate</div>
+            <div style="font-size:22px; font-weight:900; margin-top:8px;">London Mode 🌐</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:6px;">High-frequency London candidate</div>
+            <div style="margin-top:12px; font-size:13px; color:var(--muted); line-height:1.7;">Current best high-frequency session candidate, waiting on promotion and final naming decision.</div>
+          </div>
+        </div>
+      </div>
 
       <!-- STRATEGY BACKTEST REGISTRY — same as Backtest tab -->
       <div class="panel" style="margin-top:4px; margin-bottom:20px;">
@@ -1790,6 +1822,39 @@
     </div><!-- /backtest -->
 
     
+    <!-- ═══════════════════════════════════ CHART REVIEW TAB ═══════════════════════════════════ -->
+    <div id="chartreview" class="tab-content">
+      <section class="panel panel-glow-purple">
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
+          <div>
+            <div class="eyebrow" style="color:#b06aff;">🧾 Playbook Review Layer</div>
+            <div style="font-size:28px; font-weight:900; color:#e8eaf0;">Chart Review</div>
+            <div style="font-size:14px; color:var(--muted); margin-top:6px; max-width:620px; line-height:1.6;">Replay-driven trade review with setup tags, A/B/C/F grading, lessons learned, and links into the replay payload system.</div>
+          </div>
+          <div style="font-size:12px; color:var(--muted);">Source: <code>market-kombat/reviewed-trades.json</code></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1.2fr .8fr; gap:18px;">
+          <div class="panel" style="background:rgba(255,255,255,0.03); border:1px solid var(--border);">
+            <div style="font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px;">Reviewed Trades</div>
+            <div id="chartReviewList" style="display:grid; gap:12px;">
+              <div style="color:var(--muted);">Loading reviewed trades...</div>
+            </div>
+          </div>
+
+          <div class="panel" style="background:rgba(255,255,255,0.03); border:1px solid var(--border);">
+            <div style="font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:12px;">Review System Recommendations</div>
+            <div style="display:grid; gap:12px; font-size:14px; color:var(--muted); line-height:1.6;">
+              <div><strong style="color:#fff;">1. Make replay premium.</strong><br>Chart Review should become the signature product feature, not an afterthought.</div>
+              <div><strong style="color:#fff;">2. Show process, not just P&amp;L.</strong><br>Grade, setup, mistakes, and lesson should sit beside every reviewed trade.</div>
+              <div><strong style="color:#fff;">3. Keep Discord short-form.</strong><br>Use Discord for alerts and daily summaries; keep deep review on the site.</div>
+              <div><strong style="color:#fff;">4. Promote strategy identity.</strong><br>Novacane, Asia Runner, and a future London mode should feel like products, not config blobs.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <!-- ═══════════════════════════════════ AUTORESEARCH TAB ═══════════════════════════════════ -->
     <div id="autoresearch" class="tab-content">
 
@@ -2394,6 +2459,32 @@
       renderPage(tbodyId);
     }
 
+    async function loadChartReview() {
+      const host = document.getElementById('chartReviewList');
+      if (!host) return;
+      host.innerHTML = '<div style="color:var(--muted);">Loading reviewed trades...</div>';
+      try {
+        const res = await fetch('reviewed-trades.json?_=' + Date.now());
+        const rows = await res.json();
+        host.innerHTML = rows.map(r => `
+          <div style="padding:14px; border-radius:14px; border:1px solid var(--border); background:rgba(255,255,255,0.03);">
+            <div style="display:flex; justify-content:space-between; gap:12px; align-items:start; flex-wrap:wrap;">
+              <div>
+                <div style="font-size:17px; font-weight:800; color:#fff;">${r.id} — ${r.strategy}</div>
+                <div style="font-size:12px; color:var(--muted); margin-top:4px;">${r.session} · ${r.setup} · ${r.result}</div>
+              </div>
+              <div style="font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid #39d98a55; color:#39d98a;">Grade ${r.grade}</div>
+            </div>
+            <div style="margin-top:12px; color:var(--muted); line-height:1.6;"><strong style="color:#fff;">What worked:</strong> ${r.what_worked}</div>
+            <div style="margin-top:8px; color:var(--muted); line-height:1.6;"><strong style="color:#fff;">Lesson:</strong> ${r.lesson}</div>
+            <div style="margin-top:12px; font-size:12px; color:#6ab8ff;">Replay payload: <code>${r.replay}</code></div>
+          </div>
+        `).join('');
+      } catch (err) {
+        host.innerHTML = '<div style="color:#ff5d5d;">Unable to load reviewed trades.</div>';
+      }
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // SHOW TAB — handles all 6 tabs
     // ═══════════════════════════════════════════════════════════════
@@ -2409,12 +2500,13 @@
       if (id === 'backtest')   setTimeout(initChart, 100);
       if (id === 'forwardtest') setTimeout(updatePulseFeed, 100);
       if (id === 'strategies') setTimeout(refreshStrategyMonitor, 100);
+      if (id === 'chartreview') setTimeout(loadChartReview, 100);
     }
 
     // Hash routing on page load
     (function() {
       const hash = window.location.hash.replace('#', '');
-      const valid = ['kombat','strategies','propfirm','forwardtest','backtest','autoresearch','intelligence'];
+      const valid = ['kombat','strategies','propfirm','forwardtest','backtest','chartreview','autoresearch','intelligence'];
       if (hash && valid.includes(hash)) {
         showTab(hash);
       }
