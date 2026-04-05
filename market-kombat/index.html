@@ -40,6 +40,7 @@
         <button class="tab-btn active" onclick="showTab('kombat')">Live Arena</button>
         <button class="tab-btn" onclick="showTab('strategies')">Strategies</button>
         <button class="tab-btn" onclick="showTab('propfirm')">Prop Firm</button>
+        <button class="tab-btn" onclick="showTab('projects')">Projects</button>
         <button class="tab-btn" onclick="showTab('forwardtest')">Strategy Radar</button>
         <button class="tab-btn" onclick="showTab('backtest')">Backtest Analytics</button>
         <button class="tab-btn" onclick="showTab('chartreview')" style="color:#b06aff;">Chart Review</button>
@@ -1235,6 +1236,57 @@
       </div>
 
     </div><!-- /propfirm -->
+
+    <!-- ═══════════════════════════════════ PROJECTS TAB ═══════════════════════════════════ -->
+    <div id="projects" class="tab-content">
+      <div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div class="eyebrow" style="color:#b06aff;">Project Control</div>
+          <h1 style="margin-top:4px;">Projects Queue</h1>
+          <div style="font-size:13px; color:var(--muted); margin-top:6px;">Kanban-style board for future product, MT5, replay, and research work.</div>
+        </div>
+        <div style="font-size:12px; color:var(--muted);">Reference files live under <code>projects/</code></div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; align-items:start;">
+        <div class="panel" style="background:rgba(255,255,255,0.03);">
+          <div class="eyebrow" style="color:#f6c453; margin-bottom:12px;">Queued</div>
+          <div style="display:grid; gap:12px;">
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Projects / Kanban tab expansion</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">AutoResearch Deep Search — higher frequency session ideas</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Replay Player UI V1</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Prop Firm Calculator V2 strategy selector</div>
+          </div>
+        </div>
+
+        <div class="panel" style="background:rgba(255,255,255,0.03);">
+          <div class="eyebrow" style="color:#6ab8ff; margin-bottom:12px;">In Progress</div>
+          <div style="display:grid; gap:12px;">
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Market Kombat Chart Review</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Named strategy identity layer</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">MT5 bridge planning</div>
+          </div>
+        </div>
+
+        <div class="panel" style="background:rgba(255,255,255,0.03);">
+          <div class="eyebrow" style="color:#ff7ee7; margin-bottom:12px;">Blocked</div>
+          <div style="display:grid; gap:12px;">
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">MT5 credential rotation + secure storage</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Historical candle ingestion for replay</div>
+          </div>
+        </div>
+
+        <div class="panel" style="background:rgba(255,255,255,0.03);">
+          <div class="eyebrow" style="color:#39d98a; margin-bottom:12px;">Done</div>
+          <div style="display:grid; gap:12px;">
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Trade journal schema</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Replay payload spec</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Chart Review tab scaffold</div>
+            <div style="padding:12px; border-radius:12px; background:#11151c; border:1px solid var(--border);">Novacane / Asia Runner identity layer</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ═══════════════════════════════════ STRATEGY RADAR (forward test) ═══════════════════════════════════ -->
     <div id="forwardtest" class="tab-content">
@@ -2533,7 +2585,7 @@
     // Hash routing on page load
     (function() {
       const hash = window.location.hash.replace('#', '');
-      const valid = ['kombat','strategies','propfirm','forwardtest','backtest','chartreview','autoresearch','intelligence'];
+      const valid = ['kombat','strategies','propfirm','projects','forwardtest','backtest','chartreview','autoresearch','intelligence'];
       if (hash && valid.includes(hash)) {
         showTab(hash);
       }
