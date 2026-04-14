@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-04-10 07:53 CST",
-    "strategy": "VELOCITY",
-    "price": 4793.0,
-    "probability": 25.0,
-    "signal": "WAIT",
-    "mode": "TRANSITION",
-    "bias": "BULL"
-  },
-  {
     "timestamp": "2026-04-10 08:20 CST",
     "strategy": "VELOCITY",
     "price": 4798.4,
@@ -1798,5 +1789,14 @@
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
     "bias": "BULL"
+  },
+  {
+    "timestamp": "2026-04-14 00:15 CST",
+    "strategy": "VELOCITY",
+    "price": 4787.6,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
+    "bias": "NEUTRAL"
   }
 ]
