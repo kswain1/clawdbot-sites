@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "H001",
+    "opened_at": "2026-05-05 16:28 CST",
+    "opened_utc": "2026-05-05T22:28:08.262235+00:00",
+    "signal": "BUY",
+    "strategy": "HYBRID",
+    "entry": 4623.2,
+    "target": 4679.2,
+    "stop": 4603.2,
+    "rr": 2.8,
+    "probability": 76.1,
+    "result": "OPEN"
+  }
+]
