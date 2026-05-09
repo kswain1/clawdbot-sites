@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-05-03 16:45 CST",
-    "strategy": "HYBRID",
-    "price": 4635.3,
-    "probability": 25.0,
-    "signal": "WAIT",
-    "mode": "TRANSITION",
-    "bias": "NEUTRAL"
-  },
-  {
     "timestamp": "2026-05-03 17:05 CST",
     "strategy": "HYBRID",
     "price": 4632.3,
@@ -1792,6 +1783,15 @@
   },
   {
     "timestamp": "2026-05-09 16:40 CST",
+    "strategy": "HYBRID",
+    "price": 4730.7,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
+    "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-05-09 17:01 CST",
     "strategy": "HYBRID",
     "price": 4730.7,
     "probability": 25.0,
