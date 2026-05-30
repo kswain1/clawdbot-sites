@@ -1,1 +1,17 @@
-{"open":null,"next_id":1,"daily":{}}
+{
+  "open": {
+    "id": "V001",
+    "opened_at": "2026-05-30 09:44 CST",
+    "opened_utc": "2026-05-30T15:44:01.014838+00:00",
+    "signal": "BUY",
+    "strategy": "VELOCITY",
+    "entry": 4593.0,
+    "target": 4683.0,
+    "stop": 4573.0,
+    "rr": 4.5,
+    "probability": 83.3,
+    "result": "OPEN"
+  },
+  "next_id": 2,
+  "daily": {}
+}
