@@ -162,6 +162,25 @@
     "stop": 4573.0,
     "rr": 2.8,
     "probability": 79.0,
+    "result": "LOSS",
+    "closed_at": "2026-05-31 10:15 CST",
+    "hold_min": 127,
+    "exit": 4593.0,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
+  },
+  {
+    "id": "H010",
+    "opened_at": "2026-05-31 10:15 CST",
+    "opened_utc": "2026-05-31T16:15:33.078748+00:00",
+    "signal": "BUY",
+    "strategy": "HYBRID",
+    "entry": 4593.0,
+    "target": 4649.0,
+    "stop": 4573.0,
+    "rr": 2.8,
+    "probability": 79.0,
     "result": "OPEN"
   }
 ]
