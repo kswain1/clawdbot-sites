@@ -1,17 +1,5 @@
 {
-  "open": {
-    "id": "H010",
-    "opened_at": "2026-05-31 10:15 CST",
-    "opened_utc": "2026-05-31T16:15:33.078748+00:00",
-    "signal": "BUY",
-    "strategy": "HYBRID",
-    "entry": 4593.0,
-    "target": 4649.0,
-    "stop": 4573.0,
-    "rr": 2.8,
-    "probability": 79.0,
-    "result": "OPEN"
-  },
+  "open": null,
   "next_id": 11,
   "daily": {
     "2026-05-05": {
@@ -26,7 +14,7 @@
     },
     "2026-05-31": {
       "wins": 0,
-      "losses": 4,
+      "losses": 5,
       "pnl": 0.0
     }
   }
