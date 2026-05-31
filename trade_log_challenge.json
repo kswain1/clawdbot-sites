@@ -17,5 +17,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 0.0,
     "pnl_usd": 0.0
+  },
+  {
+    "id": "C002",
+    "opened_at": "2026-05-30 19:22 CST",
+    "opened_utc": "2026-05-31T01:22:39.921494+00:00",
+    "signal": "BUY",
+    "strategy": "CHALLENGE",
+    "entry": 4593.0,
+    "target": 4713.0,
+    "stop": 4573.0,
+    "rr": 6.0,
+    "probability": 79.0,
+    "result": "OPEN"
   }
 ]
