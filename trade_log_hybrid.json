@@ -314,6 +314,25 @@
     "stop": 4116.3,
     "rr": 2.8,
     "probability": 79.2,
+    "result": "LOSS",
+    "closed_at": "2026-06-27 13:42 CST",
+    "hold_min": 141,
+    "exit": 4096.3,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
+  },
+  {
+    "id": "H018",
+    "opened_at": "2026-06-27 13:42 CST",
+    "opened_utc": "2026-06-27T19:42:08.280357+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4096.3,
+    "target": 4040.3,
+    "stop": 4116.3,
+    "rr": 2.8,
+    "probability": 79.2,
     "result": "OPEN"
   }
 ]
