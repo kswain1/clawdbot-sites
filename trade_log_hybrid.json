@@ -245,5 +245,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 0.0,
     "pnl_usd": 0.0
+  },
+  {
+    "id": "H014",
+    "opened_at": "2026-06-27 02:47 CST",
+    "opened_utc": "2026-06-27T08:47:50.427726+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4103.0,
+    "target": 4047.0,
+    "stop": 4123.0,
+    "rr": 2.8,
+    "probability": 79.2,
+    "result": "OPEN"
   }
 ]
