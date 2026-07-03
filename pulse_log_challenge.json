@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-06-26 14:03 CST",
-    "strategy": "CHALLENGE",
-    "price": 4087.9,
-    "probability": 25.0,
-    "signal": "WAIT",
-    "mode": "TRANSITION",
-    "bias": "BEAR"
-  },
-  {
     "timestamp": "2026-06-26 14:42 CST",
     "strategy": "CHALLENGE",
     "price": 4083.5,
@@ -1792,6 +1783,15 @@
   },
   {
     "timestamp": "2026-07-03 15:32 CST",
+    "strategy": "CHALLENGE",
+    "price": 4188.5,
+    "probability": 65,
+    "signal": "PREPARE",
+    "mode": "CONSOLIDATION",
+    "bias": "BULL"
+  },
+  {
+    "timestamp": "2026-07-03 15:56 CST",
     "strategy": "CHALLENGE",
     "price": 4188.5,
     "probability": 65,
