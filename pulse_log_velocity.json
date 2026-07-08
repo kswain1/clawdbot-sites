@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-07-02 15:30 CST",
-    "strategy": "VELOCITY",
-    "price": 4135.5,
-    "probability": 65,
-    "signal": "PREPARE",
-    "mode": "CONSOLIDATION",
-    "bias": "BULL"
-  },
-  {
     "timestamp": "2026-07-02 16:19 CST",
     "strategy": "VELOCITY",
     "price": 4140.6,
@@ -1794,6 +1785,15 @@
     "timestamp": "2026-07-08 15:59 CST",
     "strategy": "VELOCITY",
     "price": 4086.6,
+    "probability": 65,
+    "signal": "PREPARE",
+    "mode": "CONSOLIDATION",
+    "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-07-08 16:26 CST",
+    "strategy": "VELOCITY",
+    "price": 4087.0,
     "probability": 65,
     "signal": "PREPARE",
     "mode": "CONSOLIDATION",
