@@ -618,6 +618,12 @@
     "stop": 4090.8,
     "rr": 2.8,
     "probability": 88.2,
-    "result": "OPEN"
+    "result": "LOSS",
+    "closed_at": "2026-07-26 08:45 CST",
+    "hold_min": 127,
+    "exit": 4070.8,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
   }
 ]
