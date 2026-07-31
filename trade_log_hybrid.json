@@ -713,6 +713,12 @@
     "stop": 4011.8,
     "rr": 2.8,
     "probability": 79.2,
-    "result": "OPEN"
+    "result": "WIN",
+    "closed_at": "2026-07-31 17:04 CST",
+    "hold_min": 24,
+    "exit": 4087.8,
+    "exit_reason": "TARGET",
+    "pnl_pts": 56.0,
+    "pnl_usd": 560.0
   }
 ]
