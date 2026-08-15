@@ -808,6 +808,12 @@
     "stop": 4457.3,
     "rr": 2.8,
     "probability": 78.3,
-    "result": "OPEN"
+    "result": "LOSS",
+    "closed_at": "2026-08-15 06:41 CST",
+    "hold_min": 126,
+    "exit": 4437.3,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
   }
 ]
