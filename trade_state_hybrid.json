@@ -1,8 +1,8 @@
 {
   "open": {
-    "id": "H042",
-    "opened_at": "2026-08-15 02:22 CST",
-    "opened_utc": "2026-08-15T08:22:56.303220+00:00",
+    "id": "H043",
+    "opened_at": "2026-08-15 04:34 CST",
+    "opened_utc": "2026-08-15T10:34:57.054831+00:00",
     "signal": "SELL",
     "strategy": "HYBRID",
     "entry": 4437.3,
@@ -12,7 +12,7 @@
     "probability": 78.3,
     "result": "OPEN"
   },
-  "next_id": 43,
+  "next_id": 44,
   "daily": {
     "2026-05-05": {
       "wins": 0,
@@ -68,6 +68,11 @@
       "wins": 0,
       "losses": 1,
       "pnl": -200.0
+    },
+    "2026-08-15": {
+      "wins": 0,
+      "losses": 1,
+      "pnl": 0.0
     }
   }
 }
