@@ -1,8 +1,8 @@
 {
   "open": {
-    "id": "V003",
-    "opened_at": "2026-08-15 08:42 CST",
-    "opened_utc": "2026-08-15T14:42:34.752301+00:00",
+    "id": "V004",
+    "opened_at": "2026-08-15 10:46 CST",
+    "opened_utc": "2026-08-15T16:46:41.116729+00:00",
     "signal": "SELL",
     "strategy": "VELOCITY",
     "entry": 4437.3,
@@ -12,7 +12,7 @@
     "probability": 78.7,
     "result": "OPEN"
   },
-  "next_id": 4,
+  "next_id": 5,
   "daily": {
     "2026-05-30": {
       "wins": 0,
@@ -20,6 +20,11 @@
       "pnl": 0.0
     },
     "2026-05-31": {
+      "wins": 0,
+      "losses": 1,
+      "pnl": 0.0
+    },
+    "2026-08-15": {
       "wins": 0,
       "losses": 1,
       "pnl": 0.0
