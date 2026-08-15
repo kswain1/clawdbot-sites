@@ -1,6 +1,18 @@
 {
-  "open": null,
-  "next_id": 3,
+  "open": {
+    "id": "V003",
+    "opened_at": "2026-08-15 08:42 CST",
+    "opened_utc": "2026-08-15T14:42:34.752301+00:00",
+    "signal": "SELL",
+    "strategy": "VELOCITY",
+    "entry": 4437.3,
+    "target": 4347.3,
+    "stop": 4457.3,
+    "rr": 4.5,
+    "probability": 78.7,
+    "result": "OPEN"
+  },
+  "next_id": 4,
   "daily": {
     "2026-05-30": {
       "wins": 0,
