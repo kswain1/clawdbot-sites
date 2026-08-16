@@ -93,5 +93,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 0.0,
     "pnl_usd": 0.0
+  },
+  {
+    "id": "V006",
+    "opened_at": "2026-08-16 08:14 CST",
+    "opened_utc": "2026-08-16T14:14:50.072726+00:00",
+    "signal": "SELL",
+    "strategy": "VELOCITY",
+    "entry": 4437.3,
+    "target": 4347.3,
+    "stop": 4457.3,
+    "rr": 4.5,
+    "probability": 78.7,
+    "result": "OPEN"
   }
 ]
