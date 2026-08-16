@@ -143,6 +143,12 @@
     "stop": 4457.3,
     "rr": 6.0,
     "probability": 78.3,
-    "result": "OPEN"
+    "result": "LOSS",
+    "closed_at": "2026-08-16 10:55 CST",
+    "hold_min": 127,
+    "exit": 4437.3,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
   }
 ]
