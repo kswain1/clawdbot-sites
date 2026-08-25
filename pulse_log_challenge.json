@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-08-22 23:58 CST",
-    "strategy": "CHALLENGE",
-    "price": 4680.6,
-    "probability": 25.0,
-    "signal": "WAIT",
-    "mode": "TRANSITION",
-    "bias": "NEUTRAL"
-  },
-  {
     "timestamp": "2026-08-23 00:12 CST",
     "strategy": "CHALLENGE",
     "price": 4680.6,
@@ -1797,6 +1788,15 @@
     "probability": 48.4,
     "signal": "WAIT",
     "mode": "CONSOLIDATION",
+    "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-08-25 01:50 CST",
+    "strategy": "CHALLENGE",
+    "price": 4693.8,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
     "bias": "NEUTRAL"
   }
 ]
