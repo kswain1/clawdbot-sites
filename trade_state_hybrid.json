@@ -1,6 +1,18 @@
 {
-  "open": null,
-  "next_id": 58,
+  "open": {
+    "id": "H058",
+    "opened_at": "2026-08-29 08:54 CST",
+    "opened_utc": "2026-08-29T14:54:41.080073+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4529.9,
+    "target": 4473.9,
+    "stop": 4549.9,
+    "rr": 2.8,
+    "probability": 92.3,
+    "result": "OPEN"
+  },
+  "next_id": 59,
   "daily": {
     "2026-05-05": {
       "wins": 0,
