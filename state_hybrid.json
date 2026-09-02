@@ -2,6 +2,6 @@
   "active_signal": "TREND_BUY",
   "signal_time": "07:41 CST",
   "signal_price": 4406.4,
-  "countdown_step": 3,
+  "countdown_step": 2,
   "entry_mode": "TREND"
 }
