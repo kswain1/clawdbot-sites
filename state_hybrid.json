@@ -1,7 +1,7 @@
 {
-  "active_signal": "TREND_SELL",
-  "signal_time": "06:51 CST",
-  "signal_price": 4442.3,
-  "countdown_step": 2,
-  "entry_mode": "TREND"
+  "active_signal": null,
+  "signal_time": null,
+  "signal_price": null,
+  "countdown_step": 0,
+  "entry_mode": null
 }
