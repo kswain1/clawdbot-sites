@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-09-19 13:09 CST",
-    "strategy": "VELOCITY",
-    "price": 4424.9,
-    "probability": 25.0,
-    "signal": "WAIT",
-    "mode": "TRANSITION",
-    "bias": "NEUTRAL"
-  },
-  {
     "timestamp": "2026-09-19 13:17 CST",
     "strategy": "VELOCITY",
     "price": 4424.9,
@@ -1794,6 +1785,15 @@
     "timestamp": "2026-09-20 23:33 CST",
     "strategy": "VELOCITY",
     "price": 4397.4,
+    "probability": 25.0,
+    "signal": "WAIT",
+    "mode": "TRANSITION",
+    "bias": "BEAR"
+  },
+  {
+    "timestamp": "2026-09-20 23:43 CST",
+    "strategy": "VELOCITY",
+    "price": 4393.0,
     "probability": 25.0,
     "signal": "WAIT",
     "mode": "TRANSITION",
