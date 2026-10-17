@@ -1708,5 +1708,18 @@
     "exit_reason": "STOP",
     "pnl_pts": -20.0,
     "pnl_usd": -200.0
+  },
+  {
+    "id": "H091",
+    "opened_at": "2026-10-17 00:32 CST",
+    "opened_utc": "2026-10-17T06:32:57.131340+00:00",
+    "signal": "BUY",
+    "strategy": "HYBRID",
+    "entry": 4175.9,
+    "target": 4231.9,
+    "stop": 4155.9,
+    "rr": 2.8,
+    "probability": 80.4,
+    "result": "OPEN"
   }
 ]
