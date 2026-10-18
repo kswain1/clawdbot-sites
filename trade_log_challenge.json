@@ -181,6 +181,12 @@
     "stop": 4161.1,
     "rr": 6.0,
     "probability": 80.4,
-    "result": "OPEN"
+    "result": "WIN",
+    "closed_at": "2026-10-17 20:00 CST",
+    "hold_min": 125,
+    "exit": 4186.7,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 5.6,
+    "pnl_usd": 56.0
   }
 ]
