@@ -1,6 +1,18 @@
 {
-  "open": null,
-  "next_id": 11,
+  "open": {
+    "id": "C011",
+    "opened_at": "2026-10-18 08:42 CST",
+    "opened_utc": "2026-10-18T14:42:17.893130+00:00",
+    "signal": "BUY",
+    "strategy": "CHALLENGE",
+    "entry": 4181.1,
+    "target": 4301.1,
+    "stop": 4161.1,
+    "rr": 6.0,
+    "probability": 80.4,
+    "result": "OPEN"
+  },
+  "next_id": 12,
   "daily": {
     "2026-05-30": {
       "wins": 0,

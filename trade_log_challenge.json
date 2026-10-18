@@ -188,5 +188,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 5.6,
     "pnl_usd": 56.0
+  },
+  {
+    "id": "C011",
+    "opened_at": "2026-10-18 08:42 CST",
+    "opened_utc": "2026-10-18T14:42:17.893130+00:00",
+    "signal": "BUY",
+    "strategy": "CHALLENGE",
+    "entry": 4181.1,
+    "target": 4301.1,
+    "stop": 4161.1,
+    "rr": 6.0,
+    "probability": 80.4,
+    "result": "OPEN"
   }
 ]
