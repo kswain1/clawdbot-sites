@@ -1986,6 +1986,25 @@
     "stop": 4161.1,
     "rr": 2.8,
     "probability": 80.4,
+    "result": "LOSS",
+    "closed_at": "2026-10-18 12:50 CST",
+    "hold_min": 123,
+    "exit": 4181.1,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
+  },
+  {
+    "id": "H106",
+    "opened_at": "2026-10-18 12:50 CST",
+    "opened_utc": "2026-10-18T18:50:13.021018+00:00",
+    "signal": "BUY",
+    "strategy": "HYBRID",
+    "entry": 4181.1,
+    "target": 4237.1,
+    "stop": 4161.1,
+    "rr": 2.8,
+    "probability": 80.4,
     "result": "OPEN"
   }
 ]
