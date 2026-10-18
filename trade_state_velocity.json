@@ -1,6 +1,18 @@
 {
-  "open": null,
-  "next_id": 9,
+  "open": {
+    "id": "V009",
+    "opened_at": "2026-10-17 19:54 CST",
+    "opened_utc": "2026-10-18T01:54:30.767010+00:00",
+    "signal": "BUY",
+    "strategy": "VELOCITY",
+    "entry": 4181.1,
+    "target": 4271.1,
+    "stop": 4161.1,
+    "rr": 4.5,
+    "probability": 80.3,
+    "result": "OPEN"
+  },
+  "next_id": 10,
   "daily": {
     "2026-05-30": {
       "wins": 0,
