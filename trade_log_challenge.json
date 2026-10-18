@@ -200,6 +200,25 @@
     "stop": 4161.1,
     "rr": 6.0,
     "probability": 80.4,
+    "result": "LOSS",
+    "closed_at": "2026-10-18 10:46 CST",
+    "hold_min": 124,
+    "exit": 4181.1,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
+  },
+  {
+    "id": "C012",
+    "opened_at": "2026-10-18 10:46 CST",
+    "opened_utc": "2026-10-18T16:46:29.248663+00:00",
+    "signal": "BUY",
+    "strategy": "CHALLENGE",
+    "entry": 4181.1,
+    "target": 4301.1,
+    "stop": 4161.1,
+    "rr": 6.0,
+    "probability": 80.4,
     "result": "OPEN"
   }
 ]

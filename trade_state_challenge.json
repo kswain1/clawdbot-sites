@@ -1,8 +1,8 @@
 {
   "open": {
-    "id": "C011",
-    "opened_at": "2026-10-18 08:42 CST",
-    "opened_utc": "2026-10-18T14:42:17.893130+00:00",
+    "id": "C012",
+    "opened_at": "2026-10-18 10:46 CST",
+    "opened_utc": "2026-10-18T16:46:29.248663+00:00",
     "signal": "BUY",
     "strategy": "CHALLENGE",
     "entry": 4181.1,
@@ -12,7 +12,7 @@
     "probability": 80.4,
     "result": "OPEN"
   },
-  "next_id": 12,
+  "next_id": 13,
   "daily": {
     "2026-05-30": {
       "wins": 0,
@@ -38,6 +38,11 @@
       "wins": 2,
       "losses": 0,
       "pnl": 121.0
+    },
+    "2026-10-18": {
+      "wins": 0,
+      "losses": 1,
+      "pnl": 0.0
     }
   }
 }
