@@ -2031,5 +2031,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 17.3,
     "pnl_usd": 173.0
+  },
+  {
+    "id": "H108",
+    "opened_at": "2026-10-26 15:46 CST",
+    "opened_utc": "2026-10-26T21:46:38.038073+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4029.5,
+    "target": 3973.5,
+    "stop": 4049.5,
+    "rr": 2.8,
+    "probability": 75.6,
+    "result": "OPEN"
   }
 ]
