@@ -1,17 +1,5 @@
 {
-  "open": {
-    "id": "H132",
-    "opened_at": "2026-11-07 01:27 CST",
-    "opened_utc": "2026-11-07T07:27:45.727710+00:00",
-    "signal": "SELL",
-    "strategy": "HYBRID",
-    "entry": 4079.5,
-    "target": 4023.5,
-    "stop": 4099.5,
-    "rr": 2.8,
-    "probability": 76.5,
-    "result": "OPEN"
-  },
+  "open": null,
   "next_id": 133,
   "daily": {
     "2026-05-05": {
@@ -156,7 +144,7 @@
     },
     "2026-11-07": {
       "wins": 0,
-      "losses": 1,
+      "losses": 2,
       "pnl": 0.0
     }
   }
