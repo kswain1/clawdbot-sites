@@ -2430,5 +2430,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": -2.3,
     "pnl_usd": -23.0
+  },
+  {
+    "id": "H129",
+    "opened_at": "2026-11-06 18:54 CST",
+    "opened_utc": "2026-11-07T00:54:21.050591+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4079.5,
+    "target": 4023.5,
+    "stop": 4099.5,
+    "rr": 2.8,
+    "probability": 76.5,
+    "result": "OPEN"
   }
 ]
