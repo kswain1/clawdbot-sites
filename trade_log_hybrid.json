@@ -2442,6 +2442,25 @@
     "stop": 4099.5,
     "rr": 2.8,
     "probability": 76.5,
+    "result": "LOSS",
+    "closed_at": "2026-11-06 20:58 CST",
+    "hold_min": 123,
+    "exit": 4079.5,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 0.0,
+    "pnl_usd": 0.0
+  },
+  {
+    "id": "H130",
+    "opened_at": "2026-11-06 20:58 CST",
+    "opened_utc": "2026-11-07T02:58:16.515143+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 4079.5,
+    "target": 4023.5,
+    "stop": 4099.5,
+    "rr": 2.8,
+    "probability": 76.5,
     "result": "OPEN"
   }
 ]
