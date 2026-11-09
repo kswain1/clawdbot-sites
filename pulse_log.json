@@ -1,14 +1,5 @@
 [
   {
-    "timestamp": "2026-11-07 20:33 CST",
-    "strategy": "HYBRID",
-    "price": 4074.9,
-    "probability": 65,
-    "signal": "PREPARE",
-    "mode": "CONSOLIDATION",
-    "bias": "NEUTRAL"
-  },
-  {
     "timestamp": "2026-11-07 20:38 CST",
     "strategy": "HYBRID",
     "price": 4074.9,
@@ -1794,6 +1785,15 @@
     "timestamp": "2026-11-08 20:24 CST",
     "strategy": "HYBRID",
     "price": 4140.0,
+    "probability": 30.0,
+    "signal": "WAIT",
+    "mode": "TREND",
+    "bias": "NEUTRAL"
+  },
+  {
+    "timestamp": "2026-11-08 20:29 CST",
+    "strategy": "HYBRID",
+    "price": 4137.6,
     "probability": 30.0,
     "signal": "WAIT",
     "mode": "TREND",
