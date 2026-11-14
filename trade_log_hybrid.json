@@ -2696,5 +2696,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 0.0,
     "pnl_usd": 0.0
+  },
+  {
+    "id": "H143",
+    "opened_at": "2026-11-14 10:17 CST",
+    "opened_utc": "2026-11-14T16:17:24.961006+00:00",
+    "signal": "SELL",
+    "strategy": "HYBRID",
+    "entry": 3886.3,
+    "target": 3830.3,
+    "stop": 3906.3,
+    "rr": 2.8,
+    "probability": 76.3,
+    "result": "OPEN"
   }
 ]
