@@ -2651,6 +2651,12 @@
     "stop": 3907.6,
     "rr": 2.8,
     "probability": 76.4,
-    "result": "OPEN"
+    "result": "WIN",
+    "closed_at": "2026-11-14 05:52 CST",
+    "hold_min": 124,
+    "exit": 3886.3,
+    "exit_reason": "TIMEOUT",
+    "pnl_pts": 1.3,
+    "pnl_usd": 13.0
   }
 ]
