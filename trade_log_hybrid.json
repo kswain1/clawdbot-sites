@@ -2981,5 +2981,18 @@
     "exit_reason": "TIMEOUT",
     "pnl_pts": 6.1,
     "pnl_usd": 61.0
+  },
+  {
+    "id": "H158",
+    "opened_at": "2026-11-17 13:53 CST",
+    "opened_utc": "2026-11-17T19:53:13.412113+00:00",
+    "signal": "BUY",
+    "strategy": "HYBRID",
+    "entry": 3864.5,
+    "target": 3920.5,
+    "stop": 3844.5,
+    "rr": 2.8,
+    "probability": 75.6,
+    "result": "OPEN"
   }
 ]
