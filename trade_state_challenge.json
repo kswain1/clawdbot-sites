@@ -1,17 +1,5 @@
 {
-  "open": {
-    "id": "C013",
-    "opened_at": "2026-11-24 09:38 CST",
-    "opened_utc": "2026-11-24T15:38:01.355831+00:00",
-    "signal": "SELL",
-    "strategy": "CHALLENGE",
-    "entry": 3606.9,
-    "target": 3486.9,
-    "stop": 3626.9,
-    "rr": 6.0,
-    "probability": 78.8,
-    "result": "OPEN"
-  },
+  "open": null,
   "next_id": 14,
   "daily": {
     "2026-05-30": {
@@ -43,6 +31,11 @@
       "wins": 0,
       "losses": 2,
       "pnl": 0.0
+    },
+    "2026-11-24": {
+      "wins": 1,
+      "losses": 0,
+      "pnl": 443.0
     }
   }
 }
