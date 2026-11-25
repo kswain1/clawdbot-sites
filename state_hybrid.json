@@ -1,7 +1,7 @@
 {
-  "active_signal": "BUY",
-  "signal_time": "23:56 CST",
-  "signal_price": 3530.4,
-  "countdown_step": 4,
-  "entry_mode": "CONSOLIDATION"
+  "active_signal": "TREND_BUY",
+  "signal_time": "02:51 CST",
+  "signal_price": 3560.8,
+  "countdown_step": 3,
+  "entry_mode": "TREND"
 }
